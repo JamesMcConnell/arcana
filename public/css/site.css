@@ -6584,3 +6584,47 @@ div.subnav-fixed {
 .affix {
     position: fixed;
 }
+
+/**
+ * Chat Styles
+ */
+#chat-message-pane {
+    height: 360px;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+#chat-pane hr {
+    margin: 10px 0;
+}
+
+#chat-pane form {
+    margin: 0;
+}
+
+#chat-msg {
+    height: 32px;
+    width: 100%;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+}
+
+ul.chat-messages {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+li.chat-message {
+    padding: 4px;
+    margin-bottom: 6px;
+}
+
+li.chat-message:nth-child(2n) {
+    background: #ededed;
+}
+
+li.chat-message .meta {
+    font-size: 70%;
+}

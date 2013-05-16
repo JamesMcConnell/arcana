@@ -39,13 +39,9 @@ app.controller('NavbarController', function ($scope, $http, $rootScope, $locatio
 app.controller('IndexController', function ($scope, $http, $rootScope, Page, User) {
     Page.setTitle('Home');
     $scope.user = User;
-    $scope.admin = $scope.user.isAdmin;
-    $scope.loggedIn = false;
 
     $rootScope.$on('user:login', function () {
         $scope.user = $scope.user.me();
-        $scope.admin = $scope.me.isAdmin;
-        $scope.loggedIn = true;
     });
 });
 
@@ -104,9 +100,58 @@ app.controller('LobbyController', function ($scope, $rootScope, $http, $location
     Page.setTitle('Lobby');
     $scope.user = User;
     $scope.messages = Messages;
-    $scope.flashMessages = messages;
+    $scope.flashMessages = [];
 
     $scope.$watch('messages.getAll()', function (messages) {
         $scope.flashMessages = messages;
     });
-})
+});
+
+app.controller('ChatController', function ($scope, $http, $rootScope, User) {
+    $scope.chat = io.connect('/chat');
+    $scope.user = User;
+    $scope.me = {};
+    $scope.incoming = '';
+    $scope.chatMsg = '';
+    $scope.chatLog = [];
+    $scope.maxSize = 2000;
+
+    $scope.$watch('user.me()', function (u) {
+        $scope.me = u;
+    });
+
+    $scope.chat.on('init', function (data) {
+        if (data && $scope.chatLog.length < 1) {
+            $scope.chatLog = data;
+            $scope.safeApply();
+            $scope.cleanUp();
+        }
+    });
+
+    $scope.chat.on('message', function (data) {
+        $scope.chatLog.push(data);
+        $scope.safeApply();
+        $scope.cleanUp();
+    });
+
+    $scope.sendMsg = function () {
+        if ($scope.chatMsg.length) {
+            var data = {
+                user: $scope.me.username + '.',
+                body: $scope.chatMsg,
+                timestamp: new Date().getTime()
+            };
+
+            $scope.chat.emit('message', data);
+            $scope.chatMsg = '';
+        }
+    };
+
+    $scope.cleanUp = function() {
+        if ($scope.chatLog.length > ($scope.maxSize - 1)) {
+            $scope.chatLog.splice(0, ($scope.chatLog.length - ($scope.maxSize - 1)));
+        }
+        var chatBox = $('#chat-message-pane');
+        chatBox.animate({ "scrollTop": chatBox[0].scrollHeight }, "slow");
+    };
+});
