@@ -1,0 +1,40 @@
+<form class="form-horizontal" ng-controller="RegisterController">
+    <fieldset>
+        <legend>Login</legend>
+        <div class="control-group">
+            <label class="control-label" for="username">Username:</label>
+            <div class="controls">
+                <input type="text" ng-model="username" placeholder="Username" />
+            </div>
+        </div>
+        <div class="control-group">
+            <label class="control-label" for="firstName">First Name:</label>
+            <div class="controls">
+                <input type="text" ng-model="firstName" placeholder="First name" />
+            </div>
+        </div>
+        <div class="control-group">
+            <label class="control-label" for="lastName">Last Name:</label>
+            <div class="controls">
+                <input type="text" ng-model="lastName" placeholder="Last name" />
+            </div>
+        </div>
+        <div class="control-group">
+            <label class="control-label" for="email">Email:</label>
+            <div class="controls">
+                <input type="text" ng-model="email" placeholder="Email" />
+            </div>
+        </div>
+        <div class="control-group">
+            <label class="control-label" for="password">Password</label>
+            <div class="controls">
+                <input type="password" ng-model="password" placeholder="Password" />
+            </div>
+        </div>
+        <div class="control-group">
+            <div class="controls">
+                <button class="btn btn-primary" ng-click="register()">Login</button>
+            </div>
+        </div>
+    </fieldset>
+</form>
