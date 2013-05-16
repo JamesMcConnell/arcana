@@ -1,40 +1,53 @@
-<form class="form-horizontal" ng-controller="RegisterController">
-    <fieldset>
-        <legend>Login</legend>
-        <div class="control-group">
-            <label class="control-label" for="username">Username:</label>
-            <div class="controls">
-                <input type="text" ng-model="username" placeholder="Username" />
-            </div>
-        </div>
-        <div class="control-group">
-            <label class="control-label" for="firstName">First Name:</label>
-            <div class="controls">
-                <input type="text" ng-model="firstName" placeholder="First name" />
-            </div>
-        </div>
-        <div class="control-group">
-            <label class="control-label" for="lastName">Last Name:</label>
-            <div class="controls">
-                <input type="text" ng-model="lastName" placeholder="Last name" />
-            </div>
-        </div>
-        <div class="control-group">
-            <label class="control-label" for="email">Email:</label>
-            <div class="controls">
-                <input type="text" ng-model="email" placeholder="Email" />
-            </div>
-        </div>
-        <div class="control-group">
-            <label class="control-label" for="password">Password</label>
-            <div class="controls">
-                <input type="password" ng-model="password" placeholder="Password" />
-            </div>
-        </div>
-        <div class="control-group">
-            <div class="controls">
-                <button class="btn btn-primary" ng-click="register()">Login</button>
-            </div>
-        </div>
-    </fieldset>
-</form>
+<div class="row">
+    <div class="span12">
+        <form class="form-horizontal" ng-controller="RegisterController">
+            <fieldset>
+                <legend>Register</legend>
+                <div class="alert alert-block" ng-show="validationMessages.length">
+                    <button type="button" class="close" data-dismiss="alert">&times;</button>
+                    <strong>Uh oh!</strong> There seemed to be a few errors:
+                    <ul>
+                        <li ng-repeat="message in validationMessages">
+                            {{validationMessages[$index]}}
+                        </li>
+                    </ul>
+                </div>
+                <div class="control-group">
+                    <label class="control-label" for="username">Username:</label>
+                    <div class="controls">
+                        <input type="text" ng-model="username" placeholder="Username" />
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label class="control-label" for="firstName">First Name:</label>
+                    <div class="controls">
+                        <input type="text" ng-model="firstName" placeholder="First name" />
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label class="control-label" for="lastName">Last Name:</label>
+                    <div class="controls">
+                        <input type="text" ng-model="lastName" placeholder="Last name" />
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label class="control-label" for="email">Email:</label>
+                    <div class="controls">
+                        <input type="text" ng-model="email" placeholder="Email" />
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label class="control-label" for="password">Password</label>
+                    <div class="controls">
+                        <input type="password" ng-model="password" placeholder="Password" />
+                    </div>
+                </div>
+                <div class="control-group">
+                    <div class="controls">
+                        <button class="btn btn-primary" ng-click="register()">Register</button>
+                    </div>
+                </div>
+            </fieldset>
+        </form>
+    </div>
+</div>

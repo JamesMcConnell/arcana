@@ -12,6 +12,10 @@ app.config(['$routeProvider', '$locationProvider', function ($routeProvider, $lo
             templateUrl: 'partials/register.html',
             controller: 'RegisterController'
         }).
+        when('/lobby', {
+            templateUrl: 'partials/lobby.html',
+            controller: 'LobbyController'
+        }).
         otherwise({
             redirectTo: '/home',
             controller: 'IndexController'

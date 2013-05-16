@@ -15,7 +15,7 @@ angular.module('appServices', ['ngCookies']).factory('Page', function ($rootScop
                 pageTitle = newTitle;
             }
     }
-}).factory('User', function ($rootScope, $http, $cookies, $location) {
+}).factory('User', function ($rootScope, $http, $cookies, $location, Toastr, Messages) {
     var currentUser = {};
 
     if ($cookies.arcana_admin) {
@@ -46,6 +46,7 @@ angular.module('appServices', ['ngCookies']).factory('Page', function ($rootScop
                                 break;
                             case 'error':
                                 currentUser = {};
+                                Messages.addMessage(data.message);
                                 break;
                         }
                     });
@@ -64,6 +65,7 @@ angular.module('appServices', ['ngCookies']).factory('Page', function ($rootScop
                             break;
                         case 'error':
                             currentUser = {};
+                            Messages.addMessage(data.message);
                             break;
                     }
                 });
@@ -83,4 +85,69 @@ angular.module('appServices', ['ngCookies']).factory('Page', function ($rootScop
                 return currentUser;
             }
     }
-})
+}).factory('Toastr', function ($rootScope) {
+    var queue = [],
+        currentMessage = {};
+
+    $rootScope.$on('$routeChangeSuccess', function () {
+        if (queue.length > 0) {
+            currentMessage = queue.shift();
+        } else {
+            currentMessage = {};
+        }
+    });
+
+    return {
+        showToast:
+            function (message) {
+                toastr.options.timeOut = message.timeOut || 5000;
+                toastr.options.positionClass = 'toast-top-right';
+                switch (message.type) {
+                    case 'success':
+                        toastr.success(message.body, message.title);
+                        break;
+                    case 'info':
+                        toastr.info(message.body, message.title);
+                        break;
+                    case 'warning':
+                        toastr.warning(message.body, message.title);
+                        break;
+                    case 'error':
+                        toastr.error(message.body, message.title);
+                        break;
+                }
+            },
+        setToast:
+            function (message) {
+                queue.push(message);
+            },
+        getToast:
+            function (message) {
+                return currentMessage;
+            }
+    };
+}).factory('Messages', function ($rootScope) {
+    var messages = [],
+        currentMessage = {};
+
+    $rootScope.$on('$routeChangeSuccess', function () {
+        if (messages.length > 0) {
+            messages = [];
+        }
+    });
+
+    return {
+        getAll:
+            function () {
+                return messages;
+            },
+        addMessage:
+            function (message) {
+                messages.push(message);
+            },
+        clearMessages:
+            function () {
+                messages = [];
+            }
+    }
+});

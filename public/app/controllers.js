@@ -49,11 +49,13 @@ app.controller('IndexController', function ($scope, $http, $rootScope, Page, Use
     });
 });
 
-app.controller('LoginController', function ($scope, $rootScope, $http, $location, User, Page) {
+app.controller('LoginController', function ($scope, $rootScope, $http, $location, User, Page, Messages) {
     Page.setTitle('Login');
     $scope.user = User;
     $scope.username = '';
     $scope.password = '';
+    $scope.validation = Messages;
+    $scope.validationMessages = [];
 
     $scope.$watch('User.me().username', function (loggedIn) {
         if (loggedIn) {
@@ -61,19 +63,26 @@ app.controller('LoginController', function ($scope, $rootScope, $http, $location
         }
     });
 
+    $scope.$watch('validation.getAll()', function (messages) {
+        $scope.validationMessages = messages;
+    })
+
     $scope.login = function () {
+        Messages.clearMessages();
         User.login($scope.username, $scope.password);
     }
 });
 
-app.controller('RegisterController', function ($scope, $rootScope, $http, $location, User, Page) {
+app.controller('RegisterController', function ($scope, $rootScope, $http, $location, User, Page, Messages) {
     Page.setTitle('Register');
     $scope.user = User;
+    $scope.validation = Messages;
     $scope.username = '';
     $scope.email = '';
     $scope.firstName = '';
     $scope.lastName = '';
     $scope.password = '';
+    $scope.validationMessages = [];
 
     $scope.$watch('User.me().username', function (loggedIn) {
         if (loggedIn) {
@@ -81,7 +90,23 @@ app.controller('RegisterController', function ($scope, $rootScope, $http, $locat
         }
     });
 
+    $scope.$watch('validation.getAll()', function (messages) {
+        $scope.validationMessages = messages;
+    });
+
     $scope.register = function () {
+        Messages.clearMessages();
         User.register($scope.username, $scope.password, $scope.email, $scope.firstName, $scope.lastName, false);
     }
 });
+
+app.controller('LobbyController', function ($scope, $rootScope, $http, $location, User, Page, Messages) {
+    Page.setTitle('Lobby');
+    $scope.user = User;
+    $scope.messages = Messages;
+    $scope.flashMessages = messages;
+
+    $scope.$watch('messages.getAll()', function (messages) {
+        $scope.flashMessages = messages;
+    });
+})
