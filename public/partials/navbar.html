@@ -10,15 +10,21 @@
                 <div class="nav-collapse collapse" id="main-menu">
                     <ul class="nav">
                         <li data-match-route="/home">
-                            <a href="/home" tabindex="-1"><i class="icon-home icon-white"></i> Home</a>
+                            <a href="/home" tabindex="-1">Home</a>
+                        </li>
+                        <li ng-show="me.username" data-match-route="/lobby">
+                            <a href="/lobby">Lobby</a>
                         </li>
                     </ul>
                     <ul class="nav pull-right" id="main-menu-right">
-                        <li ng-show="loggedIn">
-                            <a ng-click="logout()"><i class="icon-user"></i> Logout</a>
+                        <li ng-show="me.username">
+                            <a ng-click="logout()">Logout</a>
                         </li>
-                        <li ng-show="!loggedIn">
-                            <a href="/register"> Register</a>
+                        <li ng-show="!me.username" data-match-route="/login">
+                            <a href="/login">Login</a>
+                        </li>
+                        <li ng-show="!me.username" data-match-route="/register">
+                            <a href="/register">Register</a>
                         </li>
                     </ul>
                 </div>

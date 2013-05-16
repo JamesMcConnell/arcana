@@ -21,9 +21,7 @@ app.controller('MainController', function ($scope, $rootScope, $http, $location,
 });
 
 app.controller('NavbarController', function ($scope, $http, $rootScope, $location, User) {
-    $scope.me = User;
-    $scope.loggedIn = $scope.me.username != undefined;
-    $scope.settings = {};
+    $scope.user = User;
 
     $rootScope.$on('user:login', function () {
         $scope.me = $scope.user.me();
