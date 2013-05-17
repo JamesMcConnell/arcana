@@ -2,7 +2,7 @@ module.exports = function (app, io) {
     var Chat = require('../models/chat');
 
     var chat = io
-        .of('/chat')
+        .of('/lobby')
         .on('connection', function (socket) {
             getLog(socket);
 

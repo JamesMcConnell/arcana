@@ -1,0 +1,94 @@
+<div class="row">
+    <div class="span12">
+        <div ng-controller="UserAdminController">
+            <div class="clearfix">
+                <div class="pull-left" style="...">
+                    <button class="btn btn-primary pull-left" ng-click="editUser('new')" data-toggle="modal" href="#editModal">
+                        <i class="icon-plus-sign"></i>&nbsp;Add User
+                    </button>
+                </div>
+                <div class="pull-right">
+                    <div class="pagination pagination-right" ng-show="pages > 1">
+                        <ul>
+                            <li ng-class="(currentPage == 1) && 'disabled'">
+                                <a href="/admin#" ng-disabled="currentPage == 1" ng-click="getUsers(currentPage - 1)"><i class="icon-chevron-left"></i></a>
+                            </li>
+                            <li ng-repeat="i in [] | range:pages" class="{{ ($index + 1 == currentPage) && 'active' }}">
+                                <a href="/admin#" ng-click="getusers($index + 1)">{{ i + 1 }}</a>
+                            </li>
+                            <li ng-class="(currentPage == pages) && 'disabled'">
+                                <a href="/admin#" ng-disabled="currentPage == pages" ng-click="getUsers(currentPage + 1)"><i class="icon-chevron-right"></i></a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="pull-right">
+                <select ng-model="numPerPage" style="...">
+                    <option value="5">5</option>
+                    <option value="10">10</option>
+                    <option value="15">15</option>
+                    <option value="25">25</option>
+                    <option value="50">50</option>
+                </select> per page
+            </div>
+            <table class="table table-striped table-bordered">
+                <thead>
+                    <tr>
+                        <th>Username</th>
+                        <th>Real Name</th>
+                        <th style="...">Admin</th>
+                        <th>Operations</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr ng-repeat="user in users" ng-class="user.username == me.username && 'success'">
+                        <td style="...">
+                            {{ user.username }}
+                            <span class="pull-right badge badge-success" ng-show="user.username == me.username">
+                                You
+                            </span>
+                        </td>
+                        <td style="...">
+                            {{ user.firstName + ' ' + user.lastName }}
+                        </td>
+                        <td style="...">
+                            <i class="icon-ok"></i>
+                        </td>
+                        <td style="...">
+                            <button class="btn" data-toggle="modal" href="#editModal" ng-click="$parent.editUser(user._id)">
+                                <i class="icon-pencil"></i>&nbsp; Edit User
+                            </button>
+                            <button class="btn btn-danger" ng-click="$parent.removeUser(user._id)" ng-hide="user.username == me.username">
+                                <i class="icon-trash"></i>&nbsp;Delete User
+                            </button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <div ng-show="pages > 1" class="clearfix">
+                <div class="pull-left" style="...">
+                    <button class="btn btn-primary pull-left" ng-click="editUser('new')" data-toggle="modal" href="#editModal">
+                        <i class="icon-plus-sign"></i>&nbsp;Add User
+                    </button>
+                </div>
+                <div class="pull-right">
+                    <div class="pagination pagination-right" ng-show="pages > 1">
+                        <ul>
+                            <li ng-class="(currentPage == 1) && 'disabled'">
+                                <a href="/admin#" ng-disabled="currentPage == 1" ng-click="getUsers(currentPage - 1)"><i class="icon-chevron-left"></i></a>
+                            </li>
+                            <li ng-repeat="i in [] | range:pages" class="{{ ($index + 1 == currentPage) && 'active' }}">
+                                <a href="/admin#" ng-click="getusers($index + 1)">{{ i + 1 }}</a>
+                            </li>
+                            <li ng-class="(currentPage == pages) && 'disabled'">
+                                <a href="/admin#" ng-disabled="currentPage == pages" ng-click="getUsers(currentPage + 1)"><i class="icon-chevron-right"></i></a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal hide fade" ng-include="editModal" id="editModal"></div>
+</div>

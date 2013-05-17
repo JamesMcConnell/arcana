@@ -16,6 +16,10 @@ app.config(['$routeProvider', '$locationProvider', function ($routeProvider, $lo
             templateUrl: 'partials/lobby.html',
             controller: 'LobbyController'
         }).
+        when('/admin', {
+            templateUrl: 'partials/admin.html',
+            controller: 'AdminController'
+        }).
         otherwise({
             redirectTo: '/home',
             controller: 'IndexController'
