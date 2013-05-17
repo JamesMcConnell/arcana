@@ -74,4 +74,72 @@ module.exports = function (app) {
         res.clearCookie('arcana_admin');
         res.send({ status: 'success', message: 'You have logged out.' });
     });
-}
+
+    app.get('/users', function (req, res) {
+        var count = 0;
+        var currentPage = parseInt(req.query.currentPage) || 1;
+        var userList = [];
+        var numPerPage = parseInt(req.query.numPerPage) || 10;
+        var pages = 1;
+        var skip = (currentPage - 1) * numPerPage;
+
+        User.find().count().exec(function (err, num) {
+            count = num;
+            if (count > 1) {
+                pages = Math.ceil(count / numPerPage);
+            }
+
+            User.find(req.query.query)
+                .sort('username')
+                .skip(skip)
+                .limit(numPerPage)
+                .exec(function (err, userList) {
+                    var reply = {
+                        currentPage: currentPage,
+                        pages: pages,
+                        users: userList
+                    };
+
+                    res.header("Cache-Control", "no-cache", "must-revalidate");
+                    res.header("Pragma", "no-cache");
+                    res.header("Expires", 0);
+                    res.send(reply);
+                });
+        });
+    });
+
+    app.get('/users/:id', function (req, res) {
+        User.findOne({ _id: req.params.id }, function (err, result) {
+            if (err) {
+                console.log(err);
+            }
+
+            if (result) {
+                res.send(result);
+            }
+        });
+    });
+
+    app.del('/users/:id', function (req, res) {
+        User.remove({ _id: req.params.id }, function (err) {
+            if (err) {
+                return res.send({ status: 'error', message: err });
+            }
+            res.send({ status: 'success', message: 'User has been removed' });
+        });
+    });
+
+    app.put('/users/:id', function (req, res) {
+        User.update({ _id: req.params.id }, req.body, function (err) {
+            if (err) {
+                return res.send({ status: 'error', message: err });
+            }
+
+            if (req.body.selfEdit) {
+                res.sent({ status: 'success', message: 'Your changes have been saved.' });
+            } else {
+                res.send({ status: 'success', message: 'User has been updated.' });
+            }
+        });
+    });
+};

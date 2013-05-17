@@ -15,13 +15,38 @@ angular.module('appServices', ['ngCookies']).factory('Page', function ($rootScop
                 pageTitle = newTitle;
             }
     }
+}).factory('Table', function ($rootScope, $http) {
+    return {
+        updateTable:
+            function (tid, tableData) {
+                $http.put('/tables/' + tid, tableData).success(function (data, status) {
+                    if (data.status == 'success') {
+                        $rootScope.$broadcast('table:updateTable');
+                    } else {
+                        // messaging
+                    }
+                })
+            },
+        addTable:
+            function (tableData) {
+                $http.post('/tables', tableData).success(function (data, status) {
+                    if (data.status == 'error') {
+                        console.log(data);
+                    }
+                });
+            }
+    }
 }).factory('User', function ($rootScope, $http, $cookies, $location, Toastr, Messages) {
     var currentUser = {};
+    var userBeingEdited = {};
+    var editingSelf = false;
 
     if ($cookies.arcana_admin) {
-        currentUser.IsAdmin = true;
-    } else {
-        currentUser.isAdmin = false;
+        if ($cookies.arcana_admin == 'true') {
+            currentUser.isAdmin = true;
+        } else {
+            currentUser.isAdmin = false;
+        }
     }
 
     return {
@@ -83,6 +108,54 @@ angular.module('appServices', ['ngCookies']).factory('Page', function ($rootScop
         me:
             function() {
                 return currentUser;
+            },
+        editUser:
+            function (id) {
+                if (id == 'new') {
+                    userBeingEdited = {};
+                    editingSelf = false;
+                    $rootScope.$broadcast('user:editUser');
+                } else {
+                    $http.get('/users/' + id).success(function (data, status) {
+                        userBeingEdited = data;
+                        if (data.username == currentUser.username) {
+                            editingSelf = true;
+                        } else {
+                            editingSelf = false;
+                        }
+
+                        $rootScope.$broadcast('user:editUser');
+                    });
+                }
+            },
+        getEditUser:
+            function () {
+                return {
+                    editing: userBeingEdited,
+                    self: editingSelf
+                };
+            },
+        updateUser:
+            function (uid, userdata) {
+                $http.put('/users/' + uid, userdata).success(function (data, status) {
+                    if (data.status == 'success') {
+                        $rootScope.$broadcast('user:updateUser');
+                        // messaging
+                    } else {
+                        // messaging
+                    }
+                });
+            },
+        addUser:
+            function (userdata) {
+                $http.post('/users', userdata).success(function (data, status) {
+                    if (data.status == 'success') {
+                        $rootScope.$broadcast('user:addUser');
+                        // messaging
+                    } else {
+                        // messaging
+                    }
+                });
             }
     }
 }).factory('Toastr', function ($rootScope) {

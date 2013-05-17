@@ -15,6 +15,9 @@
                         <li ng-show="me.username" data-match-route="/lobby">
                             <a href="/lobby">Lobby</a>
                         </li>
+                        <li ng-show="me.username && me.isAdmin" data-match-route="/admin">
+                            <a href="/admin">Admin</a>
+                        </li>
                     </ul>
                     <ul class="nav pull-right" id="main-menu-right">
                         <li ng-show="me.username">

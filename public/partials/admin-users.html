@@ -2,7 +2,7 @@
     <div class="span12">
         <div ng-controller="UserAdminController">
             <div class="clearfix">
-                <div class="pull-left" style="...">
+                <div class="pull-left" style="margin: 20px 0;">
                     <button class="btn btn-primary pull-left" ng-click="editUser('new')" data-toggle="modal" href="#editModal">
                         <i class="icon-plus-sign"></i>&nbsp;Add User
                     </button>
@@ -24,7 +24,7 @@
                 </div>
             </div>
             <div class="pull-right">
-                <select ng-model="numPerPage" style="...">
+                <select ng-model="numPerPage" style="width: 5em;">
                     <option value="5">5</option>
                     <option value="10">10</option>
                     <option value="15">15</option>
@@ -37,25 +37,25 @@
                     <tr>
                         <th>Username</th>
                         <th>Real Name</th>
-                        <th style="...">Admin</th>
+                        <th style="text-align: center;">Admin</th>
                         <th>Operations</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr ng-repeat="user in users" ng-class="user.username == me.username && 'success'">
-                        <td style="...">
+                        <td style="vertical-align: middle;">
                             {{ user.username }}
                             <span class="pull-right badge badge-success" ng-show="user.username == me.username">
                                 You
                             </span>
                         </td>
-                        <td style="...">
+                        <td style="vertical-align: middle;">
                             {{ user.firstName + ' ' + user.lastName }}
                         </td>
-                        <td style="...">
-                            <i class="icon-ok"></i>
+                        <td style="text-align: center; color: green; vertical-align: middle;">
+                            <i class="icon-ok" ng-show="user.isAdmin"></i>
                         </td>
-                        <td style="...">
+                        <td style="vertical-align: middle;">
                             <button class="btn" data-toggle="modal" href="#editModal" ng-click="$parent.editUser(user._id)">
                                 <i class="icon-pencil"></i>&nbsp; Edit User
                             </button>
@@ -67,7 +67,7 @@
                 </tbody>
             </table>
             <div ng-show="pages > 1" class="clearfix">
-                <div class="pull-left" style="...">
+                <div class="pull-left" style="margin: 20px 0;">
                     <button class="btn btn-primary pull-left" ng-click="editUser('new')" data-toggle="modal" href="#editModal">
                         <i class="icon-plus-sign"></i>&nbsp;Add User
                     </button>
@@ -90,5 +90,69 @@
             </div>
         </div>
     </div>
-    <div class="modal hide fade" ng-include="editModal" id="editModal"></div>
+    <div class="modal hide fade" id="editModal">
+        <div ng-controller="UserEditModalController">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                <h3 ng-show="newUser">Create New User</h3>
+                <h3 ng-hide="newUser">Edit User: {{ username }}</h3>
+            </div>
+            <form class="form-horizontal" id="user-edit-modal-form">
+                <div class="modal-body">
+                    <div class="control-group">
+                        <label class="control-label">Username:</label>
+                        <div class="controls">
+                            <input type="text" ng-model="username" ng-disabled="!newUser" placeholder="Username" />
+                        </div>
+                    </div>
+                    <div class="control-group">
+                        <label class="control-label">First Name:</label>
+                        <div class="controls">
+                            <input type="text" ng-model="firstName" placeholder="First Name" />
+                        </div>
+                    </div>
+                    <div class="control-group">
+                        <label class="control-label">Last Name:</label>
+                        <div class="controls">
+                            <input type="text" ng-model="lastName" placeholder="Last Name" />
+                        </div>
+                    </div>
+                    <div class="control-group">
+                        <div class="controls">
+                            <label class="checkbox">
+                                <input type="checkbox" ng-model="isAdmin" /> Admin
+                            </label>
+                        </div>
+                    </div>
+                    <legend ng-show="editUser.editing._id">Change Password</legend>
+                    <div class="control-group{{pwError && ' error' || ''}}">
+                        <label class="control-label">Password:</label>
+                        <div class="controls">
+                            <div class="input-prepend">
+                                <span class="add-on"><i class="icon-key"></i></span>
+                                <input type="password" ng-model="pw1" placeholder="Password" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="control-group{{pwError && ' error' || ''}}">
+                        <label class="control-label">Repeat Password:</label>
+                        <div class="controls">
+                            <div class="input-prepend">
+                                <span class="add-on"><i class="icon-key"></i></span>
+                                <input type="password" ng-model="pw2" placeholder="Password" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn pull-left" data-dismiss="modal">
+                        <i class="icon-reply"></i>&nbsp;&nbsp;Cancel
+                    </button>
+                    <button type="submit" class="btn btn-primary" ng-disabled="pwError || incomplete" ng-click="save()" data-dismiss="modal">
+                        <i class="icon-save"></i>&nbsp;&nbsp;Save Changes
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
 </div>

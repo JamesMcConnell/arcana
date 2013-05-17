@@ -6628,3 +6628,17 @@ li.chat-message:nth-child(2n) {
 li.chat-message .meta {
     font-size: 70%;
 }
+
+#user-edit-modal-form .control-group {
+    margin-bottom: 15px;
+}
+
+/* Large desktop */
+@media (min-width: 1200px) {
+    .ace-editor { width: 768px; }
+}
+
+/* Portrait tablet to landscape and desktop */
+@media (min-width: 768px) and (max-width: 979px) {
+    .ace-editor { width: 474px; }
+}

@@ -184,6 +184,10 @@ app.controller('AdminController', function ($scope, $http, $location, Page, User
     }
 });
 
+app.controller('TableAdminController', function ($scope, $http, $rootScope, Table) {
+
+})
+
 app.controller('UserAdminController', function ($scope, $http, $rootScope, User) {
     $scope.me = User.me();
     $scope.currentPage = 1;
@@ -227,8 +231,109 @@ app.controller('UserAdminController', function ($scope, $http, $rootScope, User)
     });
 
     $scope.$on('user:updateUser', function () {
-        $scope.getUsers($scope.curentPage);
+        $scope.getUsers($scope.currentPage);
     });
 
     $scope.getUsers($scope.currentPage);
-})
+});
+
+app.controller('UserEditModalController', function ($scope, $http, $rootScope, User) {
+    $scope.user = User;
+    $scope.newUser = false;
+    $scope.uid = '';
+    $scope.username = '';
+    $scope.firstName = '';
+    $scope.lastName = '';
+    $scope.isAdmin = false;
+    $scope.pw1 = '';
+    $scope.pw2 = '';
+    $scope.pwError = false;
+    $scope.incomplete = false;
+
+    $scope.$watch('pw1', function () {
+        if ($scope.pw1 !== $scope.pw2) {
+            $scope.pwError = true;
+        } else {
+            $scope.pwError = false;
+        }
+
+        $scope.incompleteTest();
+    });
+
+    $scope.$watch('pw2', function () {
+        if ($scope.pw1 !== $scope.pw2) {
+            $scope.pwError = true;
+        } else {
+            $scope.pwError = false;
+        }
+
+        $scope.incompleteTest();
+    });
+
+    $scope.$watch('username', function () {
+        $scope.incompleteTest();
+    });
+
+    $scope.incompleteTest = function () {
+        if ($scope.newUser) {
+            if (!$scope.username.length || !$scope.pw1.length || !$scope.pw2.length) {
+                $scope.incomplete = true;
+            } else {
+                $scope.incomplete = false;
+            }
+        } else {
+            $scope.incomplete = false;
+        }
+    };
+
+    $rootScope.$on('user:editUser', function () {
+        $scope.editUser = User.getEditUser();
+        if ($scope.editUser.editing._id) {
+            $scope.username = $scope.editUser.editing.username;
+            $scope.firstName = $scope.editUser.editing.firstName;
+            $scope.lastName = $scope.editUser.editing.lastName;
+            $scope.isAdmin = $scope.editUser.editing.isAdmin;
+            $scope.uid = $scope.editUser.editing._id;
+            $scope.incomplete = false;
+            $scope.newUser = false;
+        } else {
+            $scope.username = '';
+            $scope.firstName = '';
+            $scope.lastName = '';
+            $scope.isAdmin = false;
+            $scope.pw1 = '';
+            $scope.pw2 = '';
+            $scope.incomplete = true;
+            $scope.newUser = true;
+        }
+    });
+
+    $scope.save = function () {
+        if ($scope.newUser) {
+            User.addUser({
+                username: $scope.username,
+                firstName: $scope.firstName,
+                lastName: $scope.lastName,
+                isAdmin: $scope.isAdmin,
+                password: $scope.pw1
+            });
+        } else {
+            if ($scope.pw1.length) {
+                User.updateUser($scope.uid, {
+                    username: $scope.username,
+                    firstName: $scope.firstName,
+                    lastName: $scope.lastName,
+                    isAdmin: $scope.isAdmin,
+                    password: $scope.pw1
+                });
+            } else {
+                User.updateUser($scope.uid, {
+                    username: $scope.username,
+                    firstName: $scope.firstName,
+                    lastName: $scope.lastName,
+                    isAdmin: $scope.isAdmin
+                });
+            }
+        }
+    };
+});
