@@ -36,7 +36,7 @@ angular.module('appServices', ['ngCookies']).factory('Page', function ($rootScop
                 });
             }
     }
-}).factory('User', function ($rootScope, $http, $cookies, $location, Toastr, Messages) {
+}).factory('User', function ($rootScope, $http, $cookies, $location, Messages) {
     var currentUser = {};
     var userBeingEdited = {};
     var editingSelf = false;
@@ -158,47 +158,6 @@ angular.module('appServices', ['ngCookies']).factory('Page', function ($rootScop
                 });
             }
     }
-}).factory('Toastr', function ($rootScope) {
-    var queue = [],
-        currentMessage = {};
-
-    $rootScope.$on('$routeChangeSuccess', function () {
-        if (queue.length > 0) {
-            currentMessage = queue.shift();
-        } else {
-            currentMessage = {};
-        }
-    });
-
-    return {
-        showToast:
-            function (message) {
-                toastr.options.timeOut = message.timeOut || 5000;
-                toastr.options.positionClass = 'toast-top-right';
-                switch (message.type) {
-                    case 'success':
-                        toastr.success(message.body, message.title);
-                        break;
-                    case 'info':
-                        toastr.info(message.body, message.title);
-                        break;
-                    case 'warning':
-                        toastr.warning(message.body, message.title);
-                        break;
-                    case 'error':
-                        toastr.error(message.body, message.title);
-                        break;
-                }
-            },
-        setToast:
-            function (message) {
-                queue.push(message);
-            },
-        getToast:
-            function (message) {
-                return currentMessage;
-            }
-    };
 }).factory('Messages', function ($rootScope) {
     var messages = [],
         currentMessage = {};
