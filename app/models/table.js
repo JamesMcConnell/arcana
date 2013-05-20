@@ -3,6 +3,7 @@ var mongoose = require('mongoose'),
 
 var TableSchema = new Schema({
     name: { type: String },
+    isPrivate: { type: Boolean },
     hasUsers: { type: Boolean },
     seatOne: {
         user: { type: String }

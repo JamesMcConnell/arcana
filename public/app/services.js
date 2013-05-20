@@ -16,6 +16,8 @@ angular.module('appServices', ['ngCookies']).factory('Page', function ($rootScop
             }
     }
 }).factory('Table', function ($rootScope, $http) {
+    var tableBeingEdited = {};
+
     return {
         updateTable:
             function (tid, tableData) {
@@ -34,6 +36,24 @@ angular.module('appServices', ['ngCookies']).factory('Page', function ($rootScop
                         console.log(data);
                     }
                 });
+            },
+        editTable:
+            function (id) {
+                if (id == 'new') {
+                    tableBeingEdited = {};
+                    $rootScope.$broadcast('table:editTable');
+                } else {
+                    $http.get('/tables/' + id).success(function (data, status) {
+                        tableBeingEdited = data;
+                        $rootScope.$broadcast('table:editTable');
+                    });
+                }
+            },
+        getEditTable:
+            function () {
+                return {
+                    editing: tableBeingEdited
+                };
             }
     }
 }).factory('User', function ($rootScope, $http, $cookies, $location, Messages) {

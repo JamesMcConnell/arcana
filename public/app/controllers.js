@@ -99,7 +99,7 @@ app.controller('RegisterController', function ($scope, $rootScope, $http, $locat
 app.controller('LobbyController', function ($scope, $rootScope, $http, $location, User, Page, Messages) {
     Page.setTitle('Lobby');
     $scope.user = User;
-    $scope.chat = io.connect('/lobby');
+    $scope.chat = io.connect('/lobbyChat');
     $scope.chatMsg = '';
     $scope.chatLog = [];
     $scope.currentUsers = [];
@@ -185,8 +185,94 @@ app.controller('AdminController', function ($scope, $http, $location, Page, User
 });
 
 app.controller('TableAdminController', function ($scope, $http, $rootScope, Table) {
+    $scope.me = User.me();
+    $scope.currentPage = 1;
+    $scope.currentPage = 1;
+    $scope.pages = 1;
+    $scope.numPerPage = 10;
+    $scope.tables = [];
 
-})
+    $scope.$watch('numPerPage', function () {
+        $scope.getTables(1);
+    });
+
+    $scope.getTables = function (page) {
+        if (page >= 1 && page <= $scope.pages) {
+            $http({ method: 'GET', url: '/tables', params: { currentPage: page, numPerPage: $scope.numPerPage } }).success(function (data, status, headers, config) {
+                $scope.currentPage = data.currentPage;
+                $scope.pages = data.pages;
+                $scope.tables = tables;
+            });
+        }
+    };
+
+    $scope.editTable = function (id) {
+        Table.editTable(id);
+    }
+
+    $rootScope.$on('table:addTable', function () {
+        $scope.getTables($scope.currentPage);
+    });
+
+    $rootScope.$on('table:updateTable', function () {
+        $scope.getTables($scope.currentPage);
+    })
+
+    $scope.getTables($scope.currentPage);
+});
+
+app.controller('TableEditModalController', function ($scope, $http, $rootScope, User, Table) {
+    $scope.user = User;
+    $scope.newTable = false;
+    $scope.tid = '';
+    $scope.tableName = '';
+    $scope.isPrivate = false;
+    $scope.incomplete = false;
+
+    $scope.$watch('tableName', function () {
+        $scope.incompleteTest();
+    });
+
+    $scope.incompleteTest = function () {
+        if (!$scope.tableName.length) {
+            $scope.incomplete = true;
+        } else {
+            $scope.incomplete = false;
+        }
+    };
+
+    $rootScope.$on('table:editTable', function () {
+        $scope.editTable = Table.getEditTable();
+        if ($scope.editTable.editing._id) {
+            $scope.tableName = $scope.editTable.editing.tableName;
+            $scope.isPrivate = $scope.editTable.editing.isPrivate;
+            $scope.incomplete = false;
+            $scope.newTable = false;
+        } else {
+            $scope.tableName = '';
+            $scope.isPrivate = false;
+        }
+    });
+
+    $scope.save = function () {
+        if ($scope.newTable) {
+            Table.addTable({
+                tableName: $scope.tableName,
+                isPrivate: $scope.isPrivate,
+                hasUsers: false,
+                seatOne: null,
+                seatTwo: null,
+                seatThree: null,
+                seatFour: null
+            });
+        } else {
+            Table.updateTable($scope.tid, {
+                tableName: $scope.tableName,
+                isPrivate: $scope.isPrivate
+            });
+        }
+    };
+});
 
 app.controller('UserAdminController', function ($scope, $http, $rootScope, User) {
     $scope.me = User.me();
