@@ -184,9 +184,23 @@ app.controller('AdminController', function ($scope, $http, $location, Page, User
     }
 });
 
-app.controller('TableAdminController', function ($scope, $http, $rootScope, Table) {
+app.controller('TableAdminController', function ($scope, $http, $rootScope, Page, Table) {
+    Page.setTitle('Table Administration');
+    $scope.activeTab = 'two-player';
+    $scope.tabs = [
+        { id: 'two-player', title: 'Two Player', partial: 'partials/admin-table-list' },
+        { id: 'three-player', title: 'Three Player', partial: 'partials/admin-table-list' },
+        { id: 'four-player', title: 'Four Player', partial: 'partials/admin-table-list' },
+        { id: 'six-player', title: 'Six Player', partial: 'partials/admin-table-list' }
+    ];
+
+    $scope.setActiveTab = function (tab) {
+        $scope.activeTab = tab;
+    }
+});
+
+app.controller('TableListAdminController', function ($scope, $http, $rootScope, Table) {
     $scope.me = User.me();
-    $scope.currentPage = 1;
     $scope.currentPage = 1;
     $scope.pages = 1;
     $scope.numPerPage = 10;
@@ -201,7 +215,7 @@ app.controller('TableAdminController', function ($scope, $http, $rootScope, Tabl
             $http({ method: 'GET', url: '/tables', params: { currentPage: page, numPerPage: $scope.numPerPage } }).success(function (data, status, headers, config) {
                 $scope.currentPage = data.currentPage;
                 $scope.pages = data.pages;
-                $scope.tables = tables;
+                $scope.tables = data.tables;
             });
         }
     };
@@ -219,7 +233,7 @@ app.controller('TableAdminController', function ($scope, $http, $rootScope, Tabl
     })
 
     $scope.getTables($scope.currentPage);
-});
+})
 
 app.controller('TableEditModalController', function ($scope, $http, $rootScope, User, Table) {
     $scope.user = User;
