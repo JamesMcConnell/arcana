@@ -1,17 +1,5 @@
-<div ng-controller="TableAdminController">
-    <div class="row">
-        <div class="span12">
-            <ul class="nav nav-tabs" id="tableTab">
-                <li class="{{ tab.id == activeTab && 'active' }}" ng-repeat="tab in tabs">
-                    <a ng-click="setActiveTab(tab.id)" href="/admin#">{{ tab.title }}</a>
-                </li>
-            </ul>
-            <div class="tab-content">
-                <div class="tab-pan {{ tab.id == activeTab && 'active' }}" id="{{ tab.id }}" ng-repeat="tab in tabs">
-                    <div ng-bind-html-unsafe="tab.content"></div>
-                    <div ng-include="tab.partial"></div>
-                </div>
-            </div>
-        </div>
+<div class="row">
+    <div class="span12">
+        Here there be tables...
     </div>
 </div>
