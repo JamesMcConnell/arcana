@@ -1585,11 +1585,25 @@ body:not(:-moz-handler-blocked) .dropdown-submenu > a:after {
     border-radius: 5px;
 }
 
+.modal-container {
+    display: block;
+    margin: 10px;
+    background: #f9f9f9;
+    border: 1px solid #d5d5d5;
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+    border-radius: 5px;
+}
+
 .content {
     padding: 16px 28px 23px;
 }
 
 .login-fields {
+
+}
+
+.modal-fields {
 
 }
 
@@ -1605,9 +1619,20 @@ body:not(:-moz-handler-blocked) .dropdown-submenu > a:after {
     font-family: 'Open Sans';
     font-size: 13px;
     color: #8e8d8d;
-    padding: 11px 15px 10px 50px;
+    padding: 11px 15px 7px 50px;
     background-color: #fdfdfd;
     width: 255px;
+    display: block;
+    margin: 0;
+    box-shadow: inset 2px 2px 4px #f1f1f1;
+}
+
+.modal-fields input {
+    font-family: 'Open Sans';
+    font-size: 13px;
+    color: #8e8d8d;
+    padding: 11px 15px 7px 50px;
+    background-color: #fdfdfd;
     display: block;
     margin: 0;
     box-shadow: inset 2px 2px 4px #f1f1f1;
@@ -1642,6 +1667,10 @@ body:not(:-moz-handler-blocked) .dropdown-submenu > a:after {
 span.login-checkbox {
     float: left;
     margin-top: 31px;
+}
+
+span.modal-checkbox {
+    float: left;
 }
 
 span.login-checkbox > input[type='checkbox'] {
@@ -1767,6 +1796,12 @@ span.login-checkbox > input[type='checkbox']:checked + label {
     position: relative;
     top: -6px;
 
+    width: 200px;
+}
+
+.modal span.modal-checkbox {
+    position: relative;
+    top: -6px;
     width: 200px;
 }
 

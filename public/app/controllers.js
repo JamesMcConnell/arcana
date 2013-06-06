@@ -150,18 +150,6 @@ app.controller('RegisterController', function ($scope, $http, $rootScope, $windo
     };
 });
 
-app.controller('AdminController', function ($scope) {
-    $scope.activeTab = 'users';
-    $scope.tabs = [
-        { id: 'users', title: 'Users', partial: 'partials/admin-users.html' },
-        { id: 'tables', title: 'Tables', partial: 'partials/admin-tables.html' }
-    ];
-
-    $scope.setActiveTab = function (tab) {
-        $scope.activeTab = tab;
-    }
-});
-
 app.controller('UserAdminController', function ($scope, $http, UserService) {
     $scope.currentPage = 1;
     $scope.pages = 1;
@@ -175,9 +163,9 @@ app.controller('UserAdminController', function ($scope, $http, UserService) {
     $scope.getUsers = function (page) {
         if (page >= 1 && page <= $scope.pages) {
             $http({ method: 'GET', url: '/api/users', params: {currentPage: page, numPerPage: $scope.numPerPage } }).success(function (data) {
-                $scope.currentPage = data.currentPage;
-                $scope.pages = data.pages;
-                $scope.users = data.users;
+                $scope.currentPage = data.result.currentPage;
+                $scope.pages = data.result.pages;
+                $scope.users = data.result.users;
             });
         }
     };
@@ -238,7 +226,7 @@ app.controller('UserEditModalController', function ($scope, $rootScope, UserServ
         $scope.incompleteTest();
     });
 
-    $scope.watch('username', function () {
+    $scope.$watch('username', function () {
         $scope.incompleteTest();
     });
 

@@ -47,8 +47,9 @@ block content
                                                 td(style="text-align: center; color: green; vertical-align: middle;")
                                                     i.icon-ok(ng-show="user.isAdmin")
                                                 td(style="vertical-align: middle;")
-                                                    button.btn(data-toggle="modal", href="#editModal", ng-click="$parent.editUser(user._id)")
-                                                    button.btn.btn-danger(ng-click="$parent.removeUser(user._id)")
+                                                    button.btn(data-toggle="modal", href="#editModal", ng-click="$parent.editUser(user._id)") Edit
+                                                    | &nbsp;&nbsp;
+                                                    button.btn.btn-danger(ng-click="$parent.removeUser(user._id)") Delete
                                     .clearfix(ng-show="pages > 1")
                                         .pull-left
                                             button.btn.btn-primary.pull-left(ng-click="editUser('new')", data-toggle="modal", href="#editModal")
@@ -71,29 +72,29 @@ block content
                             button.close(type="button", data-dismiss="modal", aria-hidden="true")x
                             h3(ng-show="newUser") Create New User
                             h3(ng-hide="newUser") Edit User: {{ username }}
-                        form.form-horizontal
-                            fieldset
-                                .control-group
-                                    label.control-label(for="username") Username
-                                    .controls
-                                        input.control-label(type="text", id="username", ng-model="username", ng-disabled="!newUser", placeholder="Username")
-                                .control-group
-                                    .controls
-                                        label.checkbox
-                                            input(type="checkbox", ng-model="isAdmin")
-                                legend(ng-hide="newUser") Change Password
-                                .control-group
-                                    label.control-label(for="password") Password
-                                    .controls
-                                        input.login.password-field(ng-model="password", placeholder="Password")
-                                .control-group
-                                    label.control-label(for="confirmPassword") Confirm Password
-                                    .controls
-                                        input.login.password-field(ng-model="confirmPassword", placeholder="Confirm Password")
-                            .modal-footer
-                                button.btn.pull-left(type="button", data-dismiss="modal")
-                                    i.icon-reply
-                                    | &nbsp;Cancel
-                                button.btn.btn-primary(type="submit", ng-click="save()", data-dismiss="modal")
-                                    i.icon-save
-                                    | &nbsp; Save
+                        .modal-container.register.stacked
+                            .content.clearfix
+                                form
+                                    .login-fields
+                                        .field
+                                            label(for="username") Username:
+                                            input.login(type="text", ng-model="username", ng-disabled="!newUser", placeholder="Username", name="username")
+                                        legend(ng-hide="newUser") Change Password
+                                        .field
+                                            label(for="password") Password:
+                                            input.login(type="text", ng-model="password", name="password", placeholder="Password")
+                                        .field
+                                            label(for="confirmPassword") Confirm Password:
+                                            input.login(type="text", ng-model="confirmPassword", name="confirmPassword", placeholder="Confirm Password")
+                                        span.login-checkbox(style="margin-top: 5px;")
+                                            input.field.login-checkbox(type="checkbox", ng-model="isAdmin", name="isAdmin")
+                                            label.choice(for="isAdmin") Is admin user
+                                        .clearfix
+                                        .modal-footer
+                                            .login-actions
+                                                button.btn.pull-left(type="button", data-dismiss="modal")
+                                                    i.icon-reply
+                                                    | &nbsp;Cancel
+                                                button.btn.btn-primary(type="submit", ng-click="save()", data-dismiss="modal")
+                                                    i.icon-save
+                                                    | &nbsp; Save
