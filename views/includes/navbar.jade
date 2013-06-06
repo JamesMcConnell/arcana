@@ -1,0 +1,65 @@
+div(ng-controller="NavbarController", ng-init="init({ username: #{userInfo.username}, isAdmin: #{userInfo.isAdmin} })")
+    .navbar.navbar-inverse.navbar-fixed-top
+        .navbar-inner
+            .container
+                a.btn.btn-navbar(data-toggle="collapse", data-target=".nav-collapse")
+                    i.icon-cog
+                a.brand(href="/") Arcana
+                .nav-collapse.collapse
+                    ul.nav.pull-right(ng-show="isLoggedIn")
+                        li.dropdown
+                            a.dropdown-toggle(href="#", data-toggle="dropdown")
+                                i.icon-cog
+                                | &nbsp;Settings&nbsp;
+                                b.caret
+                            ul.dropdown-menu
+                                li
+                                    a(href="javascript:;") Account Settings
+                                li.divider
+                                li
+                                    a(href="javascript:;") Help
+                        li.dropdown
+                            a.dropdown-toggle(href="#", data-toggle="dropdown")
+                                i.icon-user
+                                | &nbsp; {{currentUsername}}
+                                b.caret
+                            ul.dropdown-menu
+                                li
+                                    a(href="javascript:;") Profile
+                                li
+                                    a(href="javascript:;") Messages
+                                li.divider
+                                li
+                                    a(href="/logout") Logout
+                    ul.nav.pull-right(ng-show="!isLoggedIn")
+                        li
+                            a(href="/login")
+                                i.icon-signin
+                                | &nbsp;Login&nbsp;
+                        li
+                            a(href="/register")
+                                i.icon-user
+                                | &nbsp;Register&nbsp;
+    .subnavbar
+        .subnavbar-inner
+            .container
+                a.btn-subnavbar.collapsed(data-toggle="collapse", data-target=".subnav-collapse")
+                    i.icon-reorder
+                .subnav-collapse.collapse
+                    ul.mainnav
+                        li.active
+                            a(href="/")
+                                i.icon-home
+                                span Home
+                        li(ng-show="isLoggedIn")
+                            a(href="/lobby")
+                                i.icon-group
+                                span Lobby
+                        li.dropdown(ng-show="isLoggedIn && isAdmin")
+                            a.dropdown-toggle(href="javascript:;", data-toggle="dropdown")
+                                i.icon-sitemap
+                                span Admin
+                                b.caret
+                            ul.dropdown-menu
+                                li
+                                    a(href="/admin/users") Users

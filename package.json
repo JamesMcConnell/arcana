@@ -1,12 +1,27 @@
 {
-	"name": "Arcana",
-	"description": "Arcana game",
-	"version": "0.0.1",
-	"private": true,
-	"dependencies": {
-		"express": "3.2.3",
-		"mongoose": "3.5.3",
-		"socket.io": "0.9",
-		"bcryptjs": "latest"
-	}
+    "name": "Arcana",
+    "version": "0.0.1",
+    "private": true,
+    "author": "James McConnell <james.p.mcconnell@gmail.com>",
+    "engines": {
+        "node": "0.10.x",
+        "npm": "1.2.x"
+    },
+    "scripts": {
+        "start": "node server.js"
+    },
+    "dependencies": {
+        "express": "3.2.5",
+        "jade": "*",
+        "mongoose": "latest",
+        "connect-mongo": "latest",
+        "connect-flash": "latest",
+        "passport": "latest",
+        "passport-local": "latest",
+        "passport-twitter": "latest",
+        "bcryptjs": "latest"
+    },
+    "devDependencies": {
+        "grunt": "~0.4.1"
+    }
 }

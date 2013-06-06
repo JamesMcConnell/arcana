@@ -1,0 +1,28 @@
+extends layout
+
+block content
+    .account-container.stacked(ng-controller="LoginController")
+        .content.clearfix
+            form
+                h1 Sign In
+                div.alert.alert-error(ng-show="errorMessage")
+                    p {{errorMessage}}
+                .login-fields
+                    p Sign in using your registered account:
+                    .field
+                        label(for="username") Username:
+                        input.login.username-field(type="text", name="username", placeholder="Username", ng-model="username")
+                    .field
+                        label(for="password") Password:
+                        input.login.password-field(type="password", name="password", placeholder="Password", ng-model="password")
+                .login-actions
+                    button.button.btn.btn-warning.btn-large(ng-click="login()") Sign In
+                .login-social
+                    .twitter
+                        a.btn_1(href="#") Login with Twitter
+    .login-extra
+        | Don't have an account?
+        a(href="/register") Sign up!
+        br
+        | Reset
+        a(href="#") Password

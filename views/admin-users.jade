@@ -1,0 +1,99 @@
+extends layout
+
+block content
+    .main
+        .container
+            .row
+                .span12
+                    .widget.stacked
+                        .widget-header
+                            i.icon-user-md
+                            h3 User Administration
+                        .widget-content
+                            div(ng-controller="UserAdminController")
+                                .clearfix
+                                    .pull-left
+                                        button.btn.btn-primary.pull-left(ng-click="editUser('new')", data-toggle="modal", href="#editModal")
+                                            i.icon-plus-sign
+                                            | &nbsp;Add User
+                                    .pull-right
+                                        .pagination.pagination-right(ng-show="pages > 1")
+                                            ul
+                                                li(ng-class="(currentPage == 1) && 'disabled'")
+                                                    a(href="#", ng-disabled="currentPage == 1", ng-click="getUsers(currentPage - 1)")
+                                                        i.icon-chevron-left
+                                                li(ng-repeat="i in [] | range:pages", ng-class="($index + 1 == currentPage) && 'active'")
+                                                    a(href="#", ng-click="getUsers($index + 1)") {{ i + 1 }}
+                                                li(ng-class="(currentPage == pages) && 'disabled'")
+                                                    a(href="#")
+                                                        i.icon-chevron-right
+                                    .pull-right
+                                        select(ng-model="numPerPage", style="width: 5em;")
+                                            option(value="5") 5
+                                            option(value="10") 10
+                                            option(value="15") 15
+                                            option(value="25") 25
+                                            option(value="50") 50
+                                        | &nbsp;per page
+                                    table.table.table-striped.table-bordered
+                                        thead
+                                            tr
+                                                th Username
+                                                th(style="text-align: center;") Admin
+                                                th Operations
+                                        tbody
+                                            tr(ng-repeat="user in users")
+                                                td(style="vertical-align: middle;") {{ user.username }}
+                                                td(style="text-align: center; color: green; vertical-align: middle;")
+                                                    i.icon-ok(ng-show="user.isAdmin")
+                                                td(style="vertical-align: middle;")
+                                                    button.btn(data-toggle="modal", href="#editModal", ng-click="$parent.editUser(user._id)")
+                                                    button.btn.btn-danger(ng-click="$parent.removeUser(user._id)")
+                                    .clearfix(ng-show="pages > 1")
+                                        .pull-left
+                                            button.btn.btn-primary.pull-left(ng-click="editUser('new')", data-toggle="modal", href="#editModal")
+                                                i.icon-plus-sign
+                                                | &nbsp;Add User
+                                        .pull-right
+                                            .pagination.pagination-right(ng-show="pages > 1")
+                                                ul
+                                                    li(ng-class="(currentPage == 1) && 'disabled'")
+                                                        a(href="#", ng-disabled="currentPage == 1", ng-click="getUsers(currentPage - 1)")
+                                                            i.icon-chevron-left
+                                                    li(ng-repeat="i in [] | range:pages", ng-class="($index + 1 == currentPage) && 'active'")
+                                                        a(href="#", ng-click="getUsers($index + 1)") {{ i + 1 }}
+                                                    li(ng-class="(currentPage == pages) && 'disabled'")
+                                                        a(href="#")
+                                                            i.icon-chevron-right
+                #editModal.modal.hide.fade
+                    div(ng-controller="UserEditModalController")
+                        .modal-header
+                            button.close(type="button", data-dismiss="modal", aria-hidden="true")x
+                            h3(ng-show="newUser") Create New User
+                            h3(ng-hide="newUser") Edit User: {{ username }}
+                        form.form-horizontal
+                            fieldset
+                                .control-group
+                                    label.control-label(for="username") Username
+                                    .controls
+                                        input.control-label(type="text", id="username", ng-model="username", ng-disabled="!newUser", placeholder="Username")
+                                .control-group
+                                    .controls
+                                        label.checkbox
+                                            input(type="checkbox", ng-model="isAdmin")
+                                legend(ng-hide="newUser") Change Password
+                                .control-group
+                                    label.control-label(for="password") Password
+                                    .controls
+                                        input.login.password-field(ng-model="password", placeholder="Password")
+                                .control-group
+                                    label.control-label(for="confirmPassword") Confirm Password
+                                    .controls
+                                        input.login.password-field(ng-model="confirmPassword", placeholder="Confirm Password")
+                            .modal-footer
+                                button.btn.pull-left(type="button", data-dismiss="modal")
+                                    i.icon-reply
+                                    | &nbsp;Cancel
+                                button.btn.btn-primary(type="submit", ng-click="save()", data-dismiss="modal")
+                                    i.icon-save
+                                    | &nbsp; Save

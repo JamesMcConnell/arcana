@@ -9,7 +9,7 @@ Assigned to:	Rod Howard (rh)
 
 
 *** Any customizations made to this should be added to the custom.css
-stylesheet in order to separate your customizations and make 
+stylesheet in order to separate your customizations and make
 upgrading in the future easier. ***
 
 -------------------------------------------------------------------*/
@@ -17,7 +17,7 @@ upgrading in the future easier. ***
 [ Global ]
 */
 body {
-    background: #e9e9e9;
+    background: #e9e9e9 url(../img/tiny_grid.png) repeat 0 0;
     font: 13px/1.7em 'Open Sans';
 }
 .clearfix {
@@ -1573,20 +1573,16 @@ body:not(:-moz-handler-blocked) .dropdown-submenu > a:after {
     border-radius: 3px;
 }
 
-/** Login/Register styles **/
+/***  Account Styles ***/
 .account-container {
     width: 380px;
     display: block;
     margin: 60px auto 0 auto;
-
     background: #f9f9f9;
-
     border: 1px solid #d5d5d5;
-
     -webkit-border-radius: 5px;
     -moz-border-radius: 5px;
     border-radius: 5px;
-
 }
 
 .content {
@@ -1617,9 +1613,9 @@ body:not(:-moz-handler-blocked) .dropdown-submenu > a:after {
     box-shadow: inset 2px 2px 4px #f1f1f1;
 }
 
-.username-field { background: url(../../img/signin/user.png) no-repeat; }
+.username-field { background: url(../images/user.png) no-repeat; }
 
-.password-field { background: url(../../img/signin/password.png) no-repeat; }
+.password-field { background: url(../images/password.png) no-repeat; }
 
 
 
@@ -1665,7 +1661,7 @@ span.login-checkbox > input[type='checkbox'] + label {
     font-size: 12px;
     line-height: 1.2em;
 
-    background: url(../../img/signin/check.png) no-repeat 0 0;
+    background: url(../images/check.png) no-repeat 0 0;
 
     cursor: pointer;
 }
@@ -1701,14 +1697,14 @@ span.login-checkbox > input[type='checkbox']:checked + label {
     width: 157px;
     display: block;
 
-    background: url(../../img/signin/twitter_btn.png) no-repeat;
+    background: url(../images/twitter_btn.png) no-repeat;
 
 }
 
 .fb {
     width: 162px;
 
-    background: url(../../img/signin/fb_btn.png) no-repeat;
+    background: url(../images/fb_btn.png) no-repeat;
 }
 
 .twitter:active, .fb:active {

@@ -1,12 +1,5 @@
-app.controller('MainController', function ($scope, $rootScope, $http, $location, $cookies, Page, User) {
+app.controller('MainController', function ($scope) {
     $scope.config = {};
-    $scope.user = User;
-    $scope.Page = Page;
-    $scope.loggedIn = false;
-
-    $scope.$watch('user.me().username', function (name) {
-        $scope.loggedIn = name;
-    });
 
     $scope.safeApply = function (fn) {
         var phase = this.$root.$$phase;
@@ -20,123 +13,50 @@ app.controller('MainController', function ($scope, $rootScope, $http, $location,
     };
 });
 
-app.controller('NavbarController', function ($scope, $http, $rootScope, $location, User) {
-    $scope.user = User;
+app.controller('IndexController', function ($scope, $http, $rootScope) {
 
-    $rootScope.$on('user:login', function () {
-        $scope.me = $scope.user.me();
-    });
-
-    $scope.$watch('user.me()', function (me) {
-        $scope.me = me;
-    });
-
-    $scope.logout = function () {
-        User.logout();
-    }
 });
 
-app.controller('IndexController', function ($scope, $http, $rootScope, Page, User) {
-    Page.setTitle('Home');
-    $scope.user = User;
+app.controller('NavbarController', function ($scope) {
+    $scope.currentUsername = '';
+    $scope.isLoggedIn = false;
+    $scope.isAdmin = false;
 
-    $rootScope.$on('user:login', function () {
-        $scope.user = $scope.user.me();
-    });
-});
-
-app.controller('LoginController', function ($scope, $rootScope, $http, $location, User, Page, Messages) {
-    Page.setTitle('Login');
-    $scope.user = User;
-    $scope.username = '';
-    $scope.password = '';
-    $scope.validation = Messages;
-    $scope.validationMessages = [];
-
-    $scope.$watch('User.me().username', function (loggedIn) {
-        if (loggedIn) {
-            $location.path('/home');
+    $scope.init = function (userInfo) {
+        if (userInfo.username === undefined) {
+            $scope.currentUsername = '';
+            $scope.isAdmin = false
+            $scope.isLoggedIn = false;
+        } else {
+            $scope.currentUsername = userInfo.username;
+            $scope.isAdmin = userInfo.isAdmin;
+            $scope.isLoggedIn = true;
         }
-    });
-
-    $scope.$watch('validation.getAll()', function (messages) {
-        $scope.validationMessages = messages;
-    })
-
-    $scope.login = function () {
-        Messages.clearMessages();
-        User.login($scope.username, $scope.password);
     }
-});
+})
 
-app.controller('RegisterController', function ($scope, $rootScope, $http, $location, User, Page, Messages) {
-    Page.setTitle('Register');
-    $scope.user = User;
-    $scope.validation = Messages;
-    $scope.username = '';
-    $scope.email = '';
-    $scope.firstName = '';
-    $scope.lastName = '';
-    $scope.password = '';
-    $scope.validationMessages = [];
-
-    $scope.$watch('User.me().username', function (loggedIn) {
-        if (loggedIn) {
-            $location.path('/home');
-        }
-    });
-
-    $scope.$watch('validation.getAll()', function (messages) {
-        $scope.validationMessages = messages;
-    });
-
-    $scope.register = function () {
-        Messages.clearMessages();
-        User.register($scope.username, $scope.password, $scope.email, $scope.firstName, $scope.lastName, false);
-    }
-});
-
-app.controller('LobbyController', function ($scope, $rootScope, $http, $location, User, Page, Messages) {
-    Page.setTitle('Lobby');
-    $scope.user = User;
+app.controller('LobbyController', function ($scope) {
+    //noinspection JSUnresolvedVariable
     $scope.chat = io.connect('/lobbyChat');
     $scope.chatMsg = '';
     $scope.chatLog = [];
     $scope.currentUsers = [];
     $scope.maxChatLogSize = 2000;
-    $scope.messages = Messages;
     $scope.flashMessages = [];
 
-    $scope.$watch('user.me()', function (u) {
-        $scope.me = u;
-        var data = {
-            user: $scope.me.username + '.',
-            body: $scope.me.username + ' has entered the lobby',
-            serverGenerated: true,
-            timestamp: new Date().getTime()
-        };
+    /*
+     $scope.$watch('user.me()', function (u) {
+     $scope.me = u;
+     var data = {
+     user: $scope.me.username + '.',
+     body: $scope.me.username + ' has entered the lobby',
+     serverGenerated: true,
+     timestamp: new Date().getTime()
+     };
 
-        $scope.chat.emit('message', data);
-    });
-
-    $scope.chat.on('init', function (data) {
-        if (data && $scope.chatLog.length < 1) {
-            $scope.chatLog = data;
-            $scope.safeApply();
-            $scope.cleanUp();
-        }
-    });
-
-    $scope.chat.on('disconnect', function() {
-        var data = {
-            user: $scope.me.username + '.',
-            body: $scope.me.username + ' has left the lobby',
-            serverGenerated: true,
-            timestamp: new Date().getTime()
-        };
-
-        $scope.chat.emit('message', data);
-    })
+     $scope.chat.emit('message', data);
+     });
+     */
 
     $scope.chat.on('message', function (data) {
         $scope.chatLog.push(data);
@@ -165,14 +85,72 @@ app.controller('LobbyController', function ($scope, $rootScope, $http, $location
         var chatBox = $('#chat-message-pane');
         chatBox.animate({ "scrollTop": chatBox[0].scrollHeight }, "slow");
     };
-
-    $scope.$watch('messages.getAll()', function (messages) {
-        $scope.flashMessages = messages;
-    });
 });
 
-app.controller('AdminController', function ($scope, $http, $location, Page, User) {
-    Page.setTitle('Adminstration');
+app.controller('LoginController', function ($scope, $http, $rootScope, $window) {
+    $scope.username = '';
+    $scope.password = '';
+    $scope.errorMessage = '';
+
+    $scope.login = function () {
+        if ($scope.username.length == 0) {
+            $scope.errorMessage = 'Username is required';
+            return;
+        }
+
+        if ($scope.password.length == 0) {
+            $scope.errorMessage = 'Password is required';
+            return;
+        }
+
+        $http.post('/login', { username: $scope.username, password: $scope.password }).success(function(data) {
+            if (!data.success) {
+                $scope.errorMessage = data.message;
+            } else {
+                $window.location.href = '/';
+            }
+        });
+    };
+});
+
+app.controller('RegisterController', function ($scope, $http, $rootScope, $window) {
+    $scope.username = '';
+    $scope.password = '';
+    $scope.confirmPassword = '';
+    $scope.email = '';
+    $scope.errorMessage = '';
+
+    $scope.register = function () {
+        if ($scope.username.length == 0) {
+            $scope.errorMessage = 'Username is required';
+            return;
+        }
+
+        if ($scope.email.length == 0) {
+            $scope.errorMessage = 'Email is required';
+        }
+
+        if ($scope.password.length == 0) {
+            $scope.errorMessage = 'Password is required';
+            return;
+        }
+
+        if ($scope.password.length > 0 && $scope.confirmPassword.length > 0 && $scope.password != $scope.confirmPassword) {
+            $scope.errorMessage = 'Password and confirm password must match';
+            return;
+        }
+
+        $http.post('/register', { username: $scope.username, password: $scope.password, email: $scope.email }).success(function (data) {
+            if (!data.success) {
+                $scope.errorMessage = data.message;
+            } else {
+                $window.location.href = '/';
+            }
+        });
+    };
+});
+
+app.controller('AdminController', function ($scope) {
     $scope.activeTab = 'users';
     $scope.tabs = [
         { id: 'users', title: 'Users', partial: 'partials/admin-users.html' },
@@ -184,61 +162,7 @@ app.controller('AdminController', function ($scope, $http, $location, Page, User
     }
 });
 
-app.controller('TableEditModalController', function ($scope, $http, $rootScope, User, Table) {
-    $scope.user = User;
-    $scope.newTable = false;
-    $scope.tid = '';
-    $scope.tableName = '';
-    $scope.isPrivate = false;
-    $scope.incomplete = false;
-
-    $scope.$watch('tableName', function () {
-        $scope.incompleteTest();
-    });
-
-    $scope.incompleteTest = function () {
-        if (!$scope.tableName.length) {
-            $scope.incomplete = true;
-        } else {
-            $scope.incomplete = false;
-        }
-    };
-
-    $rootScope.$on('table:editTable', function () {
-        $scope.editTable = Table.getEditTable();
-        if ($scope.editTable.editing._id) {
-            $scope.tableName = $scope.editTable.editing.tableName;
-            $scope.isPrivate = $scope.editTable.editing.isPrivate;
-            $scope.incomplete = false;
-            $scope.newTable = false;
-        } else {
-            $scope.tableName = '';
-            $scope.isPrivate = false;
-        }
-    });
-
-    $scope.save = function () {
-        if ($scope.newTable) {
-            Table.addTable({
-                tableName: $scope.tableName,
-                isPrivate: $scope.isPrivate,
-                hasUsers: false,
-                seatOne: null,
-                seatTwo: null,
-                seatThree: null,
-                seatFour: null
-            });
-        } else {
-            Table.updateTable($scope.tid, {
-                tableName: $scope.tableName,
-                isPrivate: $scope.isPrivate
-            });
-        }
-    };
-});
-
-app.controller('UserAdminController', function ($scope, $http, $rootScope, User) {
-    $scope.me = User.me();
+app.controller('UserAdminController', function ($scope, $http, UserService) {
     $scope.currentPage = 1;
     $scope.pages = 1;
     $scope.numPerPage = 10;
@@ -248,11 +172,9 @@ app.controller('UserAdminController', function ($scope, $http, $rootScope, User)
         $scope.getUsers(1);
     });
 
-    $scope.editModal = 'partials/user-edit-modal.html';
-
     $scope.getUsers = function (page) {
         if (page >= 1 && page <= $scope.pages) {
-            $http({ method: 'GET', url: '/users', params: {currentPage: page, numPerPage: $scope.numPerPage } }).success(function (data, status, headers, config) {
+            $http({ method: 'GET', url: '/api/users', params: {currentPage: page, numPerPage: $scope.numPerPage } }).success(function (data) {
                 $scope.currentPage = data.currentPage;
                 $scope.pages = data.pages;
                 $scope.users = data.users;
@@ -261,7 +183,7 @@ app.controller('UserAdminController', function ($scope, $http, $rootScope, User)
     };
 
     $scope.removeUser = function (id) {
-        $http({ method: 'DELETE', url: '/users/' + id }).success(function (data, status, headers, config) {
+        $http({ method: 'DELETE', url: '/users/' + id }).success(function (data) {
             if (data.status == 'error') {
                 // messaging
             } else {
@@ -272,7 +194,7 @@ app.controller('UserAdminController', function ($scope, $http, $rootScope, User)
     };
 
     $scope.editUser = function (id) {
-        User.editUser(id);
+        UserService.editUser(id);
     };
 
     $scope.$on('user:addUser', function () {
@@ -286,46 +208,43 @@ app.controller('UserAdminController', function ($scope, $http, $rootScope, User)
     $scope.getUsers($scope.currentPage);
 });
 
-app.controller('UserEditModalController', function ($scope, $http, $rootScope, User) {
-    $scope.user = User;
+app.controller('UserEditModalController', function ($scope, $rootScope, UserService) {
     $scope.newUser = false;
     $scope.uid = '';
     $scope.username = '';
-    $scope.firstName = '';
-    $scope.lastName = '';
     $scope.isAdmin = false;
-    $scope.pw1 = '';
-    $scope.pw2 = '';
-    $scope.pwError = false;
+    $scope.password = '';
+    $scope.confirmPassword = '';
+    $scope.passwordError = false;
     $scope.incomplete = false;
 
-    $scope.$watch('pw1', function () {
-        if ($scope.pw1 !== $scope.pw2) {
-            $scope.pwError = true;
+    $scope.$watch('password', function () {
+        if ($scope.password !== $scope.confirmPassword) {
+            $scope.passwordError = true;
         } else {
-            $scope.pwError = false;
+            $scope.passwordError = false;
         }
 
         $scope.incompleteTest();
     });
 
-    $scope.$watch('pw2', function () {
-        if ($scope.pw1 !== $scope.pw2) {
-            $scope.pwError = true;
+    $scope.$watch('confirmPassword', function () {
+        if ($scope.password !== $scope.confirmPassword) {
+            $scope.passwordError = true;
         } else {
-            $scope.pwError = false;
+            $scope.passwordError = false;
         }
 
         $scope.incompleteTest();
     });
 
-    $scope.$watch('username', function () {
+    $scope.watch('username', function () {
         $scope.incompleteTest();
     });
 
     $scope.incompleteTest = function () {
         if ($scope.newUser) {
-            if (!$scope.username.length || !$scope.pw1.length || !$scope.pw2.length) {
+            if (!$scope.username.length || !$scope.password.length || !$scope.confirmPassword.length) {
                 $scope.incomplete = true;
             } else {
                 $scope.incomplete = false;
@@ -336,47 +255,41 @@ app.controller('UserEditModalController', function ($scope, $http, $rootScope, U
     };
 
     $rootScope.$on('user:editUser', function () {
-        $scope.editUser = User.getEditUser();
+        $scope.editUser = UserService.getEditUser();
         if ($scope.editUser.editing._id) {
             $scope.username = $scope.editUser.editing.username;
-            $scope.firstName = $scope.editUser.editing.firstName;
-            $scope.lastName = $scope.editUser.editing.lastName;
             $scope.isAdmin = $scope.editUser.editing.isAdmin;
             $scope.uid = $scope.editUser.editing._id;
-            $scope.incomplete = false;
             $scope.newUser = false;
         } else {
             $scope.username = '';
-            $scope.firstName = '';
-            $scope.lastName = '';
             $scope.isAdmin = false;
-            $scope.pw1 = '';
-            $scope.pw2 = '';
-            $scope.incomplete = true;
+            $scope.password = '';
+            $scope.confirmPassword = '';
             $scope.newUser = true;
         }
     });
 
     $scope.save = function () {
         if ($scope.newUser) {
-            User.addUser({
+            UserService.addUser({
                 username: $scope.username,
                 firstName: $scope.firstName,
                 lastName: $scope.lastName,
                 isAdmin: $scope.isAdmin,
-                password: $scope.pw1
+                password: $scope.password
             });
         } else {
-            if ($scope.pw1.length) {
-                User.updateUser($scope.uid, {
+            if ($scope.password.length) {
+                UserService.updateUser($scope.uid, {
                     username: $scope.username,
                     firstName: $scope.firstName,
                     lastName: $scope.lastName,
                     isAdmin: $scope.isAdmin,
-                    password: $scope.pw1
+                    password: $scope.password
                 });
             } else {
-                User.updateUser($scope.uid, {
+                UserService.updateUser($scope.uid, {
                     username: $scope.username,
                     firstName: $scope.firstName,
                     lastName: $scope.lastName,

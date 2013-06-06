@@ -1,0 +1,30 @@
+extends layout
+
+block content
+    .account-container.register.stacked(ng-controller="RegisterController")
+        .content.clearfix
+            form
+                h1 Register
+                .alert.alert-error(ng-show="errorMessage")
+                    p {{errorMessage}}
+                .login-social
+                    .twitter
+                        a.btn_1(href="#") Login with Twitter
+                .login-fields
+                    .field
+                        label(for="username") Username:
+                        input(type="text", placeholder="Username", ng-model="username")
+                    .field
+                        label(for="email") Email Address:
+                        input(type="text", placeholder="Email Address", ng-model="email")
+                    .field
+                        label(for="password") Password:
+                        input(type="password", placeholder="Password", ng-model="password")
+                    .field
+                        label(for="confirmPassword") Confirm Password:
+                        input(type="password", placeholder="Confirm Password", ng-model="confirmPassword")
+                .login-actions
+                    button.button.btn.btn-primary.btn-large(ng-click="register()") Register
+    .login-extra
+        | Already have an account?
+        a(href="/login") Login
