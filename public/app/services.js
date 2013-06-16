@@ -38,8 +38,8 @@ angular.module('appServices', ['ngCookies']).factory('Page', function ($rootScop
                 };
             },
         updateUser:
-            function (uid, userdata) {
-                $http.put('/users/' + uid, userdata).success(function (data) {
+            function (uid, userdata, callback) {
+                $http.put('/api/users/' + uid, userdata).success(function (data) {
                     if (data.status == 'success') {
                         $rootScope.$broadcast('user:updateUser');
                         // messaging
@@ -49,8 +49,8 @@ angular.module('appServices', ['ngCookies']).factory('Page', function ($rootScop
                 });
             },
         addUser:
-            function (userdata) {
-                $http.post('/users', userdata).success(function (data) {
+            function (userdata, callback) {
+                $http.post('/api/users', userdata).success(function (data) {
                     if (data.status == 'success') {
                         $rootScope.$broadcast('user:addUser');
                         // messaging
@@ -58,6 +58,12 @@ angular.module('appServices', ['ngCookies']).factory('Page', function ($rootScop
                         // messaging
                     }
                 });
+            },
+        getUser:
+            function (userId, callback) {
+                $http.get('/api/users/' + userId).success(function (data) {
+                    callback(data);
+                })
             }
     }
 }).factory('Messages', function ($rootScope) {

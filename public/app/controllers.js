@@ -194,6 +194,12 @@ app.controller('UserAdminController', function ($scope, $http, UserService) {
         $scope.getUsers($scope.currentPage);
     });
 
+    $scope.testGetUser = function (userId) {
+        UserService.getUser(userId, function (user) {
+            var bp = '';
+        });
+    };
+
     $scope.getUsers($scope.currentPage);
 });
 

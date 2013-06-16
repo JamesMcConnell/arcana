@@ -46,6 +46,7 @@ module.exports = function (app) {
     app.get('/lobby', ensureAuthenticated, main.lobby);
     app.get('/admin/users', ensureAuthenticatedAndAdmin, main.adminUsers);
     app.get('/api/users', ensureAuthenticatedAndAdmin, api.getUsers);
+    app.get('/api/users/:userId', ensureAuthenticatedAndAdmin, api.getUser);
 };
 
 

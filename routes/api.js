@@ -9,6 +9,15 @@ module.exports = {
                 return res.json(200, { success: true, result: reply, message: null });
             }
         });
+    },
+    getUser: function (req, res) {
+        db.getUser(req.param('userId'), function (err, user, info) {
+            if (err) {
+                return res.json(200, { success: false, result: null, message: info.message });
+            } else {
+                return res.json(200, { success: true, result: user, message: null });
+            }
+        });
     }
 };
 

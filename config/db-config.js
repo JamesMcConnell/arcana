@@ -79,5 +79,14 @@ module.exports = {
                     callback(false, reply, null);
                 });
         });
+    },
+    getUser: function (userId, callback) {
+        User.findById(userId).exec(function (err, user) {
+            if (err) {
+                return callback(true, null, { message: 'Unable to retrieve user' });
+            }
+
+            callback(false, user, null);
+        });
     }
 };
