@@ -120,26 +120,27 @@ app.controller('RegisterController', function ($scope, $http, $rootScope, $windo
     $scope.email = '';
     $scope.errorMessage = '';
 
+    $scope.$watch('password', function () {
+        if ($scope.password !== $scope.confirmPassword) {
+            $scope.registerForm.password.$setValidity('password', false);
+            $scope.registerForm.confirmPassword.$setValidity('confirmPassword', false);
+        } else {
+            $scope.registerForm.password.$setValidity('password', true);
+            $scope.registerForm.confirmPassword.$setValidity('confirmPassword', true);
+        }
+    });
+
+    $scope.$watch('confirmPassword', function () {
+        if ($scope.password !== $scope.confirmPassword) {
+            $scope.registerForm.password.$setValidity('password', false);
+            $scope.registerForm.confirmPassword.$setValidity('confirmPassword', false);
+        } else {
+            $scope.registerForm.password.$setValidity('password', true);
+            $scope.registerForm.confirmPassword.$setValidity('confirmPassword', true);
+        }
+    });
+
     $scope.register = function () {
-        if ($scope.username.length == 0) {
-            $scope.errorMessage = 'Username is required';
-            return;
-        }
-
-        if ($scope.email.length == 0) {
-            $scope.errorMessage = 'Email is required';
-        }
-
-        if ($scope.password.length == 0) {
-            $scope.errorMessage = 'Password is required';
-            return;
-        }
-
-        if ($scope.password.length > 0 && $scope.confirmPassword.length > 0 && $scope.password != $scope.confirmPassword) {
-            $scope.errorMessage = 'Password and confirm password must match';
-            return;
-        }
-
         $http.post('/register', { username: $scope.username, password: $scope.password, email: $scope.email }).success(function (data) {
             if (!data.success) {
                 $scope.errorMessage = data.message;

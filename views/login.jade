@@ -3,21 +3,19 @@ extends layout
 block content
     .account-container.stacked(ng-controller="LoginController")
         .content.clearfix
-            form
+            form(name="loginForm")
                 h1 Sign In
-                div.alert.alert-error(ng-show="errorMessage")
-                    p {{errorMessage}}
                 .login-fields
                     p Sign in using your registered account:
                     .field
                         label(for="username") Username:
-                        input.login.username-field(type="text", name="username", placeholder="Username", ng-model="username")
+                        input.login.username-field(type="text", name="username", placeholder="Username", ng-model="username", required)
                     .field
                         label(for="password") Password:
-                        input.login.password-field(type="password", name="password", placeholder="Password", ng-model="password")
+                        input.login.password-field(type="password", name="password", placeholder="Password", ng-model="password", required)
                 .login-actions
-                    button.button.btn.btn-warning.btn-large(ng-click="login()") Sign In
-                .login-social
+                    button.button.btn.btn-warning.btn-large(ng-click="login()", ng-disabled="loginForm.$invalid") Sign In
+                .login-social(style="width: 100%;")
                     .twitter
                         a.btn_1(href="#") Login with Twitter
     .login-extra

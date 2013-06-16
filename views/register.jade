@@ -3,28 +3,26 @@ extends layout
 block content
     .account-container.register.stacked(ng-controller="RegisterController")
         .content.clearfix
-            form
+            form(name="registerForm")
                 h1 Register
-                .alert.alert-error(ng-show="errorMessage")
-                    p {{errorMessage}}
-                .login-social
+                .login-social(style="width: 100%;")
                     .twitter
                         a.btn_1(href="#") Login with Twitter
                 .login-fields
                     .field
                         label(for="username") Username:
-                        input(type="text", placeholder="Username", ng-model="username")
+                        input(id="username", name="username", type="text", placeholder="Username", ng-model="username", required)
                     .field
                         label(for="email") Email Address:
-                        input(type="text", placeholder="Email Address", ng-model="email")
+                        input(id="email", name="email", type="email", placeholder="Email Address", ng-model="email", required)
                     .field
                         label(for="password") Password:
-                        input(type="password", placeholder="Password", ng-model="password")
+                        input(id="password", name="password", type="password", placeholder="Password", ng-model="password", required)
                     .field
                         label(for="confirmPassword") Confirm Password:
-                        input(type="password", placeholder="Confirm Password", ng-model="confirmPassword")
+                        input(id="confirmPassword", name="confirmPassword", type="password", placeholder="Confirm Password", ng-model="confirmPassword", required)
                 .login-actions
-                    button.button.btn.btn-primary.btn-large(ng-click="register()") Register
+                    button.button.btn.btn-primary.btn-large(ng-click="register()", ng-disabled="registerForm.$invalid") Register
     .login-extra
         | Already have an account?
         a(href="/login") Login
