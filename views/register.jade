@@ -1,28 +1,38 @@
 extends layout
 
 block content
-    .account-container.register.stacked(ng-controller="RegisterController")
-        .content.clearfix
-            form(name="registerForm")
-                h1 Register
-                .login-social(style="width: 100%;")
-                    .twitter
-                        a.btn_1(href="#") Login with Twitter
-                .login-fields
-                    .field
-                        label(for="username") Username:
-                        input(id="username", name="username", type="text", placeholder="Username", ng-model="username", required)
-                    .field
-                        label(for="email") Email Address:
-                        input(id="email", name="email", type="email", placeholder="Email Address", ng-model="email", required)
-                    .field
-                        label(for="password") Password:
-                        input(id="password", name="password", type="password", placeholder="Password", ng-model="password", required)
-                    .field
-                        label(for="confirmPassword") Confirm Password:
-                        input(id="confirmPassword", name="confirmPassword", type="password", placeholder="Confirm Password", ng-model="confirmPassword", required)
-                .login-actions
-                    button.button.btn.btn-primary.btn-large(ng-click="register()", ng-disabled="registerForm.$invalid") Register
-    .login-extra
-        | Already have an account?
-        a(href="/login") Login
+    .span12
+        .widget.stacked
+            .widget-header
+                .icon-th-large
+                h3 Register
+            .widget-content(ng-controller="RegisterController")
+                p.alert.alert-error(ng-show="errorMessage")
+                    span {{ errorMessage }}
+                form.form-horizontal(name="registerForm")
+                    .control-group
+                        label.control-label(for="username") Username:
+                        .controls
+                            input.input-large(type="text", name="username", id="username", placeholder="Username", ng-model="username", required)
+                            .input-help
+                                h4 Username is required
+                    .control-group
+                        label.control-label(for="email") Email Address:
+                        .controls
+                            input.input-large(type="email", name="email", id="email", placeholder="Email Address", ng-model="email", required)
+                            .input-help
+                                h4 Invalid email address
+                    .control-group
+                        label.control-label(for="password") Password:
+                        .controls
+                            input.input-large(type="password", name="password", id="email", placeholder="Password", ng-model="password", required)
+                            .input-help
+                                h4 Password is required
+                    .control-group
+                        label.control-label(for="confirmPassword") Confirm Password:
+                        .controls
+                            input.input-large(type="password", name="confirmPassword", id="confirmPassword", placeholder="Confirm Password", ng-model="confirmPassword", confirm-password="password", required)
+                            .input-help
+                                h4 Passwords must match
+                    .form-actions
+                        button.btn.btn-secondary.btn-large(ng-click="register()", ng-disabled="registerForm.$invalid") Register

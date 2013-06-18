@@ -4,5 +4,8 @@ html(lang="en", ng-app="arcana", ng-controller="MainController")
         include includes/header
     body(ng-cloak="ng-cloak")
         include includes/navbar
-        block content
+        .main
+            .container
+                .row
+                    block content
         include includes/footer

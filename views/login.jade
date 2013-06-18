@@ -1,26 +1,27 @@
 extends layout
 
 block content
-    .account-container.stacked(ng-controller="LoginController")
-        .content.clearfix
-            form(name="loginForm")
-                h1 Sign In
-                .login-fields
-                    p Sign in using your registered account:
-                    .field
-                        label(for="username") Username:
-                        input.login.username-field(type="text", name="username", placeholder="Username", ng-model="username", required)
-                    .field
-                        label(for="password") Password:
-                        input.login.password-field(type="password", name="password", placeholder="Password", ng-model="password", required)
-                .login-actions
-                    button.button.btn.btn-warning.btn-large(ng-click="login()", ng-disabled="loginForm.$invalid") Sign In
-                .login-social(style="width: 100%;")
-                    .twitter
-                        a.btn_1(href="#") Login with Twitter
-    .login-extra
-        | Don't have an account?
-        a(href="/register") Sign up!
-        br
-        | Reset
-        a(href="#") Password
+    .span12
+        .widget.stacked
+            .widget-header
+                .icon-th-large
+                h3 Login
+            .widget-content(ng-controller="LoginController")
+                p.alert.alert-error(ng-show="errorMessage")
+                    span {{ errorMessage }}
+                form.form-horizontal(name="loginForm")
+                    fieldset
+                        .control-group
+                            label.control-label(for="username") Username:
+                            .controls
+                                input.input-large(type="text", name="username", id="username", placeholder="Username", ng-model="username", required)
+                                .input-help
+                                    h4 Username is required
+                        .control-group
+                            label.control-label(for="email") Email Address:
+                            .controls
+                                input.input-large(type="email", name="email", id="email", placeholder="Email Address", ng-model="email", required)
+                                .input-help
+                                    h4 Invalid email address
+                        .form-actions
+                            button.btn.btn-secondary.btn-large(ng-click="login()", ng-disabled="loginForm.$invalid") Sign In

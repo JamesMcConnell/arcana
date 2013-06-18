@@ -93,16 +93,6 @@ app.controller('LoginController', function ($scope, $http, $rootScope, $window) 
     $scope.errorMessage = '';
 
     $scope.login = function () {
-        if ($scope.username.length == 0) {
-            $scope.errorMessage = 'Username is required';
-            return;
-        }
-
-        if ($scope.password.length == 0) {
-            $scope.errorMessage = 'Password is required';
-            return;
-        }
-
         $http.post('/login', { username: $scope.username, password: $scope.password }).success(function(data) {
             if (!data.success) {
                 $scope.errorMessage = data.message;
@@ -119,26 +109,6 @@ app.controller('RegisterController', function ($scope, $http, $rootScope, $windo
     $scope.confirmPassword = '';
     $scope.email = '';
     $scope.errorMessage = '';
-
-    $scope.$watch('password', function () {
-        if ($scope.password !== $scope.confirmPassword) {
-            $scope.registerForm.password.$setValidity('password', false);
-            $scope.registerForm.confirmPassword.$setValidity('confirmPassword', false);
-        } else {
-            $scope.registerForm.password.$setValidity('password', true);
-            $scope.registerForm.confirmPassword.$setValidity('confirmPassword', true);
-        }
-    });
-
-    $scope.$watch('confirmPassword', function () {
-        if ($scope.password !== $scope.confirmPassword) {
-            $scope.registerForm.password.$setValidity('password', false);
-            $scope.registerForm.confirmPassword.$setValidity('confirmPassword', false);
-        } else {
-            $scope.registerForm.password.$setValidity('password', true);
-            $scope.registerForm.confirmPassword.$setValidity('confirmPassword', true);
-        }
-    });
 
     $scope.register = function () {
         $http.post('/register', { username: $scope.username, password: $scope.password, email: $scope.email }).success(function (data) {

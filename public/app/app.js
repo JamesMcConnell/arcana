@@ -15,3 +15,18 @@ app.filter('range', function () {
         return input;
     };
 });
+
+app.directive("confirmPassword", function () {
+    return {
+        require: "ngModel",
+        link: function (scope, elem, attrs, ctrl) {
+            ctrl.$parsers.push(function (value) {
+                if (value === scope.password) {
+                    ctrl.$setValidity("confirmPassword", true);
+                    return value;
+                }
+                ctrl.$setValidity("confirmPassword", false);
+            });
+        }
+    }
+});
