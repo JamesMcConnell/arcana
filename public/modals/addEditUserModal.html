@@ -1,0 +1,64 @@
+<div ng-controller="UserEditModalController">
+    <div class="modal-header">
+        <button type="button" class="close" ng-click="cancel()">&times;</button>
+        <h3 ng-show="newUser">Create New User</h3>
+        <h3 ng-hide="newUser">Edit User: {{ username }}</h3>
+    </div>
+    <div class="modal-container">
+        <div class="container">
+            <p class="alert alert-error" ng-show="errorMessage">
+                {{ errorMessage }}
+            </p>
+            <form name="addEditUserForm" class="form-horizontal">
+                <div class="control-group">
+                    <label class="control-label" for="username">Username:</label>
+                    <div class="controls">
+                        <input type="text" class="input-large" name="username" id="username" placeholder="Username" ng-model="username" required />
+                        <div class="input-help">
+                            <h4>Username is required</h4>
+                        </div>
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label class="control-label" for="email">Email Address:</label>
+                    <div class="controls">
+                        <input type="email" class="input-large" name="email" id="email" placeholder="Email Address" ng-model="email" required />
+                        <div class="input-help">
+                            <h4>Invalid email address</h4>
+                        </div>
+                    </div>
+                </div>
+                <div class="controls">
+                    <label class="checkbox">
+                        <input type="checkbox" name="isAdmin" id="isAdmin" ng-model="isAdmin" /> Is Admin User
+                    </label>
+                </div>
+                <fieldset>
+                    <legend>Password Administration</legend>
+                    <div class="control-group">
+                        <label class="control-label" for="password">Password:</label>
+                        <div class="controls">
+                            <input type="password" class="input-large" name="password" id="password" placeholder="Password" ng-model="password" />
+                            <div class="input-help">
+                                <h4>Password is required</h4>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="control-group">
+                        <label class="control-label" for="confirmPassword">Confirm Password:</label>
+                        <div class="controls">
+                            <input type="password" class="input-large" name="confirmPassword" id="confirmPassword" placeholder="Confirm Password" ng-model="confirmPassword" />
+                            <div class="input-help">
+                                <h4>Passwords must match</h4>
+                            </div>
+                        </div>
+                    </div>
+                </fieldset>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary btn-large" ng-click="addEditUser()" ng-disabled="addEditUserForm.$invalid">Save User</button>
+                    <button type="button" class="btn" ng-click="cancel()">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

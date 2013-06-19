@@ -45,7 +45,10 @@ module.exports = function (app) {
     app.get('/logout', main.logout);
     app.get('/lobby', ensureAuthenticated, main.lobby);
     app.get('/admin/users', ensureAuthenticatedAndAdmin, main.adminUsers);
+
     app.get('/api/users', ensureAuthenticatedAndAdmin, api.getUsers);
+    app.post('/api/users', ensureAuthenticatedAndAdmin, api.postUser);
+    app.put('/api/users/:userId', ensureAuthenticatedAndAdmin, api.putUser);
     app.get('/api/users/:userId', ensureAuthenticatedAndAdmin, api.getUser);
 };
 

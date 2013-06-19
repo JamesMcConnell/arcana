@@ -121,7 +121,7 @@ app.controller('RegisterController', function ($scope, $http, $rootScope, $windo
     };
 });
 
-app.controller('UserAdminController', function ($scope, $http, UserService) {
+app.controller('UserAdminController', function ($scope, $http, $dialog, UserService) {
     $scope.currentPage = 1;
     $scope.pages = 1;
     $scope.numPerPage = 10;
@@ -152,29 +152,47 @@ app.controller('UserAdminController', function ($scope, $http, UserService) {
         });
     };
 
-    $scope.editUser = function (id) {
-        UserService.editUser(id);
+    $scope.addUser = function () {
+        var dialog = $dialog.dialog({
+            dialogFade: true,
+            resolve: {
+                item: function () {
+                    return {};
+                }
+            }
+        });
+        dialog.open('/modals/addEditUserModal.html', 'UserEditModalController').then(function (status) {
+            if (status) {
+                // messaging
+                $scope.getUsers($scope.currentPage);
+            }
+        });
     };
 
-    $scope.$on('user:addUser', function () {
-        $scope.getUsers($scope.currentPage);
-    });
-
-    $scope.$on('user:updateUser', function () {
-        $scope.getUsers($scope.currentPage);
-    });
-
-    $scope.testGetUser = function (userId) {
-        UserService.getUser(userId, function (user) {
-            var bp = '';
+    $scope.editUser = function (id) {
+        UserService.getUser(id, function (user) {
+            var dialog = $dialog.dialog({
+                dialogFade: true,
+                resolve: {
+                    item: function () {
+                        return angular.copy(user);
+                    }
+                }
+            });
+            dialog.open('/modals/addEditUserModal.html', 'UserEditModalController').then(function (status) {
+                if (status) {
+                    // messaging
+                    $scope.getUsers($scope.currentPage);
+                }
+            });
         });
     };
 
     $scope.getUsers($scope.currentPage);
 });
 
-app.controller('UserEditModalController', function ($scope, $rootScope, UserService) {
-    $scope.newUser = false;
+app.controller('UserEditModalController', ['$scope', '$rootScope', 'UserService', 'dialog', 'item', function ($scope, $rootScope, UserService, dialog, item) {
+    $scope.newUser = item.username;
     $scope.uid = '';
     $scope.username = '';
     $scope.isAdmin = false;
@@ -263,4 +281,4 @@ app.controller('UserEditModalController', function ($scope, $rootScope, UserServ
             }
         }
     };
-});
+}]);

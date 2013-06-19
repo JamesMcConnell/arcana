@@ -50,6 +50,15 @@ module.exports = {
             }
         });
     },
+    updateUser: function (userId, user, callback) {
+        User.update({ _id: userId }, user, function (err) {
+            if (err) {
+                callback(true, err);
+            } else {
+                callback(false, '')
+            }
+        });
+    },
     getPagedUsers: function (currentPage, numPerPage, callback) {
         var count = 0;
         var userList = [];

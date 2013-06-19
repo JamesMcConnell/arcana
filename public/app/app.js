@@ -1,4 +1,4 @@
-var app = angular.module('arcana', ['appServices', 'ngCookies']);
+var app = angular.module('arcana', ['appServices', 'ngCookies', 'ui.bootstrap']);
 
 app.filter('chatTime', function () {
     return function (raw) {
