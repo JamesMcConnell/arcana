@@ -51,7 +51,7 @@ module.exports = {
         });
     },
     updateUser: function (userId, user, callback) {
-        User.update({ _id: userId }, user, function (err) {
+        User.findOneAndUpdate({ _id: userId }, user, function (err) {
             if (err) {
                 callback(true, err);
             } else {

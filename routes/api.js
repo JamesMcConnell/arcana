@@ -22,8 +22,9 @@ module.exports = {
     postUser: function (req, res) {
         db.saveUser({
             username: req.param('username'),
-            password: req.param('password'),
-            email: req.param('email')
+            email: req.param('email'),
+            isAdmin: req.param('isAdmin'),
+            password: req.param('password')
         }, function (err, user, info) {
             if (err) {
                 return res.json(200, { success: false, user: null, message: info.message });
@@ -33,7 +34,13 @@ module.exports = {
         });
     },
     putUser: function (req, res) {
-        db.updateUser(req.param('uid'), req.param('user'), function (err, message) {
+        var uid = req.param('userId');
+        var userObj = {
+            username: req.body.username,
+            email: req.body.email,
+            isAdmin: req.body.isAdmin
+        };
+        db.updateUser(uid, userObj, function (err, message) {
             if (err) {
                 res.json(200, { success: false, message: message });
             } else {

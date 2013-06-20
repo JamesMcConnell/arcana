@@ -121,11 +121,12 @@ app.controller('RegisterController', function ($scope, $http, $rootScope, $windo
     };
 });
 
-app.controller('UserAdminController', function ($scope, $http, $dialog, UserService) {
+app.controller('UserAdminController', function ($scope, $http, $dialog, UserService, NotificationService) {
     $scope.currentPage = 1;
     $scope.pages = 1;
     $scope.numPerPage = 10;
     $scope.users = [];
+    $scope.errorMessage = '';
 
     $scope.$watch('numPerPage', function () {
         $scope.getUsers(1);
@@ -133,10 +134,10 @@ app.controller('UserAdminController', function ($scope, $http, $dialog, UserServ
 
     $scope.getUsers = function (page) {
         if (page >= 1 && page <= $scope.pages) {
-            $http({ method: 'GET', url: '/api/users', params: {currentPage: page, numPerPage: $scope.numPerPage } }).success(function (data) {
-                $scope.currentPage = data.result.currentPage;
-                $scope.pages = data.result.pages;
-                $scope.users = data.result.users;
+            UserService.getUsers(page, $scope.numPerPage, function (currentPage, pages, users) {
+                $scope.currentPage = currentPage;
+                $scope.pages = pages;
+                $scope.users = users;
             });
         }
     };
@@ -157,34 +158,44 @@ app.controller('UserAdminController', function ($scope, $http, $dialog, UserServ
             dialogFade: true,
             resolve: {
                 item: function () {
-                    return {};
+                    return {
+                        newUser: true,
+                        user: null
+                    };
                 }
             }
         });
         dialog.open('/modals/addEditUserModal.html', 'UserEditModalController').then(function (status) {
             if (status) {
-                // messaging
+                NotificationService.success('User successfully added!');
                 $scope.getUsers($scope.currentPage);
             }
         });
     };
 
     $scope.editUser = function (id) {
-        UserService.getUser(id, function (user) {
-            var dialog = $dialog.dialog({
-                dialogFade: true,
-                resolve: {
-                    item: function () {
-                        return angular.copy(user);
+        UserService.getUser(id, function (payload) {
+            if (payload.success) {
+                var dialog = $dialog.dialog({
+                    dialogFade: true,
+                    resolve: {
+                        item: function () {
+                            return {
+                                newUser: false,
+                                user: angular.copy(payload.result)
+                            };
+                        }
                     }
-                }
-            });
-            dialog.open('/modals/addEditUserModal.html', 'UserEditModalController').then(function (status) {
-                if (status) {
-                    // messaging
-                    $scope.getUsers($scope.currentPage);
-                }
-            });
+                });
+                dialog.open('/modals/addEditUserModal.html', 'UserEditModalController').then(function (status) {
+                    if (status) {
+                        NotificationService.success('User successfully updated!');
+                        $scope.getUsers($scope.currentPage);
+                    }
+                });
+            } else {
+                $scope.alertMessage = payload.message;
+            }
         });
     };
 
@@ -192,64 +203,47 @@ app.controller('UserAdminController', function ($scope, $http, $dialog, UserServ
 });
 
 app.controller('UserEditModalController', ['$scope', '$rootScope', 'UserService', 'dialog', 'item', function ($scope, $rootScope, UserService, dialog, item) {
-    $scope.newUser = item.username;
-    $scope.uid = '';
-    $scope.username = '';
-    $scope.isAdmin = false;
+    $scope.newUser = item.newUser;
+    $scope.uid = (!item.newUser) ? item.user._id: '';
+    $scope.username = (!item.newUser) ? item.user.username: '';
+    $scope.email = (!item.newUser) ? item.user.email : '';
+    $scope.isAdmin = (!item.newUser) ? item.user.isAdmin : false;
     $scope.password = '';
     $scope.confirmPassword = '';
-    $scope.passwordError = false;
-    $scope.incomplete = false;
+
+    $scope.cancel = function () {
+        dialog.close(false);
+    };
 
     $scope.$watch('password', function () {
-        if ($scope.password !== $scope.confirmPassword) {
-            $scope.passwordError = true;
-        } else {
-            $scope.passwordError = false;
-        }
+        if ($scope.newUser) {
+            if ($scope.password.length == 0) {
+                $scope.addEditUserForm.password.$setValidity('password', false);
+            } else {
+                $scope.addEditUserForm.password.$setValidity('password', true);
+            }
 
-        $scope.incompleteTest();
+            if ($scope.password != $scope.confirmPassword) {
+                $scope.addEditUserForm.confirmPassword.$setValidity('confirmPassword', false);
+            } else {
+                $scope.addEditUserForm.confirmPassword.$setValidity('confirmPassword', true);
+            }
+        }
     });
 
     $scope.$watch('confirmPassword', function () {
-        if ($scope.password !== $scope.confirmPassword) {
-            $scope.passwordError = true;
-        } else {
-            $scope.passwordError = false;
-        }
-
-        $scope.incompleteTest();
-    });
-
-    $scope.$watch('username', function () {
-        $scope.incompleteTest();
-    });
-
-    $scope.incompleteTest = function () {
         if ($scope.newUser) {
-            if (!$scope.username.length || !$scope.password.length || !$scope.confirmPassword.length) {
-                $scope.incomplete = true;
+            if ($scope.confirmPassword.length == 0) {
+                $scope.addEditUserForm.confirmPassword.$setValidity('confirmPassword', false);
             } else {
-                $scope.incomplete = false;
+                $scope.addEditUserForm.confirmPassword.$setValidity('confirmPassword', true);
             }
-        } else {
-            $scope.incomplete = false;
-        }
-    };
 
-    $rootScope.$on('user:editUser', function () {
-        $scope.editUser = UserService.getEditUser();
-        if ($scope.editUser.editing._id) {
-            $scope.username = $scope.editUser.editing.username;
-            $scope.isAdmin = $scope.editUser.editing.isAdmin;
-            $scope.uid = $scope.editUser.editing._id;
-            $scope.newUser = false;
-        } else {
-            $scope.username = '';
-            $scope.isAdmin = false;
-            $scope.password = '';
-            $scope.confirmPassword = '';
-            $scope.newUser = true;
+            if ($scope.password != $scope.confirmPassword) {
+                $scope.addEditUserForm.confirmPassword.$setValidity('confirmPassword', false);
+            } else {
+                $scope.addEditUserForm.confirmPassword.$setValidity('confirmPassword', true);
+            }
         }
     });
 
@@ -257,28 +251,28 @@ app.controller('UserEditModalController', ['$scope', '$rootScope', 'UserService'
         if ($scope.newUser) {
             UserService.addUser({
                 username: $scope.username,
-                firstName: $scope.firstName,
-                lastName: $scope.lastName,
+                email: $scope.email,
                 isAdmin: $scope.isAdmin,
                 password: $scope.password
+            }, function (payload) {
+                if (payload.success) {
+                    dialog.close(true);
+                } else {
+                    $scope.errorMessage = payload.message;
+                }
             });
         } else {
-            if ($scope.password.length) {
-                UserService.updateUser($scope.uid, {
-                    username: $scope.username,
-                    firstName: $scope.firstName,
-                    lastName: $scope.lastName,
-                    isAdmin: $scope.isAdmin,
-                    password: $scope.password
-                });
-            } else {
-                UserService.updateUser($scope.uid, {
-                    username: $scope.username,
-                    firstName: $scope.firstName,
-                    lastName: $scope.lastName,
-                    isAdmin: $scope.isAdmin
-                });
-            }
+            UserService.updateUser($scope.uid, {
+                username: $scope.username,
+                email: $scope.email,
+                isAdmin: $scope.isAdmin
+            }, function (payload) {
+                if (payload.success) {
+                    dialog.close(true);
+                } else {
+                    $scope.errorMessage = payload.message;
+                }
+            });
         }
     };
 }]);

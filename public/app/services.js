@@ -19,75 +19,38 @@ angular.module('appServices', ['ngCookies']).factory('Page', function ($rootScop
     var userBeingEdited = {};
 
     return {
-        editUser:
-            function (id) {
-                if (id == 'new') {
-                    userBeingEdited = {};
-                    $rootScope.$broadcast('user:editUser');
-                } else {
-                    $http.get('api/users/' + id).success(function (data) {
-                        userBeingEdited = data;
-                        $rootScope.$broadcast('user:editUser');
-                    });
-                }
-            },
-        getEditUser:
-            function () {
-                return {
-                    editing: userBeingEdited
-                };
-            },
         updateUser:
             function (uid, userdata, callback) {
                 $http.put('/api/users/' + uid, userdata).success(function (data) {
-                    if (data.status == 'success') {
-                        $rootScope.$broadcast('user:updateUser');
-                        // messaging
-                    } else {
-                        // messaging
-                    }
+                    callback(data);
                 });
             },
         addUser:
             function (userdata, callback) {
                 $http.post('/api/users', userdata).success(function (data) {
-                    if (data.status == 'success') {
-                        $rootScope.$broadcast('user:addUser');
-                        // messaging
-                    } else {
-                        // messaging
-                    }
+                    callback(data);
                 });
             },
         getUser:
             function (userId, callback) {
-                $http.get('/api/users/' + userId).success(function (data) {
-                    callback(data);
+                $http.get('/api/users/' + userId).success(function (payload) {
+                    callback(payload);
+                })
+            },
+        getUsers:
+            function (currentPage, numPerPage, callback) {
+                $http({ method: 'GET', url: '/api/users', params: { currentPage: currentPage, numPerPage: numPerPage } }).success(function (data) {
+                    callback(data.result.currentPage, data.result.pages, data.result.users);
                 })
             }
     }
-}).factory('Messages', function ($rootScope) {
-    var messages = [],
-        currentMessage = {};
-
-    $rootScope.$on('$routeChangeSuccess', function () {
-        if (messages.length > 0) {
-            messages = [];
-        }
-    });
-
+}).factory('NotificationService', function () {
     return {
-        getAll:
-            function () {
-                return messages;
-            },
-        addMessage:
-            function (message) {
-                messages.push(message);
-            },
-        clearMessages:
-            function () {
-                messages = [];
-            }
-    }
+        success: function (message) {
+            toastr.success(message);
+        },
+        error: function (message) {
+            toaster.error(message);
+        }
+    };
 });

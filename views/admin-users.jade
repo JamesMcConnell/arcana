@@ -7,10 +7,12 @@ block content
                 .span12
                     .widget.stacked
                         .widget-header
-                            i.icon-user-md
+                            i.icon-user
                             h3 User Administration
-                        .widget-content
-                            div(ng-controller="UserAdminController")
+                        .widget-content(ng-controller="UserAdminController")
+                            p.alert.alert-error(ng-show="errorMessage")
+                                {{ errorMessage }}
+                            div
                                 .clearfix
                                     .pull-left
                                         button.btn.btn-primary.pull-left(type="button", ng-click="addUser()")
@@ -39,11 +41,13 @@ block content
                                         thead
                                             tr
                                                 th Username
+                                                th Email Address
                                                 th(style="text-align: center;") Admin
                                                 th Operations
                                         tbody
                                             tr(ng-repeat="user in users")
                                                 td(style="vertical-align: middle;") {{ user.username }}
+                                                td(style="vertical-align: middle;") {{ user.email }}
                                                 td(style="text-align: center; color: green; vertical-align: middle;")
                                                     i.icon-ok(ng-show="user.isAdmin")
                                                 td(style="vertical-align: middle;")

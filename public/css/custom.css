@@ -188,3 +188,12 @@ input {
     position: relative;
     margin-left: 120px;
 }
+
+.modal-container .form-actions {
+    margin-bottom: 0px;
+}
+
+.modal-container .control-group {
+    margin-top: 5px;
+    margin-left: 5px;
+}
