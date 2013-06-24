@@ -1,5 +1,7 @@
-app.controller('MainController', function ($scope) {
+app.controller('MainController', function ($scope, UserService) {
     $scope.config = {};
+
+    UserService.setCurrentUser();
 
     $scope.safeApply = function (fn) {
         var phase = this.$root.$$phase;
@@ -17,15 +19,23 @@ app.controller('IndexController', function ($scope, $http, $rootScope) {
 
 });
 
-app.controller('NavbarController', function ($scope) {
+app.controller('NavbarController', function ($scope, UserService) {
     $scope.currentUsername = '';
     $scope.isLoggedIn = false;
     $scope.isAdmin = false;
 
+    $scope.$watch('UserService.me', function () {
+        if (UserService.me._id) {
+            $scope.currentUsername = UserService.me.username;
+            $scope.isLoggedIn = true;
+            $scope.isAdmin = UserService.me.isAdmin;
+        }
+    });
+
     $scope.init = function (userInfo) {
         if (userInfo.username === undefined) {
             $scope.currentUsername = '';
-            $scope.isAdmin = false
+            $scope.isAdmin = false;
             $scope.isLoggedIn = false;
         } else {
             $scope.currentUsername = userInfo.username;
@@ -33,7 +43,7 @@ app.controller('NavbarController', function ($scope) {
             $scope.isLoggedIn = true;
         }
     }
-})
+});
 
 app.controller('LobbyController', function ($scope) {
     //noinspection JSUnresolvedVariable

@@ -10,6 +10,13 @@ module.exports = {
             }
         });
     },
+    session: function (req, res) {
+        if (req.user) {
+            return res.json(200, { user: req.user });
+        } else {
+            return res.json(200, { user: {} });
+        }
+    },
     getRegister: function (req, res) {
         res.render('register.jade', {
             pageTitle: 'Register User',

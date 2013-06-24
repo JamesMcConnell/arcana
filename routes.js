@@ -7,7 +7,7 @@ function ensureAuthenticated(req, res, next) {
         return next();
     }
 
-    res.redirect('/login');
+    return res.redirect('/login');
 }
 
 function ensureAuthenticatedAndAdmin(req, res, next) {
@@ -15,11 +15,12 @@ function ensureAuthenticatedAndAdmin(req, res, next) {
         return next();
     }
 
-    res.redirect('/login');
+    return res.redirect('/login');
 }
 
 module.exports = function (app) {
     app.get('/', main.index);
+    app.get('/session', main.session);
     app.get('/login', main.getLogin);
     app.post('/login', function (req, res, next) {
         passport.authenticate('local', function (err, user, info) {

@@ -1,24 +1,13 @@
-angular.module('appServices', ['ngCookies']).factory('Page', function ($rootScope) {
-    var siteName = 'Arcana';
-    var pageTitle = '';
+angular.module('appServices', ['ngCookies']).factory('UserService', function ($rootScope, $http) {
+    var me = {};
 
     return {
-        title:
-            function (includeSiteName) {
-                if (includeSiteName) {
-                    return siteName + ' :: ' + pageTitle;
-                }
-                return pageTitle;
+        setCurrentUser:
+            function () {
+                $http.get('/session').success(function (data) {
+                    me = data.user;
+                });
             },
-        setTitle:
-            function (newTitle) {
-                pageTitle = newTitle;
-            }
-    }
-}).factory('UserService', function ($rootScope, $http) {
-    var userBeingEdited = {};
-
-    return {
         updateUser:
             function (uid, userdata, callback) {
                 $http.put('/api/users/' + uid, userdata).success(function (data) {
@@ -42,7 +31,8 @@ angular.module('appServices', ['ngCookies']).factory('Page', function ($rootScop
                 $http({ method: 'GET', url: '/api/users', params: { currentPage: currentPage, numPerPage: numPerPage } }).success(function (data) {
                     callback(data.result.currentPage, data.result.pages, data.result.users);
                 })
-            }
+            },
+        me: me
     }
 }).factory('NotificationService', function () {
     return {
