@@ -24,6 +24,7 @@ app.controller('NavbarController', function ($scope, UserService) {
     $scope.isLoggedIn = false;
     $scope.isAdmin = false;
 
+    /*
     $scope.$watch('UserService.me', function () {
         if (UserService.me._id) {
             $scope.currentUsername = UserService.me.username;
@@ -31,6 +32,7 @@ app.controller('NavbarController', function ($scope, UserService) {
             $scope.isAdmin = UserService.me.isAdmin;
         }
     });
+    */
 
     $scope.init = function (userInfo) {
         if (userInfo.username === undefined) {
