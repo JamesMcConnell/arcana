@@ -6,6 +6,7 @@ var express = require('express'),
     http = require('http'),
     app = express(),
     server = http.createServer(app),
+    io = require('socket.io').listen(server),
     flash = require('connect-flash');
 
 var dbConn = 'mongodb://localhost/arcana';
@@ -18,7 +19,7 @@ app.configure(function () {
     app.use(express.methodOverride());
     app.use(express.session({
         secret: 'arcana-session-store',
-        httpOnly: false
+        key: 'express.sid'
     }, function () {
         app.use(app.router);
     }));
@@ -39,5 +40,6 @@ app.configure('production', function (){
 });
 
 require('./routes')(app);
+//io.sockets.on('connection', socket);
 app.listen(3000);
 console.log('Express server listening on port 3000 in %s mode', app.settings.env);

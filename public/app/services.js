@@ -1,11 +1,11 @@
 angular.module('appServices', ['ngCookies']).factory('UserService', function ($rootScope, $http) {
-    var me = {};
+    var currentUser = {};
 
     return {
-        setCurrentUser:
-            function () {
+        me:
+            function (callback) {
                 $http.get('/session').success(function (data) {
-                    me = data.user;
+                    callback(data.user);
                 });
             },
         updateUser:
@@ -31,8 +31,7 @@ angular.module('appServices', ['ngCookies']).factory('UserService', function ($r
                 $http({ method: 'GET', url: '/api/users', params: { currentPage: currentPage, numPerPage: numPerPage } }).success(function (data) {
                     callback(data.result.currentPage, data.result.pages, data.result.users);
                 })
-            },
-        me: me
+            }
     }
 }).factory('NotificationService', function () {
     return {

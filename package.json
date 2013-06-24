@@ -19,7 +19,8 @@
         "passport": "latest",
         "passport-local": "latest",
         "passport-twitter": "latest",
-        "bcryptjs": "latest"
+        "bcryptjs": "latest",
+        "socket.io": "latest"
     },
     "devDependencies": {
         "grunt": "~0.4.1"

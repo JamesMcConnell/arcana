@@ -1,7 +1,18 @@
-app.controller('MainController', function ($scope, UserService) {
+app.controller('MainController', function ($scope, $http, UserService) {
     $scope.config = {};
+    $scope.uid = '';
+    $scope.currentUsername = '';
+    $scope.isLoggedIn = false;
+    $scope.isAdmin = false;
 
-    UserService.setCurrentUser();
+    UserService.me(function (user) {
+        if (user._id) {
+            $scope.uid = user._id;
+            $scope.currentUsername = user.username;
+            $scope.isLoggedIn = true;
+            $scope.isAdmin = user.isAdmin;
+        }
+    });
 
     $scope.safeApply = function (fn) {
         var phase = this.$root.$$phase;
@@ -16,35 +27,15 @@ app.controller('MainController', function ($scope, UserService) {
 });
 
 app.controller('IndexController', function ($scope, $http, $rootScope) {
-
+    /*
+    $scope.test = function () {
+        var username = $scope.$parent.currentUsername;
+    }
+    */
 });
 
-app.controller('NavbarController', function ($scope, UserService) {
-    $scope.currentUsername = '';
-    $scope.isLoggedIn = false;
-    $scope.isAdmin = false;
+app.controller('NavbarController', function ($scope, $rootScope, UserService) {
 
-    /*
-    $scope.$watch('UserService.me', function () {
-        if (UserService.me._id) {
-            $scope.currentUsername = UserService.me.username;
-            $scope.isLoggedIn = true;
-            $scope.isAdmin = UserService.me.isAdmin;
-        }
-    });
-    */
-
-    $scope.init = function (userInfo) {
-        if (userInfo.username === undefined) {
-            $scope.currentUsername = '';
-            $scope.isAdmin = false;
-            $scope.isLoggedIn = false;
-        } else {
-            $scope.currentUsername = userInfo.username;
-            $scope.isAdmin = userInfo.isAdmin;
-            $scope.isLoggedIn = true;
-        }
-    }
 });
 
 app.controller('LobbyController', function ($scope) {
