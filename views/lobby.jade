@@ -11,4 +11,4 @@ block content
                             h3 Lobby
                         .widget-content(ng-controller="LobbyController")
                             ul
-                                li(ng-repeat="msg in chatLog") {{ msg.body }} at {{ msg.timestamp }}
+                                li(ng-repeat="msg in chatLog") {{ msg.body }} at {{ msg.timestamp | chatTime }}
