@@ -38,8 +38,6 @@ app.configure('production', function (){
 
 io.configure(function () {
     io.enable('browser client minification');
-    io.enable('browser client etag');
-    io.enable('browser client gzip');
     io.set('log level', 1);
 });
 

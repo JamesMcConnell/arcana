@@ -6,4 +6,4 @@ module.exports = function (app, io) {
                 chat.emit(data);
             });
         });
-}
+};
