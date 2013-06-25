@@ -1,27 +1,28 @@
 extends layout
 
 block content
-    .span12
-        .widget.stacked
-            .widget-header
-                .icon-signin
-                h3 Login
-            .widget-content(ng-controller="LoginController")
-                p.alert.alert-error(ng-show="errorMessage")
-                    span {{ errorMessage }}
-                form.form-horizontal(name="loginForm")
-                    fieldset
-                        .control-group
-                            label.control-label(for="username") Username:
-                            .controls
-                                input.input-large(type="text", name="username", id="username", placeholder="Username", ng-model="username", required)
-                                .input-help
-                                    h4 Username is required
-                        .control-group
-                            label.control-label(for="password") Password:
-                            .controls
-                                input.input-large(type="password", name="password", id="password", placeholder="Password", ng-model="password", required)
-                                .input-help
-                                    h4 Invalid email address
-                        .form-actions
-                            button.btn.btn-secondary.btn-large(ng-click="login()", ng-disabled="loginForm.$invalid") Sign In
+    .main
+        .container
+            .widget.stacked
+                .widget-header
+                    .icon-signin
+                    h3 Login
+                .widget-content(ng-controller="LoginController")
+                    p.alert.alert-error(ng-show="errorMessage")
+                        span {{ errorMessage }}
+                    form.form-horizontal(name="loginForm")
+                        fieldset
+                            .control-group
+                                label.control-label(for="username") Username:
+                                .controls
+                                    input.input-large(type="text", name="username", id="username", placeholder="Username", ng-model="username", required)
+                                    .input-help
+                                        h4 Username is required
+                            .control-group
+                                label.control-label(for="password") Password:
+                                .controls
+                                    input.input-large(type="password", name="password", id="password", placeholder="Password", ng-model="password", required)
+                                    .input-help
+                                        h4 Invalid email address
+                            .form-actions
+                                button.btn.btn-secondary.btn-large(ng-click="login()", ng-disabled="loginForm.$invalid") Sign In

@@ -2,11 +2,9 @@ extends layout
 
 block content
     .main
-        .container
-            .row
-                .span12
-                    .widget.stacked
-                        .widget-header
-                            i.icon-th-large
-                            h3 Welcome to Arcana!
-                        .widget-content(ng-controller="IndexController")
+        .container-fluid
+            .widget.stacked
+                .widget-header
+                    i.icon-th-large
+                    h3 Welcome to Arcana!
+                .widget-content(ng-controller="IndexController")
