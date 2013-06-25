@@ -3,11 +3,7 @@ var db = require('../config/db-config');
 module.exports = {
     index: function (req, res) {
         res.render('index.jade', {
-            pageTitle: 'Arcana',
-            userInfo: {
-                username: req.user ? JSON.stringify(req.user.username) : 'undefined',
-                isAdmin: req.user ? req.user.isAdmin : false
-            }
+            pageTitle: 'Arcana'
         });
     },
     session: function (req, res) {
@@ -19,11 +15,7 @@ module.exports = {
     },
     getRegister: function (req, res) {
         res.render('register.jade', {
-            pageTitle: 'Register User',
-            userInfo: {
-                username: req.user ? JSON.stringify(req.user.username) : 'undefined',
-                isAdmin: req.user ? req.user.isAdmin : false
-            }
+            pageTitle: 'Register User'
         });
     },
     postRegister: function (req, res) {
@@ -47,29 +39,17 @@ module.exports = {
     },
     lobby: function (req, res) {
         res.render('lobby.jade', {
-            pageTitle: 'Lobby',
-            userInfo: {
-                username: JSON.stringify(req.user.username),
-                isAdmin: req.user ? req.user.isAdmin : false
-            }
+            pageTitle: 'Lobby'
         });
     },
     adminUsers: function (req, res) {
         res.render('admin-users.jade', {
-            pageTitle: 'User Administration',
-            userInfo: {
-                username: JSON.stringify(req.user.username),
-                isAdmin: true
-            }
+            pageTitle: 'User Administration'
         });
     },
     getLogin: function (req, res) {
         res.render('login.jade', {
-            pageTitle: 'Login',
-            userInfo: {
-                username: req.user ? JSON.stringify(req.user.username) : 'undefined',
-                isAdmin: req.user ? req.user.isAdmin : false
-            }
+            pageTitle: 'Login'
         });
     },
     logout: function (req, res) {
