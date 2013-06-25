@@ -1,0 +1,14 @@
+extends layout
+
+block content
+    .main
+        .container
+            .row
+                .span12
+                    .widget.stacked
+                        .widget-header
+                            i.icon-th-large
+                            h3 Lobby
+                        .widget-content(ng-controller="LobbyController")
+                            ul
+                                li(ng-repeat="msg in chatLog") {{ msg.body }} at {{ msg.timestamp }}

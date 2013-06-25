@@ -1,18 +1,5 @@
-app.controller('MainController', function ($scope, $http, UserService) {
-    $scope.config = {};
-    $scope.uid = '';
-    $scope.currentUsername = '';
-    $scope.isLoggedIn = false;
-    $scope.isAdmin = false;
-
-    UserService.me(function (user) {
-        if (user._id) {
-            $scope.uid = user._id;
-            $scope.currentUsername = user.username;
-            $scope.isLoggedIn = true;
-            $scope.isAdmin = user.isAdmin;
-        }
-    });
+app.controller('MainController', function ($scope, $rootScope, $http, UserService) {
+    UserService.me();
 
     $scope.safeApply = function (fn) {
         var phase = this.$root.$$phase;
@@ -35,31 +22,45 @@ app.controller('IndexController', function ($scope, $http, $rootScope) {
 });
 
 app.controller('NavbarController', function ($scope, $rootScope, UserService) {
+    $scope.currentUsername = '';
+    $scope.isLoggedIn = false;
+    $scope.isAdmin = false;
 
+    $rootScope.$on('currentUser', function () {
+        var user = UserService.currentUser();
+        if (user._id) {
+            $scope.currentUsername = user.username;
+            $scope.isLoggedIn = true;
+            $scope.isAdmin = user.isAdmin;
+        }
+    });
 });
 
-app.controller('LobbyController', function ($scope) {
+app.controller('LobbyController', function ($scope, $rootScope, UserService) {
     //noinspection JSUnresolvedVariable
-    $scope.chat = io.connect('/lobbyChat');
+    $scope.chat = io.connect('/lobby');
     $scope.chatMsg = '';
     $scope.chatLog = [];
-    $scope.currentUsers = [];
     $scope.maxChatLogSize = 2000;
-    $scope.flashMessages = [];
+    $scope.currentUser = {};
 
-    /*
-     $scope.$watch('user.me()', function (u) {
-     $scope.me = u;
-     var data = {
-     user: $scope.me.username + '.',
-     body: $scope.me.username + ' has entered the lobby',
-     serverGenerated: true,
-     timestamp: new Date().getTime()
-     };
+    $rootScope.$on('currentUser', function () {
+        var user = UserService.currentUser();
+        if (user._id) {
+            $scope.currentUser.uid = user._id;
+            $scope.currentUser.username = user.username;
+            $scope.currentUser.isAdmin = user.isAdmin;
 
-     $scope.chat.emit('message', data);
-     });
-     */
+            var chatMsg = {
+                user: $scope.currentUser.username,
+                body: $scope.currentUser.username + ' has entered the lobby',
+                serverGenerated: true,
+                timestamp: new Date().getTime()
+            };
+
+            $scope.chat.emit('message', chatMsg);
+        }
+    });
 
     $scope.chat.on('message', function (data) {
         $scope.chatLog.push(data);

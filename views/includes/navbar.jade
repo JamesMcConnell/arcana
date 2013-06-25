@@ -6,7 +6,7 @@ div(ng-controller="NavbarController")
                     i.icon-cog
                 a.brand(href="/") Arcana
                 .nav-collapse.collapse
-                    ul.nav.pull-right(ng-show="$parent.isLoggedIn")
+                    ul.nav.pull-right(ng-show="isLoggedIn")
                         li.dropdown
                             a.dropdown-toggle(href="#", data-toggle="dropdown")
                                 i.icon-cog
@@ -21,7 +21,7 @@ div(ng-controller="NavbarController")
                         li.dropdown
                             a.dropdown-toggle(href="#", data-toggle="dropdown")
                                 i.icon-user
-                                | &nbsp; {{$parent.currentUsername}}
+                                | &nbsp; {{currentUsername}}
                                 b.caret
                             ul.dropdown-menu
                                 li
@@ -31,7 +31,7 @@ div(ng-controller="NavbarController")
                                 li.divider
                                 li
                                     a(href="/logout") Logout
-                    ul.nav.pull-right(ng-show="!$parent.isLoggedIn")
+                    ul.nav.pull-right(ng-show="!isLoggedIn")
                         li
                             a(href="/login")
                                 i.icon-signin
@@ -51,11 +51,11 @@ div(ng-controller="NavbarController")
                             a(href="/")
                                 i.icon-home
                                 span Home
-                        li(ng-show="$parent.isLoggedIn")
+                        li(ng-show="isLoggedIn")
                             a(href="/lobby")
                                 i.icon-group
                                 span Lobby
-                        li.dropdown(ng-show="$parent.isLoggedIn && $parent.isAdmin")
+                        li.dropdown(ng-show="isLoggedIn && isAdmin")
                             a.dropdown-toggle(href="javascript:;", data-toggle="dropdown")
                                 i.icon-sitemap
                                 span Admin
