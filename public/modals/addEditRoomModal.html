@@ -1,0 +1,39 @@
+<div class="modal-header">
+    <button type="button" class="close" ng-click="cancel()">&times;</button>
+    <h3 ng-show="newRoom">Create New Room</h3>
+    <h3 ng-hide="newRoom">Edit Room: {{ roomName }}</h3>
+</div>
+<div class="modal-container">
+    <p class="alert alert-error" ng-show="errorMessage">
+        {{ errorMessage }}
+    </p>
+    <form name="addEditRoomForm" class="form-horizontal">
+        <div class="control-group">
+            <label class="control-label" for="username">Room Name:</label>
+            <div class="controls">
+                <input type="text" class="input-large" name="roomName" id="roomName" placeholder="Room Name" ng-model="roomName" required />
+                <div class="input-help">
+                    <h4>Room name is required</h4>
+                </div>
+            </div>
+        </div>
+        <div class="control-group">
+            <label class="control-label" for="email">Number of players:</label>
+            <div class="controls">
+                <select name="numPlayers" id="numPlayers" ng-model="numPlayers" required>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                    <option value="6">6</option>
+                </select>
+                <div class="input-help">
+                    <h4>Number of players required</h4>
+                </div>
+            </div>
+        </div>
+        <div class="form-actions">
+            <button type="button" class="btn btn-secondary" ng-click="save()" ng-disabled="addEditRoomForm.$invalid">Save Room</button>
+            <button type="button" class="btn" ng-click="cancel()">Cancel</button>
+        </div>
+    </form>
+</div>

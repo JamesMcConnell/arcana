@@ -47,6 +47,11 @@ module.exports = {
             pageTitle: 'User Administration'
         });
     },
+    adminRooms: function (req, res) {
+        res.render('admin-rooms.jade', {
+            pageTitle: 'Room Administration'
+        });
+    },
     getLogin: function (req, res) {
         res.render('login.jade', {
             pageTitle: 'Login'

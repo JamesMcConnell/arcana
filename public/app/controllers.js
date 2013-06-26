@@ -125,6 +125,78 @@ app.controller('RegisterController', function ($scope, $http, $rootScope, $windo
     };
 });
 
+app.controller('RoomAdminController', function ($scope, $http, $dialog, RoomService, NotificationService) {
+    $scope.currentPage = 1;
+    $scope.pages = 1;
+    $scope.numPerPage = 10;
+    $scope.rooms = [];
+    $scope.errorMessage = '';
+
+    $scope.$watch('numPerPage', function () {
+        $scope.getRooms(1);
+    });
+
+    $scope.getRooms = function (page) {
+        if (page >= 1 && page <= $scope.pages) {
+            RoomService.getRooms(page, $scope.numPerPage, function (currentPage, pages, rooms) {
+                $scope.currentPage = currentPage;
+                $scope.pages = pages;
+                $scope.rooms = rooms;
+            });
+        }
+    };
+
+    $scope.addRoom = function () {
+        var dialog = $dialog.dialog({
+            dialogFade: true,
+            resolve: {
+                item: function () {
+                    return {
+                        newRoom: true,
+                        room: null
+                    };
+                }
+            }
+        });
+
+        dialog.open('/modals/addEditRoomModal.html', 'RoomEditModalController').then(function (status) {
+            if (status) {
+                NotificationService.success('Room successfully added!');
+                $scope.getRooms($scope.currentPage);
+            }
+        });
+
+    };
+
+    $scope.editRoom = function (roomId) {
+        RoomService.getRoom(roomId, function (data) {
+            if (data.success) {
+                var dialog = $dialog.dialog({
+                    dialogFade: true,
+                    resolve: {
+                        item: function () {
+                            return {
+                                newRoom: false,
+                                room: angular.copy(data.result)
+                            };
+                        }
+                    }
+                });
+                dialog.open('/modals/addEditRoomModal.html', 'RoomEditModalController').then(function (status) {
+                    if (status) {
+                        NotificationService.success('Room successfully updated!');
+                        $scope.getRooms($scope.currentPage);
+                    }
+                });
+            } else {
+                $scope.alertMessage = data.message;
+            }
+        });
+    };
+
+    $scope.getRooms($scope.currentPage);
+});
+
 app.controller('UserAdminController', function ($scope, $http, $dialog, UserService, NotificationService) {
     $scope.currentPage = 1;
     $scope.pages = 1;
@@ -206,10 +278,47 @@ app.controller('UserAdminController', function ($scope, $http, $dialog, UserServ
     $scope.getUsers($scope.currentPage);
 });
 
+app.controller('RoomEditModalController', ['$scope', '$rootScope', 'RoomService', 'dialog', 'item', function ($scope, $rootScope, RoomService, dialog, item) {
+    $scope.newRoom = item.newRoom;
+    $scope.roomId = (!item.newRoom) ? item.room._id : '';
+    $scope.roomName = (!item.newRoom) ? item.room.roomName : '';
+    $scope.numPlayers = (!item.newRoom) ? item.room.numPlayers : 0;
+
+    $scope.cancel = function () {
+        dialog.close(false);
+    };
+
+    $scope.save = function () {
+        if ($scope.newRoom) {
+            RoomService.addRoom({
+                roomName: $scope.roomName,
+                numPlayers: $scope.numPlayers
+            }, function (data) {
+                if (data.success) {
+                    dialog.close(true);
+                } else {
+                    $scope.errorMessage = data.message;
+                }
+            });
+        } else {
+            RoomService.updateRoom($scope.roomId, {
+                roomName: $scope.roomName,
+                numPlayers: $scope.numPlayers
+            }, function (data) {
+                if (data.success) {
+                    dialog.close(true);
+                } else {
+                    $scope.errorMessage = data.message;
+                }
+            });
+        }
+    };
+}]);
+
 app.controller('UserEditModalController', ['$scope', '$rootScope', 'UserService', 'dialog', 'item', function ($scope, $rootScope, UserService, dialog, item) {
     $scope.newUser = item.newUser;
-    $scope.uid = (!item.newUser) ? item.user._id: '';
-    $scope.username = (!item.newUser) ? item.user.username: '';
+    $scope.uid = (!item.newUser) ? item.user._id : '';
+    $scope.username = (!item.newUser) ? item.user.username : '';
     $scope.email = (!item.newUser) ? item.user.email : '';
     $scope.isAdmin = (!item.newUser) ? item.user.isAdmin : false;
     $scope.password = '';

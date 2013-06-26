@@ -92,4 +92,4 @@ module.exports = {
             callback(false, user, null);
         });
     }
-}
+};
