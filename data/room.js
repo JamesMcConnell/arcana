@@ -11,7 +11,6 @@ module.exports = {
         });
 
         newRoom.save(function (err) {
-            console.log('db task executed');
             if (err) {
                 if (err.code === 11000) {
                     callback(true, null, { message: 'Duplicate room name' });
@@ -30,35 +29,45 @@ module.exports = {
             }
         });
     },
-    getPagedRooms: function (currentPage, numPerPage, callback) {
-        var count = 0;
-        var roomList = [];
-        var pages = 1;
-        var skip = (currentPage -1 ) * numPerPage;
+    getRooms: function (fetchAll, currentPage, numPerPage, callback) {
+        if (fetchAll) {
+            Room.find().sort('numPlayers').exec(function (err, roomList) {
+                if (err) {
+                    return callback(true, null, { message: 'Unable to retrieve rooms' });
+                }
+                var reply = {
+                    rooms: roomList
+                };
+                callback(false, reply, null);
+            });
+        } else {
+            var count = 0;
+            var roomList = [];
+            var pages = 1;
+            var skip = (currentPage - 1) * numPerPage;
 
-        Room.find().count().exec(function (err, num) {
-            count = num;
-            if (count > 1) {
-                pages = Math.ceil(count / numPerPage);
-            }
+            var countQuery = Room.find().count();
+            countQuery.exec(function (err, num) {
+                count = num;
+                if (count > 1) {
+                    pages = Math.ceil(count / numPerPage);
+                }
 
-            Room.find()
-                .sort('roomName')
-                .skip(skip)
-                .limit(numPerPage)
-                .exec(function (err, roomList) {
+                var listQuery = Room.find().sort('numPlayers').skip(skip).limit(numPerPage);
+                listQuery.exec(function (err, roomList) {
                     if (err) {
-                        callback(true, null, { message: 'Unable to retrieve rooms' });
+                        return callback(true, null, { message: 'Unable to retrieve rooms' });
                     }
+
                     var reply = {
                         currentPage: currentPage,
                         pages: pages,
                         rooms: roomList
                     };
-
                     callback(false, reply, null);
                 });
-        });
+            });
+        }
     },
     getRoom: function (roomId, callback) {
         Room.findById(roomId).exec(function (err, room) {

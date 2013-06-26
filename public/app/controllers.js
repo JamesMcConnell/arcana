@@ -125,6 +125,44 @@ app.controller('RegisterController', function ($scope, $http, $rootScope, $windo
     };
 });
 
+app.controller('TableAdminController', function ($scope, $http, $dialog, TableService, RoomService, NotificationService) {
+    $scope.currentPage = 1;
+    $scope.pages = 1;
+    $scope.numPerPage = 10;
+    $scope.tables = [];
+    $scope.rooms = [];
+    $scope.selectedRoom = '';
+    $scope.errorMessage = '';
+
+    $scope.$watch('numPerPage', function () {
+        $scope.getTables(1);
+    });
+
+    $scope.$watch('selectedRoom', function () {
+        $scope.getTables(1);
+    });
+
+    $scope.getTables = function (page) {
+        if (page >= 1 && page <= $scope.pages) {
+            TableService.getTables($scope.currentPage, $scope.numPerPage, $scope.selectedRoom, function (currentPage, pages, tables) {
+                $scope.currentPage = currentPage;
+                $scope.pages = pages;
+                $scope.tables = tables;
+            });
+        }
+    };
+
+    $scope.addTable = function () {
+
+    };
+
+    $scope.editTable = function () {
+
+    };
+
+    $scope.getTables($scope.currentPage);
+});
+
 app.controller('RoomAdminController', function ($scope, $http, $dialog, RoomService, NotificationService) {
     $scope.currentPage = 1;
     $scope.pages = 1;
@@ -138,7 +176,7 @@ app.controller('RoomAdminController', function ($scope, $http, $dialog, RoomServ
 
     $scope.getRooms = function (page) {
         if (page >= 1 && page <= $scope.pages) {
-            RoomService.getRooms(page, $scope.numPerPage, function (currentPage, pages, rooms) {
+            RoomService.getRooms(false, page, $scope.numPerPage, function (currentPage, pages, rooms) {
                 $scope.currentPage = currentPage;
                 $scope.pages = pages;
                 $scope.rooms = rooms;
@@ -210,7 +248,7 @@ app.controller('UserAdminController', function ($scope, $http, $dialog, UserServ
 
     $scope.getUsers = function (page) {
         if (page >= 1 && page <= $scope.pages) {
-            UserService.getUsers(page, $scope.numPerPage, function (currentPage, pages, users) {
+            UserService.getUsers(false, $scope.currentPage, $scope.numPerPage, function (currentPage, pages, users) {
                 $scope.currentPage = currentPage;
                 $scope.pages = pages;
                 $scope.users = users;

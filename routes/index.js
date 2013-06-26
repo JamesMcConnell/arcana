@@ -52,6 +52,11 @@ module.exports = {
             pageTitle: 'Room Administration'
         });
     },
+    adminTables: function (req, res) {
+        res.render('admin-tables.jade', {
+            pageTitle: 'Table Administration'
+        });
+    },
     getLogin: function (req, res) {
         res.render('login.jade', {
             pageTitle: 'Login'

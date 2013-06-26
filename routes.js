@@ -1,6 +1,8 @@
 var passport = require('passport'),
     main = require('./routes/index'),
-    api = require('./routes/api');
+    userApi = require('./routes/api/userApi'),
+    roomApi = require('./routes/api/roomApi'),
+    tableApi = require('./routes/api/tableApi');
 
 function ensureAuthenticated(req, res, next) {
     if (req.isAuthenticated()) {
@@ -47,16 +49,22 @@ module.exports = function (app) {
     app.get('/lobby', ensureAuthenticated, main.lobby);
     app.get('/admin/users', ensureAuthenticatedAndAdmin, main.adminUsers);
     app.get('/admin/rooms', ensureAuthenticatedAndAdmin, main.adminRooms);
+    app.get('/admin/tables', ensureAuthenticatedAndAdmin, main.adminTables);
 
-    app.get('/api/users', ensureAuthenticatedAndAdmin, api.getUsers);
-    app.post('/api/users', ensureAuthenticatedAndAdmin, api.postUser);
-    app.put('/api/users/:userId', ensureAuthenticatedAndAdmin, api.putUser);
-    app.get('/api/users/:userId', ensureAuthenticatedAndAdmin, api.getUser);
+    app.get('/api/users', ensureAuthenticatedAndAdmin, userApi.getUsers);
+    app.post('/api/users', ensureAuthenticatedAndAdmin, userApi.postUser);
+    app.put('/api/users/:userId', ensureAuthenticatedAndAdmin, userApi.putUser);
+    app.get('/api/users/:userId', ensureAuthenticatedAndAdmin, userApi.getUser);
 
-    app.get('/api/rooms', ensureAuthenticatedAndAdmin, api.getRooms);
-    app.get('/api/rooms/:roomId', ensureAuthenticatedAndAdmin, api.getRoom);
-    app.post('/api/rooms', ensureAuthenticatedAndAdmin, api.postRoom);
-    app.put('/api/rooms/:roomId', ensureAuthenticatedAndAdmin, api.putRoom);
+    app.get('/api/rooms', ensureAuthenticatedAndAdmin, roomApi.getRooms);
+    app.get('/api/rooms/:roomId', ensureAuthenticatedAndAdmin, roomApi.getRoom);
+    app.post('/api/rooms', ensureAuthenticatedAndAdmin, roomApi.postRoom);
+    app.put('/api/rooms/:roomId', ensureAuthenticatedAndAdmin, roomApi.putRoom);
+
+    app.get('/api/tables', ensureAuthenticatedAndAdmin, tableApi.getTables);
+    app.get('/api/tables/:tableId', ensureAuthenticatedAndAdmin, tableApi.getTable);
+    app.post('/api/tables', ensureAuthenticatedAndAdmin, tableApi.postTable);
+    app.put('/api/tables/:tableId', ensureAuthenticatedAndAdmin, tableApi.putTable);
 };
 
 

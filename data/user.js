@@ -53,35 +53,44 @@ module.exports = {
             }
         });
     },
-    getPagedUsers: function (currentPage, numPerPage, callback) {
-        var count = 0;
-        var userList = [];
-        var pages = 1;
-        var skip = (currentPage - 1) * numPerPage;
+    getUsers: function (fetchAll, currentPage, numPerPage, callback) {
+        if (fetchAll) {
+            User.find().sort('username').exec(function (err, userList) {
+                if (err) {
+                    return callback(true, null, { message: 'Unable to retrieve users' });
+                }
+                var reply = {
+                    users: userList
+                };
+                callback(false, reply, null);
+            });
+        } else {
+            var count = 0;
+            var userList = [];
+            var pages = 1;
+            var skip = (currentPage - 1) * numPerPage;
 
-        User.find().count().exec(function (err, num) {
-            count = num;
-            if (count > 1) {
-                pages = Math.ceil(count / numPerPage);
-            }
+            var countQuery = User.find();
+            countQuery.count().exec(function (err, num) {
+                count = num;
+                if (count > 1) {
+                    pages = Math.ceil(count / numPerPage);
+                }
 
-            User.find()
-                .sort('username')
-                .skip(skip)
-                .limit(numPerPage)
-                .exec(function (err, userList) {
+                var listQuery = User.find().sort('username').skip(skip).limit(numPerPage);
+                listQuery.exec(function (err, userList) {
                     if (err) {
-                        callback(true, null, { message: 'Unable to retrieve users' });
+                        return callback(true, null, { message: 'Unable to retrieve users' });
                     }
                     var reply = {
                         currentPage: currentPage,
                         pages: pages,
                         users: userList
                     };
-
                     callback(false, reply, null);
                 });
-        });
+            });
+        }
     },
     getUser: function (userId, callback) {
         User.findById(userId).exec(function (err, user) {

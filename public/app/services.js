@@ -28,8 +28,8 @@ angular.module('appServices', ['ngCookies']).factory('UserService', function ($r
                 });
             },
         getUsers:
-            function (currentPage, numPerPage, callback) {
-                $http({ method: 'GET', url: '/api/users', params: { currentPage: currentPage, numPerPage: numPerPage } }).success(function (data) {
+            function (fetchAll, currentPage, numPerPage, callback) {
+                $http({ method: 'GET', url: '/api/users', params: { fetchAll: fetchAll, currentPage: currentPage, numPerPage: numPerPage } }).success(function (data) {
                     callback(data.result.currentPage, data.result.pages, data.result.users);
                 });
             },
@@ -41,8 +41,8 @@ angular.module('appServices', ['ngCookies']).factory('UserService', function ($r
 }).factory('RoomService', function ($rootScope, $http) {
     return {
         getRooms:
-            function (currentPage, numPerPage, callback) {
-                $http({ method: 'GET', url: '/api/rooms', params: { currentPage: currentPage, numPerPage: numPerPage } }).success(function (data) {
+            function (fetchAll, currentPage, numPerPage, callback) {
+                $http({ method: 'GET', url: '/api/rooms', params: { fetchAll: fetchAll, currentPage: currentPage, numPerPage: numPerPage } }).success(function (data) {
                     callback(data.result.currentPage, data.result.pages, data.result.rooms);
                 });
             },
@@ -61,6 +61,33 @@ angular.module('appServices', ['ngCookies']).factory('UserService', function ($r
         updateRoom:
             function (roomId, roomData, callback) {
                 $http.put('/api/rooms/' + roomId, roomData).success(function (data) {
+                    callback(data);
+                });
+            }
+    };
+}).factory('TableService', function ($rootScope, $http) {
+    return {
+        getTables:
+            function (fetchAll, currentPage, numPerPage, roomName, callback) {
+                $http({ method: 'GET', url: '/api/tables', params: { fetchAll: fetchAll, currentPage: currentPage, numPerPage: numPerPage, roomName: roomName } }).success(function (data) {
+                    callback(data.result.currentPage, data.result.pages, data.result.tables);
+                });
+            },
+        getTable:
+            function (tableId, callback) {
+                $http.get('/api/tables/' + tableId).success(function (data) {
+                    callback(data);
+                });
+            },
+        addTable:
+            function (tableData, callback) {
+                $http.post('/api/tables', tableData).success(function (data) {
+                    callback(data);
+                });
+            },
+        updateTable:
+            function (tableId, tableData, callback) {
+                $http.put('/api/tables/' + tableId, tableData).success(function (data) {
                     callback(data);
                 });
             }
