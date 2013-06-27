@@ -2,7 +2,7 @@ var roomDb = require('../../data/room');
 
 module.exports = {
     getRooms: function (req, res) {
-        roomDb.getRooms(req.param('fetchAll'), req.param('currentPage'), req.param('numPerPage'), function (err, reply, info) {
+        roomDb.getRooms(req.param('isPaged'), req.param('currentPage'), req.param('numPerPage'), function (err, reply, info) {
             if (err) {
                 return res.json(200, { success: false, result: null, message: info.message });
             } else {

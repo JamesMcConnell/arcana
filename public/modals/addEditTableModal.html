@@ -1,0 +1,36 @@
+<div class="modal-header">
+    <button type="button" class="close" ng-click="cancel()">&times;</button>
+    <h3 ng-show="newTable">Create New Table</h3>
+    <h3 ng-hide="newTable">Edit Table: {{ tableName }}</h3>
+</div>
+<div class="modal-container">
+    <p class="alert alert-error" ng-show="errorMessage">
+        {{ errorMessage }}
+    </p>
+    <form name="addEditTableForm" class="form-horizontal">
+        <div class="control-group">
+            <label class="control-label" for="tableName">Table Name:</label>
+            <div class="controls">
+                <input type="text" class="input-large" name="tableName" id="tableName" placeholder="Table Name" ng-model="tableName" required />
+                <div class="input-help">
+                    <h4>Table name is required</h4>
+                </div>
+            </div>
+        </div>
+        <div class="control-group">
+            <label class="control-label" for="roomName">Room:</label>
+            <div class="controls">
+                <select name="roomName" id="roomName" ng-model="roomName" required>
+                    <option ng-repeat="room in rooms" value="{{ room.roomName }}">{{ room.roomName }}</option>
+                </select>
+                <div class="input-help">
+                    <h4>Room is required</h4>
+                </div>
+            </div>
+        </div>
+        <div class="form-actions">
+            <button type="button" class="btn btn-secondary" ng-click="save()" ng-disabled="addEditTableForm.$invalid">Save Table</button>
+            <button type="button" class="btn" ng-click="cancel()">Cancel</button>
+        </div>
+    </form>
+</div>

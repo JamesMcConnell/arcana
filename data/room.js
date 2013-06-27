@@ -29,8 +29,8 @@ module.exports = {
             }
         });
     },
-    getRooms: function (fetchAll, currentPage, numPerPage, callback) {
-        if (fetchAll) {
+    getRooms: function (isPaged, currentPage, numPerPage, callback) {
+        if (!isPaged) {
             Room.find().sort('numPlayers').exec(function (err, roomList) {
                 if (err) {
                     return callback(true, null, { message: 'Unable to retrieve rooms' });
