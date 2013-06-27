@@ -15,23 +15,6 @@ Randland (Jordan)
 	Tarabon
 	Tear
 	
-Karanda (Eddings)
-	Algaria
-	Cherek
-	Drasnia
-	Riva
-	Asturia
-	Erat
-	Sendaria
-	Mimbre
-	Wacune
-	Cthol Murgos
-	Gar Og Nadrak
-	Mallorea
-	Nyissa
-	Tolnedra
-	Maragor
-	
 Westeros
 	Winterfell
 	Pyke

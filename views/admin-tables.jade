@@ -6,24 +6,28 @@ block content
             .widget.stacked
                 .widget-header
                     i.icon-tablet
-                    h3 Room Administration
-                .widget-content(ng-controller="RoomAdminController")
+                    h3 Table Administration
+                .widget-content(ng-controller="TableAdminController")
                     p.alert.alert-error(ng-show="errorMessage")
                         {{ errorMessage }}
                     div
                         .clearfix
                             .pull-left
-                                select(ng-model="numPerPage", style="width: 5em;")
-                                    option(value="5") 5
-                                    option(value="10") 10
-                                    option(value="15") 15
-                                    option(value="25") 25
-                                    option(value="50") 50
-                                | &nbsp;per page
-                            .pull-rirhgt
-                                button.btn.btn-primary.pull-left(type="button", ng-click="addRoom()")
+                                | Filter by room: &nbsp;
+                                select(ng-model="selectedRoom")
+                                    option(ng-repeat="room in rooms", value="{{ room.roomName }}") {{ room.roomName }}
+                            | &nbsp;&nbsp;
+                            select(ng-model="numPerPage", style="width: 5em;")
+                                option(value="5") 5
+                                option(value="10") 10
+                                option(value="15") 15
+                                option(value="25") 25
+                                option(value="50") 50
+                            | &nbsp;per page
+                            .pull-right
+                                button.btn.btn-primary.pull-left(type="button", ng-click="addTable()")
                                     i.icon-plus-sign
-                                    | &nbsp; Add Room
+                                    | &nbsp; Add Table
                             .clear
                             .pull-left
                                 .pagination.pagination-right(ng-show="pages > 1")
@@ -32,31 +36,33 @@ block content
                                             a(href="javascript:;", ng-disabled="currentPage == 1", ng-click="getPreviousPage()")
                                                 i.icon-chevron-left
                                         li(ng-repeat="i in [] | range:pages", ng-class="($index + 1 == currentPage) && 'active'")
-                                            a(href="javascript:;", ng-click="getRooms($index + 1)") {{ i + 1 }}
+                                            a(href="javascript:;", ng-click="getTables($index + 1)") {{ i + 1 }}
                                         li(ng-class="(currentPage == pages) && 'disabled'")
                                             a(href="javascript:;", ng-click="getNextPage()")
                                                 i.icon-chevron-right
                             table.table.table-striped.table-bordered
                                 thead
                                     tr
-                                        th Room Name
-                                        th Number of players
+                                        th Table Name
+                                        th Room
+                                        th Current Status
                                         th Operations
                                 tbody
-                                    tr(ng-repeat="room in rooms")
-                                        td(style="vertical-align: middle;") {{ room.roomName }}
-                                        td(style="vertical-align: middle;") {{ room.numPlayers }}
+                                    tr(ng-repeat="table in tables")
+                                        td(style="vertical-align: middle;") {{ table.tableName }}
+                                        td(style="vertical-align: middle;") {{ table.roomName }}
+                                        td(style="vertical-align: middle;") {{ table.status }}
                                         td(style="vertical-align: middle;")
-                                            button.btn(ng-click="$parent.editRoom(room._id)") Edit
+                                            button.btn(ng-click="$parent.editTable(table._id)") Edit
                             .clearfix(ng-show="pages > 1")
                                 .pull-left
                                     .pagination.pagination-right(ng-show="pages > 1")
                                         ul
                                             li(ng-class="(currentPage == 1) && 'disabled'")
-                                                a(href="#", ng-disabled="currentPage == 1", ng-click="getRooms(currentPage - 1)")
+                                                a(href="#", ng-disabled="currentPage == 1", ng-click="getTables(currentPage - 1)")
                                                     i.icon-chevron-left
                                             li(ng-repeat="i in [] | range:pages", ng-class="($index + 1 == currentPage) && 'active'")
-                                                a(href="#", ng-click="getRooms($index + 1)") {{ i + 1 }}
+                                                a(href="#", ng-click="getTables($index + 1)") {{ i + 1 }}
                                             li(ng-class="(currentPage == pages) && 'disabled'")
                                                 a(href="#")
                                                     i.icon-chevron-right

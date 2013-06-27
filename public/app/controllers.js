@@ -144,7 +144,7 @@ app.controller('TableAdminController', function ($scope, $http, $dialog, TableSe
 
     $scope.getTables = function (page) {
         if (page >= 1 && page <= $scope.pages) {
-            TableService.getTables(true, $scope.currentPage, $scope.numPerPage, $scope.selectedRoom, function (currentPage, pages, tables) {
+            TableService.getTables(true, page, $scope.numPerPage, $scope.selectedRoom, function (currentPage, pages, tables) {
                 $scope.currentPage = currentPage;
                 $scope.pages = pages;
                 $scope.tables = tables;
@@ -152,15 +152,65 @@ app.controller('TableAdminController', function ($scope, $http, $dialog, TableSe
         }
     };
 
-    $scope.addTable = function () {
-
+    $scope.getPreviousPage = function () {
+        $scope.getTables(parseInt($scope.currentPage) - 1);
     };
 
-    $scope.editTable = function () {
+    $scope.getNextPage = function () {
+        $scope.getTables(parseInt($scope.currentPage) + 1);
+    };
 
+    $scope.addTable = function () {
+        var dialog = $dialog.dialog({
+            dialogFade: true,
+            resolve: {
+                item: function () {
+                    return {
+                        newTable: true,
+                        table: null
+                    };
+                }
+            }
+        });
+
+        dialog.open('/modals/addEditTableModal.html', 'TableEditModalController').then(function (status) {
+            if (status) {
+                NotificationService.success('Table successfully added!');
+                $scope.getTables($scope.currentPage);
+            }
+        });
+    };
+
+    $scope.editTable = function (tableId) {
+        TableService.getTable(tableId, function (data) {
+            if (data.success) {
+                var dialog = $dialog.dialog({
+                    dialogFade: true,
+                    resolve: {
+                        item: function () {
+                            return {
+                                newTable: false,
+                                table: angular.copy(data.result)
+                            };
+                        }
+                    }
+                });
+                dialog.open('/modals/addEditTableModal.html', 'TableEditModalController').then(function (status) {
+                    if (status) {
+                        NotificationService.success('Table successfully updated!');
+                        $scope.getTables($scope.currentPage);
+                    }
+                });
+            } else {
+                $scope.errorMessage = data.message;
+            }
+        });
     };
 
     $scope.getTables($scope.currentPage);
+    RoomService.getRooms(false, null, null, function (currentPage, pages, rooms) {
+        $scope.rooms = rooms;
+    });
 });
 
 app.controller('RoomAdminController', function ($scope, $http, $dialog, RoomService, NotificationService) {
@@ -182,6 +232,14 @@ app.controller('RoomAdminController', function ($scope, $http, $dialog, RoomServ
                 $scope.rooms = rooms;
             });
         }
+    };
+
+    $scope.getPreviousPage = function () {
+        $scope.getRooms(parseInt($scope.currentPage) - 1);
+    };
+
+    $scope.getNextPage = function () {
+        $scope.getRooms(parseInt($scope.currentPage) + 1);
     };
 
     $scope.addRoom = function () {
@@ -256,6 +314,14 @@ app.controller('UserAdminController', function ($scope, $http, $dialog, UserServ
         }
     };
 
+    $scope.getPreviousPage = function () {
+        $scope.getUsers(parseInt($scope.currentPage) - 1);
+    };
+
+    $scope.getNextPage = function () {
+        $scope.getUsers(parseInt($scope.currentPage) + 1);
+    };
+
     $scope.removeUser = function (id) {
         $http({ method: 'DELETE', url: '/users/' + id }).success(function (data) {
             if (data.status == 'error') {
@@ -315,6 +381,50 @@ app.controller('UserAdminController', function ($scope, $http, $dialog, UserServ
 
     $scope.getUsers($scope.currentPage);
 });
+
+app.controller('TableEditModalController', ['$scope', '$rootScope', 'RoomService', 'TableService', 'dialog', 'item', function ($scope, $rootScope, RoomService, TableService, dialog, item) {
+    $scope.newTable = item.newTable;
+    $scope.tableId = (!item.newTable) ? item.table._id : '';
+    $scope.tableName = (!item.newTable) ? item.table.tableName : '';
+    $scope.roomName = (!item.newTable) ? item.table.roomName : '';
+    $scope.rooms = [];
+
+    RoomService.getRooms(false, null, null, function (currentPage, pages, rooms) {
+        $scope.rooms = rooms;
+    });
+
+    $scope.cancel = function () {
+        dialog.close(false);
+    };
+
+    $scope.save = function () {
+        if ($scope.newTable) {
+            TableService.addTable({
+                tableName: $scope.tableName,
+                roomName: $scope.roomName,
+                status: 'Open'
+            }, function (data) {
+                if (data.success) {
+                    dialog.close(true);
+                } else {
+                    $scope.errorMessage = data.message;
+                }
+            });
+        } else {
+            TableService.updateTable($scope.tableId, {
+                tableName: $scope.tableName,
+                roomName: $scope.roomName,
+                status: 'Open'
+            }, function (data) {
+                if (data.success) {
+                    dialog.close(true);
+                } else {
+                    $scope.errorMessage = data.message;
+                }
+            });
+        }
+    };
+}]);
 
 app.controller('RoomEditModalController', ['$scope', '$rootScope', 'RoomService', 'dialog', 'item', function ($scope, $rootScope, RoomService, dialog, item) {
     $scope.newRoom = item.newRoom;
