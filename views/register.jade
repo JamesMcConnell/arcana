@@ -1,39 +1,47 @@
 extends layout
 
 block content
-    .main
+    section.section
         .container
-            .widget.stacked
-                .widget-header
-                    .icon-user
-                    h3 Register
-                .widget-content(ng-controller="RegisterController")
-                    p.alert.alert-error(ng-show="errorMessage")
-                        span {{ errorMessage }}
-                    form.form-horizontal(name="registerForm")
-                        .control-group
-                            label.control-label(for="username") Username:
-                            .controls
-                                input.input-large(type="text", name="username", id="username", placeholder="Username", ng-model="username", required)
-                                .input-help
-                                    h4 Username is required
-                        .control-group
-                            label.control-label(for="email") Email Address:
-                            .controls
-                                input.input-large(type="email", name="email", id="email", placeholder="Email Address", ng-model="email", required)
-                                .input-help
-                                    h4 Invalid email address
-                        .control-group
-                            label.control-label(for="password") Password:
-                            .controls
-                                input.input-large(type="password", name="password", id="email", placeholder="Password", ng-model="password", required)
-                                .input-help
-                                    h4 Password is required
-                        .control-group
-                            label.control-label(for="confirmPassword") Confirm Password:
-                            .controls
-                                input.input-large(type="password", name="confirmPassword", id="confirmPassword", placeholder="Confirm Password", ng-model="confirmPassword", confirm-password="password", required)
-                                .input-help
-                                    h4 Passwords must match
-                        .form-actions
-                            button.btn.btn-secondary.btn-large(ng-click="register()", ng-disabled="registerForm.$invalid") Register
+            .signin-form.row-fluid
+                .span5
+                    .box.corner-all
+                        .box-header.grd-green.color-white.corner-top
+                            span Create Account
+                        .box-body.bg-white(ng-controller="RegisterController")
+                            p.alert.alert-error(ng-show="errorMessage")
+                                span {{ errorMessage }}
+                            form(name="registerForm", id="registerForm")
+                                .control-group
+                                    label.control-label(for="username") Username:
+                                    .controls
+                                        input.input-block-level(type="text", name="username", id="username", placeholder="Username", ng-model="username", required)
+                                        .input-help
+                                            h4 Username is required
+                                .control-group
+                                    label.control-label(for="email") Email Address:
+                                    .controls
+                                        input.input-block-level(type="email", name="email", id="email", placeholder="Email Address", ng-model="email", required)
+                                        .input-help
+                                            h4 Invalid email address
+                                .control-group
+                                    label.control-label(for="password") Password:
+                                    .controls
+                                        input.input-block-level(type="password", name="password", id="email", placeholder="Password", ng-model="password", required)
+                                        .input-help
+                                            h4 Password is required
+                                .control-group
+                                    label.control-label(for="confirmPassword") Confirm Password:
+                                    .controls
+                                        input.input-block-level(type="password", name="confirmPassword", id="confirmPassword", placeholder="Confirm Password", ng-model="confirmPassword", confirm-password="password", required)
+                                        .input-help
+                                            h4 Passwords must match
+                                .control-group
+                                    p.term-of-use
+                                        | Lorem ipsum dolor sit amet, natoque per at morbi at vestibulum leo, velit non, curabitur ac est.
+                                        a(href="javascript:;") terms of use
+                                        | and
+                                        a(href="javascript:;") privacy policy
+                                        | .
+                                .form-actions
+                                    button.btn.btn-success.btn-block.btn-large(ng-click="register()", ng-disabled="registerForm.$invalid") Register
