@@ -144,7 +144,7 @@ app.controller('TableAdminController', function ($scope, $http, $dialog, TableSe
 
     $scope.getTables = function (page) {
         if (page >= 1 && page <= $scope.pages) {
-            TableService.getTables($scope.currentPage, $scope.numPerPage, $scope.selectedRoom, function (currentPage, pages, tables) {
+            TableService.getTables(true, $scope.currentPage, $scope.numPerPage, $scope.selectedRoom, function (currentPage, pages, tables) {
                 $scope.currentPage = currentPage;
                 $scope.pages = pages;
                 $scope.tables = tables;
@@ -176,7 +176,7 @@ app.controller('RoomAdminController', function ($scope, $http, $dialog, RoomServ
 
     $scope.getRooms = function (page) {
         if (page >= 1 && page <= $scope.pages) {
-            RoomService.getRooms(false, page, $scope.numPerPage, function (currentPage, pages, rooms) {
+            RoomService.getRooms(true, page, $scope.numPerPage, function (currentPage, pages, rooms) {
                 $scope.currentPage = currentPage;
                 $scope.pages = pages;
                 $scope.rooms = rooms;
@@ -248,7 +248,7 @@ app.controller('UserAdminController', function ($scope, $http, $dialog, UserServ
 
     $scope.getUsers = function (page) {
         if (page >= 1 && page <= $scope.pages) {
-            UserService.getUsers(false, $scope.currentPage, $scope.numPerPage, function (currentPage, pages, users) {
+            UserService.getUsers(true, $scope.currentPage, $scope.numPerPage, function (currentPage, pages, users) {
                 $scope.currentPage = currentPage;
                 $scope.pages = pages;
                 $scope.users = users;

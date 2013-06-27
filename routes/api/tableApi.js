@@ -2,7 +2,7 @@ var tableDb = require('../../data/table');
 
 module.exports = {
     getTables: function (req, res) {
-        tableDb.getTables(req.param('fetchAll'), req.param('currentPage'), req.param('numPerPage'), req.param('roomName'), function (err, reply, info) {
+        tableDb.getTables(req.param('isPaged'), req.param('currentPage'), req.param('numPerPage'), req.param('roomName'), function (err, reply, info) {
             if (err) {
                 return res.json(200, { success: false, result: null, message: info.message });
             } else {

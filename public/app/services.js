@@ -28,8 +28,8 @@ angular.module('appServices', ['ngCookies']).factory('UserService', function ($r
                 });
             },
         getUsers:
-            function (fetchAll, currentPage, numPerPage, callback) {
-                $http({ method: 'GET', url: '/api/users', params: { fetchAll: fetchAll, currentPage: currentPage, numPerPage: numPerPage } }).success(function (data) {
+            function (isPaged, currentPage, numPerPage, callback) {
+                $http({ method: 'GET', url: '/api/users', params: { isPaged: isPaged, currentPage: currentPage, numPerPage: numPerPage } }).success(function (data) {
                     callback(data.result.currentPage, data.result.pages, data.result.users);
                 });
             },
@@ -41,8 +41,8 @@ angular.module('appServices', ['ngCookies']).factory('UserService', function ($r
 }).factory('RoomService', function ($rootScope, $http) {
     return {
         getRooms:
-            function (fetchAll, currentPage, numPerPage, callback) {
-                $http({ method: 'GET', url: '/api/rooms', params: { fetchAll: fetchAll, currentPage: currentPage, numPerPage: numPerPage } }).success(function (data) {
+            function (isPaged, currentPage, numPerPage, callback) {
+                $http({ method: 'GET', url: '/api/rooms', params: { isPaged: isPaged, currentPage: currentPage, numPerPage: numPerPage } }).success(function (data) {
                     callback(data.result.currentPage, data.result.pages, data.result.rooms);
                 });
             },
@@ -68,7 +68,7 @@ angular.module('appServices', ['ngCookies']).factory('UserService', function ($r
 }).factory('TableService', function ($rootScope, $http) {
     return {
         getTables:
-            function (fetchAll, currentPage, numPerPage, roomName, callback) {
+            function (isPaged, currentPage, numPerPage, roomName, callback) {
                 $http({ method: 'GET', url: '/api/tables', params: { fetchAll: fetchAll, currentPage: currentPage, numPerPage: numPerPage, roomName: roomName } }).success(function (data) {
                     callback(data.result.currentPage, data.result.pages, data.result.tables);
                 });

@@ -40,8 +40,8 @@ module.exports = {
             callback(false, table, null);
         });
     },
-    getTables: function (fetchAll, currentPage, numPerPage, roomName, callback) {
-        if (fetchAll) {
+    getTables: function (isPaged, currentPage, numPerPage, roomName, callback) {
+        if (!isPaged) {
             var tableQuery = Table.find().sort('tableName');
             if (roomName && roomName.length > 0) {
                 tableQuery.where('roomName').equals(roomName);
@@ -61,12 +61,12 @@ module.exports = {
             var pages = 1;
             var skip = (currentPage - 1) * numPerPage;
 
-            var countQuery = Table.find();
+            var countQuery = Table.find().count();
             if (roomName && roomName.length > 0) {
                 countQuery.where('roomName').equals(roomName);
             }
 
-            countQuery.count().exec(function (err, num) {
+            countQuery.exec(function (err, num) {
                 count = num;
                 if (count > 1) {
                     pages = Math.ceil(count / numPerPage);

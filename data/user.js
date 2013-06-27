@@ -53,8 +53,8 @@ module.exports = {
             }
         });
     },
-    getUsers: function (fetchAll, currentPage, numPerPage, callback) {
-        if (fetchAll) {
+    getUsers: function (isPaged, currentPage, numPerPage, callback) {
+        if (!isPaged) {
             User.find().sort('username').exec(function (err, userList) {
                 if (err) {
                     return callback(true, null, { message: 'Unable to retrieve users' });
@@ -70,8 +70,8 @@ module.exports = {
             var pages = 1;
             var skip = (currentPage - 1) * numPerPage;
 
-            var countQuery = User.find();
-            countQuery.count().exec(function (err, num) {
+            var countQuery = User.find().count();
+            countQuery.exec(function (err, num) {
                 count = num;
                 if (count > 1) {
                     pages = Math.ceil(count / numPerPage);
