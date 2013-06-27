@@ -4,29 +4,9 @@ html(lang="en", ng-app="arcana", ng-controller="MainController")
         include includes/header
     body(ng-cloak="ng-cloak")
         header.header
-            .navbar-helper
-                .row-fluid
-                    .span2
-                        .panel-sitename
-                            h2
-                                a(href="/") Arcana
-                    .span9
-                        .panel-ext
-                            .btn-group.user-group.pull-right
-                                a.dropdown-toggle(data-toggle="dropdown", href="javascript:;")
-                                    img.corner-all(align="middle", src="img/user-thumb.jpg", title="John Doe", alt="John Doe")
-                                ul.dropdown-menu.dropdown-user(role="menu", aria-labelledby="dLabel")
-                                    li
-                                        .media
-                                            a.pull-left(href="javascript:;")
-                                                img.img-circle(src="img/user.jpg", title="profile", alt="profile")
-                                            .media-body.description
-                                                p
-                                                    strong John Doe
-                                                    p.muted johndoe@email.com
-                                    li.dropdown-footer
-                                        div
-                                            a.btn.btn-small.pull-right(href="/logout") Logout
-                                            a.btn.btn-small(href="javascript:;") View Profile
-        block content
+            include includes/navbar
+        section.section
+            .row-fluid
+                include includes/sidebar
+                block content
         include includes/footer

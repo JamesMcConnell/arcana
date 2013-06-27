@@ -1,69 +1,29 @@
-div(ng-controller="NavbarController")
-    .navbar.navbar-inverse.navbar-fixed-top
-        .navbar-inner
-            .container-fluid
-                a.btn.btn-navbar(data-toggle="collapse", data-target=".nav-collapse")
-                    i.icon-cog
-                a.brand(href="/") Arcana
-                .nav-collapse.collapse
-                    ul.nav.pull-right(ng-show="isLoggedIn")
-                        li.dropdown
-                            a.dropdown-toggle(href="#", data-toggle="dropdown")
-                                i.icon-cog
-                                | &nbsp;Settings&nbsp;
-                                b.caret
-                            ul.dropdown-menu
-                                li
-                                    a(href="javascript:;") Account Settings
-                                li.divider
-                                li
-                                    a(href="javascript:;") Help
-                        li.dropdown
-                            a.dropdown-toggle(href="#", data-toggle="dropdown")
-                                i.icon-user
-                                | &nbsp; {{currentUsername}}
-                                b.caret
-                            ul.dropdown-menu
-                                li
-                                    a(href="javascript:;") Profile
-                                li
-                                    a(href="javascript:;") Messages
-                                li.divider
-                                li
-                                    a(href="/logout") Logout
-                    ul.nav.pull-right(ng-show="!isLoggedIn")
+.navbar-helper(ng-controller="NavbarController")
+    .row-fluid
+        .span2
+            .panel-sitename
+                h2
+                    a(href="/") Arcana
+        .span7
+        .span2
+            .panel-ext
+                .btn-group(ng-show="isLoggedIn")
+                    a.btn.btn-inverse.dropdown-toggle(data-toggle="dropdown", href="javascript:;", style="margin-top: 10px;")
+                        {{ currentUsername }} &nbsp;&nbsp;
+                        i.icon-white.icon-cog
+                    ul.dropdown-menu(role="menu", aria-labelledby="dLabel")
                         li
-                            a(href="/login")
-                                i.icon-signin
-                                | &nbsp;Login&nbsp;
+                            a(href="javascript:;") Profile
                         li
-                            a(href="/register")
-                                i.icon-user
-                                | &nbsp;Register&nbsp;
-    .subnavbar
-        .subnavbar-inner
-            .container
-                a.btn-subnavbar.collapsed(data-toggle="collapse", data-target=".subnav-collapse")
-                    i.icon-reorder
-                .subnav-collapse.collapse
-                    ul.mainnav
-                        li.active
-                            a(href="/")
-                                i.icon-home
-                                span Home
-                        li(ng-show="isLoggedIn")
-                            a(href="/lobby")
-                                i.icon-group
-                                span Lobby
-                        li.dropdown(ng-show="isLoggedIn && isAdmin")
-                            a.dropdown-toggle(href="javascript:;", data-toggle="dropdown")
-                                i.icon-sitemap
-                                span Admin
-                                b.caret
-                            ul.dropdown-menu
-                                li
-                                    a(href="/admin/users") Users
-                                li
-                                    a(href="/admin/rooms") Rooms
-                                li
-                                    a(href="/admin/tables") Tables
+                            a(href="javascript:;") Messages
+                        li.divider
+                        li
+                            a(href="/logout") Logout
+                .btn-group(ng-show="!isLoggedIn")
+                    a.btn.btn-inverse(href="/login", style="margin-top: 10px;")
+                        i.icon-signin
+                        | &nbsp;Login&nbsp;
+                .btn-group(ng-show="!isLoggedIn")
+                    a.btn.btn-inverse(href="/register", style="margin-top: 10px;")
+                        i.icon-user
+                        | &nbsp;Register&nbsp;
