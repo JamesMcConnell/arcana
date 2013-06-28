@@ -69,6 +69,10 @@ app.controller('ChatController', function ($scope, $rootScope, UserService) {
             };
 
             $scope.chat.emit('message', data);
+            $scope.chatLog.push(data);
+            $scope.safeApply();
+            $scope.cleanChat();
+
             $scope.chatMsg = '';
         }
     };
