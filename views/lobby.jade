@@ -25,9 +25,12 @@ block content
                     .span3(ng-repeat="table in tables", ng-style="clearLeftMargin($index)")
                         .box.corner-all
                             .box-header.grd-white
-                                span {{ table.tableName }}
+                                span {{ table.tableName }}&nbsp; - &nbsp;
+                                span.muted(style="font-size: 11px;") {{ table.status }}
                             .box-body
-                                button.btn.btn-small.btn-warning(ng-click="takeSeat(i)", ng-repeat="i in [] | range:currentRoom.numPlayers") Take Seat
+                                div(ng-repeat="i in [] | range:currentRoom.numPlayers")
+                                    button.btn.btn-small.btn-warning(ng-click="takeSeat(i, table._id, table.tableName)", ng-show="!playerInSeat(i, table.tableName)") Take Seat
+                                    button.btn.btn-small.btn-error(ng-click="leaveSeat(i, table._id, table.tableName)", ng-show="playerInSeat(i, table.tableName)", ng-disabled="table.players[order].username != currentUser.username") {{ getSeatText(i, table.tableName) }}
                         div(ng-class="($index + 1 % 4 == 0 && 'clear')")
 
     .span2(ng-controller="ChatController")

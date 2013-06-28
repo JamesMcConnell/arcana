@@ -1,6 +1,6 @@
 module.exports = function (app, io) {
     var chat = io
-        .of('/lobby')
+        .of('/chat')
         .on('connection', function (socket) {
             socket.on('message', function (data) {
                 socket.emit('updateChat', data);
@@ -58,6 +58,14 @@ module.exports = function (app, io) {
                     body: socket.username + ' has left the room.',
                     timestamp: new Date().getTime()
                 });
+            });
+        });
+
+    var lobby = io
+        .of('/lobby')
+        .on('connection', function (socket) {
+            socket.on('playerChangedSeat', function (data) {
+                socket.broadcast.emit('updateTable', data);
             });
         });
 };

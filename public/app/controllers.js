@@ -52,7 +52,7 @@ app.controller('SidebarController', function ($scope, $rootScope, UserService) {
 });
 
 app.controller('ChatController', function ($scope, $rootScope, UserService) {
-    $scope.chat = io.connect('/lobby');
+    $scope.chat = io.connect('/chat');
     $scope.chatMsg = '';
     $scope.chatLog = [];
     $scope.maxChatLogSize = 2000;
@@ -114,7 +114,7 @@ app.controller('ChatController', function ($scope, $rootScope, UserService) {
 
 app.controller('LobbyController', function ($scope, $rootScope, UserService, RoomService, TableService) {
     $scope.currentUser = {};
-
+    $scope.chat = io.connect('/lobby');
     $scope.rooms = [];
     $scope.tables = [];
     $scope.currentRoom = {};
@@ -164,8 +164,99 @@ app.controller('LobbyController', function ($scope, $rootScope, UserService, Roo
         });
     };
 
-    $scope.takeSeat = function (order) {
-        console.log(order);
+    $scope.takeSeat = function (order, tableId, tableName) {
+        var table = _.find($scope.tables, function (table) {
+            return table.tableName == tableName;
+        });
+
+        table.players.push({
+            username: $scope.currentUser.username,
+            userId: $scope.currentUser.uid,
+            order: order
+        });
+
+        TableService.updateTable(tableId, table, function (data) {});
+        $scope.chat.emit('playerChangedSeat', {
+            action: 'tookSeat',
+            tableName: tableName,
+            username: $scope.currentUser.username,
+            userId: $scope.currentUser.uid,
+            order: order
+        });
+    };
+
+    $scope.chat.on('updateTable', function (data) {
+        var table = _.find($scope.tables, function (table) {
+            return table.tableName == data.tableName;
+        });
+
+        if (data.action == 'tookSeat') {
+            table.players.push({
+                username: data.username,
+                userId: data.userId,
+                order: data.order
+            });
+        } else {
+            table.players = _.reject($scope.players, function (player) {
+                return player.username == data.username;
+            });
+
+            if (table.players.length) {
+                for (var i = 0; i < table.players.length; i++) {
+                    table.players[i].order = i;
+                }
+            }
+        }
+    });
+
+    $scope.leaveSeat = function (order, tableId, tableName) {
+        var table = _.find($scope.tables, function (table) {
+            return table.tableName == tableName;
+        });
+
+        table.players = _.reject($scope.players, function (player) {
+            return player.username == $scope.currentUser.username;
+        });
+
+        if (table.players.length) {
+            // re-order positions
+            for (var i = 0; i < table.players.length; i++) {
+                table.players[i].order = i;
+                TableService.updateTable(table._id, table, function (data) {});
+            }
+        }
+
+        $scope.chat.emit('playerChangedSeat', {
+            action: 'leftSeat',
+            tableName: tableName,
+            username: $scope.currentUser.username,
+            userId: $scope.currentUser.uid,
+            order: order
+        });
+    };
+
+    $scope.playerInSeat = function (order, tableName) {
+        var table = _.find($scope.tables, function (table) {
+            return table.tableName == tableName;
+        });
+
+        if (!table.players.length) {
+            return false;
+        }
+
+        return (table.players[order]);
+    };
+
+    $scope.getSeatText = function (order, tableName) {
+        var table = _.find($scope.tables, function (table) {
+            return table.tableName == tableName;
+        });
+
+        if (table.players.length && table.players.length >= order) {
+            return (table.players[order].username == $scope.currentUser.username) ? 'Leave Seat' : table.players[order].username;
+        }
+
+        return 'Take Seat';
     }
 });
 
