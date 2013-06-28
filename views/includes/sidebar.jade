@@ -1,4 +1,4 @@
-.span1
+.span1(ng-controller="SidebarController")
     aside.side-left.fixed(style="top: 60px;")
         ul.sidebar
             li.first
@@ -6,12 +6,12 @@
                     .helper-font-24
                         i.icofont-dashboard
                     span.sidebar-text Home
-            li
+            li(ng-show="isLoggedIn")
                 a(href="/lobby", title="Lobby")
                     .helper-font-24
                         i.icofont-table
                     span.sidebar-text Lobby
-            li
+            li(ng-show="isLoggedIn && isAdmin")
                 a(href="javascript:;", title="Admin")
                     .helper-font-24
                         i.icofont-edit

@@ -36,45 +36,28 @@ app.controller('NavbarController', function ($scope, $rootScope, UserService) {
     });
 });
 
-app.controller('LobbyController', function ($scope, $rootScope, UserService, RoomService) {
-    //noinspection JSUnresolvedVariable
+app.controller('SidebarController', function ($scope, $rootScope, UserService) {
+    $scope.currentUsername = '';
+    $scope.isLoggedIn = false;
+    $scope.isAdmin = false;
+
+    $rootScope.$on('currentUser', function () {
+        var user = UserService.currentUser();
+        if (user._id) {
+            $scope.currentName = user.username;
+            $scope.isLoggedIn = true;
+            $scope.isAdmin = user.isAdmin;
+        }
+    });
+});
+
+app.controller('ChatController', function ($scope, $rootScope, UserService) {
     $scope.chat = io.connect('/lobby');
     $scope.chatMsg = '';
     $scope.chatLog = [];
     $scope.maxChatLogSize = 2000;
     $scope.currentUser = {};
-
-    $scope.rooms = [];
     $scope.currentRoom = '';
-
-    RoomService.getRooms(false, null, null, function (currentPage, pages, rooms) {
-        $scope.rooms = rooms;
-        $scope.currentRoom = $scope.rooms[0].roomName;
-    });
-
-    $rootScope.$on('currentUser', function () {
-        var user = UserService.currentUser();
-        if (user._id) {
-            $scope.currentUser.uid = user._id;
-            $scope.currentUser.username = user.username;
-            $scope.currentUser.isAdmin = user.isAdmin;
-
-            var chatMsg = {
-                user: $scope.currentUser.username,
-                body: $scope.currentUser.username + ' has entered the lobby',
-                serverGenerated: true,
-                timestamp: new Date().getTime()
-            };
-
-            $scope.chat.emit('message', chatMsg);
-        }
-    });
-
-    $scope.chat.on('message', function (data) {
-        $scope.chatLog.push(data);
-        $scope.safeApply();
-        $scope.cleanUp();
-    });
 
     $scope.sendMsg = function () {
         if ($scope.chatMsg.length) {
@@ -90,13 +73,100 @@ app.controller('LobbyController', function ($scope, $rootScope, UserService, Roo
         }
     };
 
-    $scope.cleanUp = function() {
+    $scope.chat.on('updateChat', function (data) {
+        $scope.chatLog.push(data);
+        $scope.safeApply();
+        $scope.cleanChat();
+    });
+
+    $scope.cleanChat = function () {
         if ($scope.chatLog.length > ($scope.maxChatLogSize - 1)) {
             $scope.chatLog.splice(0, ($scope.chatLog.length - ($scope.maxChatLogSize - 1)));
         }
-        var chatBox = $('#chat-message-pane');
-        chatBox.animate({ "scrollTop": chatBox[0].scrollHeight }, "slow");
     };
+
+    $rootScope.$on('currentUser', function () {
+        var user = UserService.currentUser();
+        if (user._id) {
+            $scope.currentUser.uid = user._id;
+            $scope.currentUser.username = user.username;
+            $scope.currentUser.isAdmin = user.isAdmin;
+        }
+    });
+
+    $rootScope.$on('userEnteredRoom', function (scope, payload) {
+        $scope.currentRoom = payload.roomName;
+
+        $scope.chat.emit('userEntered', {
+            roomName: $scope.currentRoom,
+            username: $scope.currentUser.username
+        });
+    });
+
+    $rootScope.$on('userChangedRoom', function (scope, payload) {
+        $scope.currentRoom = payload.roomName;
+        $scope.chat.emit('switchRoom', {
+            roomName: $scope.currentRoom,
+            username: payload.username
+        });
+    });
+});
+
+app.controller('LobbyController', function ($scope, $rootScope, UserService, RoomService, TableService) {
+    $scope.currentUser = {};
+
+    $scope.rooms = [];
+    $scope.tables = [];
+    $scope.currentRoom = {};
+
+    RoomService.getRooms(false, null, null, function (currentPage, pages, rooms) {
+        $scope.rooms = rooms;
+        $scope.currentRoom = angular.copy($scope.rooms[0]);
+        $scope.numPlayers = $scope.currentRoom.numPlayers;
+        $scope.getTables($scope.currentRoom.roomName);
+
+        $rootScope.$broadcast('userEnteredRoom',{
+            roomName: $scope.currentRoom.roomName
+        });
+    });
+
+    $scope.clearLeftMargin = function (index) {
+        if (index % 4 == 0) {
+            return { 'margin-left': '0px' };
+        }
+    };
+
+    $rootScope.$on('currentUser', function () {
+        var user = UserService.currentUser();
+        if (user._id) {
+            $scope.currentUser.uid = user._id;
+            $scope.currentUser.username = user.username;
+            $scope.currentUser.isAdmin = user.isAdmin;
+        }
+    });
+
+    $scope.getTables = function (roomName) {
+        TableService.getTables(false, null, null, roomName, function (currentPage, pages, tables) {
+            $scope.tables = tables;
+        });
+    };
+
+    $scope.changeRoom = function (roomName) {
+        $scope.currentRoom = angular.copy(_.find($scope.rooms, function (room) {
+            return room.roomName == roomName;
+        }));
+
+        $scope.getTables($scope.currentRoom.roomName);
+
+        $rootScope.$broadcast('userChangedRoom', {
+            roomName: $scope.currentRoom.roomName,
+            username: $scope.currentUser.username
+        });
+    };
+
+    $scope.takeSeat = function (order) {
+        console.log(order);
+    }
 });
 
 app.controller('LoginController', function ($scope, $http, $rootScope, $window) {
@@ -139,7 +209,7 @@ app.controller('TableAdminController', function ($scope, $http, $dialog, TableSe
     $scope.numPerPage = 10;
     $scope.tables = [];
     $scope.rooms = [];
-    $scope.selectedRoom = '';
+    $scope.selectedRoom = 'all';
     $scope.errorMessage = '';
 
     $scope.$watch('numPerPage', function () {
@@ -150,9 +220,380 @@ app.controller('TableAdminController', function ($scope, $http, $dialog, TableSe
         $scope.getTables(1);
     });
 
+    /* Populate table data
+    var tables = [{ tableName: "Altara",
+        roomName: "Randland",
+        status: "Open",
+        players: [],
+        _id:  "51cb9f6e627f71c013000002",
+        "__v": 0 },
+        { tableName: "Amadicia",
+            roomName: "Randland",
+            status: "Open",
+            players: [],
+            _id:  "51cba075627f71c013000003",
+            "__v": 0 },
+        { tableName: "Andor",
+            roomName: "Randland",
+            status: "Open",
+            players: [],
+            _id:  "51cba07e627f71c013000004",
+            "__v": 0 },
+        { tableName: "Arad Doman",
+            roomName: "Randland",
+            status: "Open",
+            players: [],
+            _id:  "51cba087627f71c013000005",
+            "__v": 0 },
+        { tableName: "Arafel",
+            roomName: "Randland",
+            players: [],
+            status: "Open",
+            _id:  "51cba08f627f71c013000006",
+            "__v": 0 },
+        { tableName: "Kandor",
+            roomName: "Randland",
+            status: "Open",
+            players: [],
+            _id:  "51cba096627f71c013000007",
+            "__v": 0 },
+        { tableName: "Malkier",
+            roomName: "Randland",
+            status: "Open",
+            players: [],
+            _id:  "51cba09f627f71c013000008",
+            "__v": 0 },
+        { tableName: "Saldaea",
+            roomName: "Randland",
+            status: "Open",
+            players: [],
+            _id:  "51cba0aa627f71c013000009",
+            "__v": 0 },
+        { tableName: "Shienar",
+            roomName: "Randland",
+            status: "Open",
+            players: [],
+            _id:  "51cba0b7627f71c01300000a",
+            "__v": 0 },
+        { tableName: "Cairhien",
+            roomName: "Randland",
+            status: "Open",
+            players: [],
+            _id:  "51cba0c0627f71c01300000b",
+            "__v": 0 },
+        { tableName: "Ghealdan",
+            roomName: "Randland",
+            status: "Open",
+            players: [],
+            _id:  "51cba0cc627f71c01300000c",
+            "__v": 0 },
+        { tableName: "Illian",
+            roomName: "Randland",
+            status: "Open",
+            players: [],
+            _id:  "51cba0ec627f71c01300000d",
+            "__v": 0 },
+        { tableName: "Murandy",
+            roomName: "Randland",
+            status: "Open",
+            players: [],
+            _id:  "51cba0f4627f71c01300000e",
+            "__v": 0 },
+        { tableName: "Tarabon",
+            roomName: "Randland",
+            status: "Open",
+            players: [],
+            _id:  "51cba0fc627f71c01300000f",
+            "__v": 0 },
+        { tableName: "Tear",
+            roomName: "Randland",
+            status: "Open",
+            players: [],
+            _id:  "51cba104627f71c013000010",
+            "__v": 0 },
+        { tableName: "Winterfell",
+            roomName: "Westeros",
+            status: "Open",
+            players: [],
+            _id:  "51cba6fb627f71c013000011",
+            "__v": 0 },
+        { tableName: "Pyke",
+            roomName: "Westeros",
+            status: "Open",
+            players: [],
+            _id:  "51cba702627f71c013000012",
+            "__v": 0 },
+        { tableName: "Harrenhal",
+            roomName: "Westeros",
+            status: "Open",
+            players: [],
+            _id:  "51cba70b627f71c013000013",
+            "__v": 0 },
+        { tableName: "Riverrun",
+            roomName: "Westeros",
+            status: "Open",
+            players: [],
+            _id:  "51cba712627f71c013000014",
+            "__v": 0 },
+        { tableName: "The Twins",
+            roomName: "Westeros",
+            status: "Open",
+            players: [],
+            _id:  "51cba719627f71c013000015",
+            "__v": 0 },
+        { tableName: "Casterly Rock",
+            roomName: "Westeros",
+            status: "Open",
+            players: [],
+            _id:  "51cba724627f71c013000016",
+            "__v": 0 },
+        { tableName: "Lannisport",
+            roomName: "Westeros",
+            status: "Open",
+            players: [],
+            _id:  "51cba72e627f71c013000017",
+            "__v": 0 },
+        { tableName: "Oldtown",
+            roomName: "Westeros",
+            status: "Open",
+            players: [],
+            _id:  "51cba736627f71c013000018",
+            "__v": 0 },
+        { tableName: "Storm's End",
+            roomName: "Westeros",
+            status: "Open",
+            players: [],
+            _id:  "51cba73e627f71c013000019",
+            "__v": 0 },
+        { tableName: "Dragonstone",
+            roomName: "Westeros",
+            status: "Open",
+            players: [],
+            _id:  "51cba74a627f71c01300001a",
+            "__v": 0 },
+        { tableName: "King's Landing",
+            roomName: "Westeros",
+            status: "Open",
+            players: [],
+            _id:  "51cba757627f71c01300001b",
+            "__v": 0 },
+        { tableName: "The Wall",
+            roomName: "Westeros",
+            status: "Open",
+            players: [],
+            _id:  "51cba760627f71c01300001c",
+            "__v": 0 },
+        { tableName: "The Eyrie",
+            roomName: "Westeros",
+            status: "Open",
+            players: [],
+            _id:  "51cba767627f71c01300001d",
+            "__v": 0 },
+        { tableName: "Dorne",
+            roomName: "Westeros",
+            status: "Open",
+            players: [],
+            _id:  "51cba770627f71c01300001e",
+            "__v": 0 },
+        { tableName: "Braavos",
+            roomName: "Westeros",
+            status: "Open",
+            players: [],
+            _id:  "51cba778627f71c01300001f",
+            "__v": 0 },
+        { tableName: "Twilight Lands",
+            roomName: "Shadowmarch",
+            status: "Open",
+            players: [],
+            _id:  "51cba783627f71c013000020",
+            "__v": 0 },
+        { tableName: "Vuttish",
+            roomName: "Shadowmarch",
+            status: "Open",
+            players: [],
+            _id:  "51cba78a627f71c013000021",
+            "__v": 0 },
+        { tableName: "Connord",
+            roomName: "Shadowmarch",
+            status: "Open",
+            players: [],
+            _id:  "51cba791627f71c013000022",
+            "__v": 0 },
+        { tableName: "Southmarch",
+            roomName: "Shadowmarch",
+            status: "Open",
+            players: [],
+            _id:  "51cba79b627f71c013000023",
+            "__v": 0 },
+        { tableName: "Brenland",
+            roomName: "Shadowmarch",
+            status: "Open",
+            players: [],
+            _id:  "51cba7a1627f71c013000024",
+            "__v": 0 },
+        { tableName: "Settland",
+            roomName: "Shadowmarch",
+            status: "Open",
+            players: [],
+            _id:  "51cba7aa627f71c013000025",
+            "__v": 0 },
+        { tableName: "Perikal",
+            roomName: "Shadowmarch",
+            status: "Open",
+            players: [],
+            _id:  "51cba7c4627f71c013000026",
+            "__v": 0 },
+        { tableName: "Syan",
+            roomName: "Shadowmarch",
+            status: "Open",
+            players: [],
+            _id:  "51cba7cc627f71c013000027",
+            "__v": 0 },
+        { tableName: "Fael",
+            roomName: "Shadowmarch",
+            status: "Open",
+            players: [],
+            _id:  "51cba7d4627f71c013000028",
+            "__v": 0 },
+        { tableName: "Krace",
+            roomName: "Shadowmarch",
+            status: "Open",
+            players: [],
+            _id:  "51cba7dc627f71c013000029",
+            "__v": 0 },
+        { tableName: "Ulos",
+            roomName: "Shadowmarch",
+            status: "Open",
+            players: [],
+            _id:  "51cba7e3627f71c01300002a",
+            "__v": 0 },
+        { tableName: "Akaris",
+            roomName: "Shadowmarch",
+            status: "Open",
+            players: [],
+            _id:  "51cba7ef627f71c01300002b",
+            "__v": 0 },
+        { tableName: "Hierosol",
+            roomName: "Shadowmarch",
+            status: "Open",
+            players: [],
+            _id:  "51cba7f7627f71c01300002c",
+            "__v": 0 },
+        { tableName: "Devonis",
+            roomName: "Shadowmarch",
+            status: "Open",
+            players: [],
+            _id:  "51cba800627f71c01300002d",
+            "__v": 0 },
+        { tableName: "Xand",
+            roomName: "Shadowmarch",
+            status: "Open",
+            players: [],
+            _id:  "51cba806627f71c01300002e",
+            "__v": 0 },
+        { tableName: "Arnor",
+            roomName: "Middle-Earth",
+            status: "Open",
+            players: [],
+            _id:  "51cba816627f71c01300002f",
+            "__v": 0 },
+        { tableName: "Bree-land",
+            roomName: "Middle-Earth",
+            status: "Open",
+            players: [],
+            _id:  "51cba820627f71c013000030",
+            "__v": 0 },
+        { tableName: "Erebor",
+            roomName: "Middle-Earth",
+            status: "Open",
+            players: [],
+            _id:  "51cba826627f71c013000031",
+            "__v": 0 },
+        { tableName: "Esgaroth",
+            roomName: "Middle-Earth",
+            status: "Open",
+            players: [],
+            _id:  "51cba82d627f71c013000032",
+            "__v": 0 },
+        { tableName: "Fangorn",
+            roomName: "Middle-Earth",
+            status: "Open",
+            players: [],
+            _id:  "51cba836627f71c013000033",
+            "__v": 0 },
+        { tableName: "Gondor",
+            roomName: "Middle-Earth",
+            status: "Open",
+            players: [],
+            _id:  "51cba842627f71c013000034",
+            "__v": 0 },
+        { tableName: "Helm's Deep",
+            roomName: "Middle-Earth",
+            status: "Open",
+            players: [],
+            _id:  "51cba849627f71c013000035",
+            "__v": 0 },
+        { tableName: "Isengard",
+            roomName: "Middle-Earth",
+            status: "Open",
+            players: [],
+            _id:  "51cba852627f71c013000036",
+            "__v": 0 },
+        { tableName: "Khazad-dum",
+            roomName: "Middle-Earth",
+            status: "Open",
+            players: [],
+            _id:  "51cba85a627f71c013000037",
+            "__v": 0 },
+        { tableName: "Lothlorien",
+            roomName: "Middle-Earth",
+            status: "Open",
+            players: [],
+            _id:  "51cba861627f71c013000038",
+            "__v": 0 },
+        { tableName: "Mordor",
+            roomName: "Middle-Earth",
+            status: "Open",
+            players: [],
+            _id:  "51cba86b627f71c013000039",
+            "__v": 0 },
+        { tableName: "Mirkwood",
+            roomName: "Middle-Earth",
+            status: "Open",
+            players: [],
+            _id:  "51cba872627f71c01300003a",
+            "__v": 0 },
+        { tableName: "Rivendell",
+            roomName: "Middle-Earth",
+            status: "Open",
+            players: [],
+            _id:  "51cba879627f71c01300003b",
+            "__v": 0 },
+        { tableName: "Rohan",
+            roomName: "Middle-Earth",
+            status: "Open",
+            players: [],
+            _id:  "51cba87f627f71c01300003c",
+            "__v": 0 },
+        { tableName: "The Shire",
+            roomName: "Middle-Earth",
+            status: "Open",
+            players: [],
+            _id:  "51cba887627f71c01300003d",
+            "__v": 0 } ];
+
+    $scope.populateTables = function () {
+        angular.forEach(tables, function (table) {
+            TableService.addTable(table, function (data) {});
+        });
+        $scope.getTables($scope.currentPage);
+    };
+    */
+
     $scope.getTables = function (page) {
         if (page >= 1 && page <= $scope.pages) {
-            TableService.getTables(true, page, $scope.numPerPage, $scope.selectedRoom, function (currentPage, pages, tables) {
+            var room = ($scope.selectedRoom == 'all') ? '' : $scope.selectedRoom;
+            TableService.getTables(true, page, $scope.numPerPage, room, function (currentPage, pages, tables) {
                 $scope.currentPage = currentPage;
                 $scope.pages = pages;
                 $scope.tables = tables;
@@ -231,6 +672,37 @@ app.controller('RoomAdminController', function ($scope, $http, $dialog, RoomServ
     $scope.$watch('numPerPage', function () {
         $scope.getRooms(1);
     });
+
+    /* Populate room data
+    var rooms = [{
+        roomName: "Randland",
+        numPlayers: 2,
+        _id: "51cb972609ed917c01000002",
+        __v: 0
+    },{
+        roomName: "Westeros",
+        numPlayers: 3,
+        _id: "51cb972f09ed917c01000003",
+        __v: 0
+    },{
+        roomName: "Shadowmarch",
+        numPlayers: 4,
+        _id: "51cb973a09ed917c01000004",
+        __v: 0
+    },{
+        roomName: "Middle-Earth",
+        numPlayers: 6,
+        _id: "51cb974409ed917c01000005",
+        __v: 0
+    }];
+
+    $scope.populateRooms = function () {
+        angular.forEach(rooms, function (room) {
+            RoomService.addRoom(room, function (data) {});
+        });
+        $scope.getRooms($scope.currentPage);
+    };
+    */
 
     $scope.getRooms = function (page) {
         if (page >= 1 && page <= $scope.pages) {

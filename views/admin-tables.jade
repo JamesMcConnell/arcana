@@ -34,6 +34,7 @@ block content
                                                 button.btn.btn-primary.pull-left(type="button", ng-click="addTable()")
                                                     i.icofont-plus-sign
                                                     | &nbsp; Add Table
+                                                button.btn.btn-primary.pull-left(type="button", ng-click="populateTables()", ng-show="false") Populate Tables
                                             label(style="margin-left: 10px;")
                                                 select(ng-model="numPerPage", style="width: 5em;")
                                                     option(value="5") 5
@@ -47,6 +48,7 @@ block content
                                             label
                                                 | Filter by room: &nbsp;
                                                 select(ng-model="selectedRoom")
+                                                    option(value="all") All
                                                     option(ng-repeat="room in rooms", value="{{ room.roomName }}") {{ room.roomName }}
                                 table.table.table-striped.table-bordered
                                     thead

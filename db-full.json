@@ -2,20 +2,6 @@
 "BackupType" : "DBBackup",
 "Date" : "26-6-2013",
 "arcana": [{
-"users": [
-{ "username": "interneth3ro", 
-"email": "james.mcconnell@ilmservice.com", 
-"password": "$2a$10$90hlKXUQXsrBrmPULDnfpeGqsy5uSVRdBjnaoC4lOmI0sNp7vWDga", 
-"isAdmin": true, 
-"_id": { "$oid" : "5199811a0122d89015000001" }, 
-"__v": 0 }, 
-{ "__v": 0, 
-"_id": { "$oid" : "51be2a813c79b11011000001" }, 
-"email": "test@arcana.com", 
-"isAdmin": false, 
-"password": "$2a$10$Enmv7mDhXZqh7tFaO4xpEO1g3TVEWJsqSV8S0kUMOvov9AcV4jSqC", 
-"username": "test" } ]},
-{
 "rooms": [
 { "roomName": "Randland", 
 "numPlayers": 2, 

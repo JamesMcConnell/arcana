@@ -6,7 +6,8 @@ var TableSchema = new Schema({
     roomName: { type: String, required: true },
     players: [{
         username: { type: String },
-        userId: { type: String }
+        userId: { type: String },
+        order: { type: Number }
     }],
     status: { type: String, enum: ['Open', 'In Progress', 'Closed']}
 });
