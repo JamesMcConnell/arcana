@@ -36,13 +36,21 @@ app.controller('NavbarController', function ($scope, $rootScope, UserService) {
     });
 });
 
-app.controller('LobbyController', function ($scope, $rootScope, UserService) {
+app.controller('LobbyController', function ($scope, $rootScope, UserService, RoomService) {
     //noinspection JSUnresolvedVariable
     $scope.chat = io.connect('/lobby');
     $scope.chatMsg = '';
     $scope.chatLog = [];
     $scope.maxChatLogSize = 2000;
     $scope.currentUser = {};
+
+    $scope.rooms = [];
+    $scope.currentRoom = '';
+
+    RoomService.getRooms(false, null, null, function (currentPage, pages, rooms) {
+        $scope.rooms = rooms;
+        $scope.currentRoom = $scope.rooms[0].roomName;
+    });
 
     $rootScope.$on('currentUser', function () {
         var user = UserService.currentUser();
@@ -71,7 +79,7 @@ app.controller('LobbyController', function ($scope, $rootScope, UserService) {
     $scope.sendMsg = function () {
         if ($scope.chatMsg.length) {
             var data = {
-                user: $scope.me.username + '.',
+                user: $scope.currentUser.username,
                 body: $scope.chatMsg,
                 serverGenerated: false,
                 timestamp: new Date().getTime()

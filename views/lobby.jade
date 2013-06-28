@@ -1,12 +1,44 @@
 extends layout
 
 block content
-    .main
-        .container-fluid
-            .widget.stacked
-                .widget-header
-                    i.icon-th-large
-                    h3 Lobby
-                .widget-content(ng-controller="LobbyController")
-                    ul
-                        li(ng-repeat="msg in chatLog") {{ msg.body }} at {{ msg.timestamp | chatTime }}
+    div(ng-controller="LobbyController")
+        .span9
+            .content
+                .content-breadcrumb
+                    ul.breadcrumb-nav.pull-right
+                        li.btn-group(ng-repeat="room in rooms")
+                            a.btn.btn-small.btn-link(href="javascript:;", ng-click="changeRoom(room._id)")
+                                i.icofont-tasks
+                                | &nbsp;{{ room.roomName }}
+                    ul.breadcrumb
+                        li
+                            a(href="/")
+                                i.icofont-home
+                                | &nbsp; Home
+                            span.divider &rsaquo;
+                        li
+                            a(href="/lobby") Lobby
+                            span.divider &rsaquo;
+                        li.active
+                            | Current room: {{ currentRoom }}
+                .content-body
+        .span2
+            aside.side-right
+                .sidebar-right
+                    .sidebar-right-content
+                        .side-chat
+                            .chat-header
+                                h5
+                                    i.icofont-certificate.color-green
+                                    | &nbsp; {{ currentUser.username }}
+                            .chat-content
+                                .chat-in(ng-repeat="msg in chatLog")
+                                    span.chat-time {{ msg.timestamp | chatTime }}
+                                    strong.chat-user {{ msg.user }}:
+                                    .chat-text {{ msg.body }}
+                            .chat-input
+                                .chat-desc.muted Enter your message:
+                                textarea.input-block-level(placeholder="Message", ng-model="chatMsg")
+                                button.btn.btn-small.btn-block(ng-click="sendMsg()") Submit
+                            .divider-content
+                                span

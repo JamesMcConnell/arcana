@@ -30,3 +30,12 @@ app.directive("confirmPassword", function () {
         }
     }
 });
+
+app.directive('prependDivider', function () {
+    return {
+        restrict: 'A',
+        link: function (scope, elem) {
+            elem.prepend('<li class="divider"></li>');
+        }
+    }
+});
