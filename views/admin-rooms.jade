@@ -1,62 +1,74 @@
 extends layout
 
 block content
-    .main
-        .container
-            .widget.stacked
-                .widget-header
-                    i.icon-tablet
-                    h3 Room Administration
-                .widget-content(ng-controller="RoomAdminController")
-                    p.alert.alert-error(ng-show="errorMessage")
-                        {{ errorMessage }}
-                    div
-                        .clearfix
-                            .pull-left
-                                select(ng-model="numPerPage", style="width: 5em;")
-                                    option(value="5") 5
-                                    option(value="10") 10
-                                    option(value="15") 15
-                                    option(value="25") 25
-                                    option(value="50") 50
-                                | &nbsp;per page
-                            .pull-rirhgt
-                                button.btn.btn-primary.pull-left(type="button", ng-click="addRoom()")
-                                    i.icon-plus-sign
-                                    | &nbsp; Add Room
-                            .clear
-                            .pull-left
-                                .pagination.pagination-right(ng-show="pages > 1")
-                                    ul
-                                        li(ng-class="(currentPage == 1) && 'disabled'")
-                                            a(href="javascript:;", ng-disabled="currentPage == 1", ng-click="getPreviousPage()")
-                                                i.icon-chevron-left
-                                        li(ng-repeat="i in [] | range:pages", ng-class="($index + 1 == currentPage) && 'active'")
-                                            a(href="javascript:;", ng-click="getRooms($index + 1)") {{ i + 1 }}
-                                        li(ng-class="(currentPage == pages) && 'disabled'")
-                                            a(href="javascript:;", ng-click="getNextPage()")
-                                                i.icon-chevron-right
-                            table.table.table-striped.table-bordered
-                                thead
-                                    tr
-                                        th Room Name
-                                        th Number of players
-                                        th Operations
-                                tbody
-                                    tr(ng-repeat="room in rooms")
-                                        td(style="vertical-align: middle;") {{ room.roomName }}
-                                        td(style="vertical-align: middle;") {{ room.numPlayers }}
-                                        td(style="vertical-align: middle;")
-                                            button.btn(ng-click="$parent.editRoom(room._id)") Edit
-                            .clearfix(ng-show="pages > 1")
-                                .pull-left
-                                    .pagination.pagination-right(ng-show="pages > 1")
-                                        ul
-                                            li(ng-class="(currentPage == 1) && 'disabled'")
-                                                a(href="#", ng-disabled="currentPage == 1", ng-click="getRooms(currentPage - 1)")
-                                                    i.icon-chevron-left
-                                            li(ng-repeat="i in [] | range:pages", ng-class="($index + 1 == currentPage) && 'active'")
-                                                a(href="#", ng-click="getRooms($index + 1)") {{ i + 1 }}
-                                            li(ng-class="(currentPage == pages) && 'disabled'")
-                                                a(href="#")
-                                                    i.icon-chevron-right
+    .span11
+        .content
+            .content-header.admin-custom-header
+                h2
+                    i.icon-th-large
+                    span &nbsp;Room Administration
+            .content-breadcrumb
+                ul.breadcrumb.admin-custom-breadcrumb
+                    li
+                        a(href="/")
+                            i.icofont-home
+                            | &nbsp;Home
+                        span.divider &rsaquo;
+                    li
+                        a(href="/") Admin Dashboard
+                        span.divider &rsaquo;
+                    li.active Room Administration
+            .content-body.admin-custom-content-body
+                .row-fluid
+                    .span12
+                        .box.corner-all
+                            .box-header.grd-white.corner-top
+                                span Rooms
+                            .box-body(ng-controller="RoomAdminController")
+                                p.alert.alert-error(ng-show="errorMessage")
+                                    {{ errorMessage }}
+                                .row-fluid
+                                    .span6
+                                        .dataTables_length
+                                            .pull-left
+                                                button.btn.btn-primary.pull-left(type="button", ng-click="addRoom()")
+                                                    i.icofont-plus-sign
+                                                    | &nbsp; Add Room
+                                            label(style="margin-left: 10px;")
+                                                select(ng-model="numPerPage", style="width: 5em;")
+                                                    option(value="5") 5
+                                                    option(value="10") 10
+                                                    option(value="15") 15
+                                                    option(value="25") 25
+                                                    option(value="50") 50
+                                                | &nbsp;per page
+                                    .span6
+                                        .dataTables_filter
+                                            label
+                                                | Search: &nbsp;
+                                                input(type="text", id="search", name="search", ng-model="search")
+                                table.table.table-striped.table-bordered
+                                    thead
+                                        tr
+                                            th Room Name
+                                            th Number of players
+                                            th Operations
+                                    tbody
+                                        tr(ng-repeat="room in rooms")
+                                            td(style="vertical-align: middle;") {{ room.roomName }}
+                                            td(style="vertical-align: middle;") {{ room.numPlayers }}
+                                            td(style="vertical-align: middle;")
+                                                button.btn(ng-click="$parent.editRoom(room._id)") Edit
+                                .row-fluid
+                                    .span6
+                                        .dataTables_info
+                                            | Showing 1 to 10 of 46 entries
+                                    .span6
+                                        .dataTables_paginate.paging_bootstrap.pagination
+                                            ul
+                                                li.prev(ng-class="(currentPage == 1) && 'disabled'")
+                                                    a(href="javascript:;", ng-disabled="currentPage == 1", ng-click="getPreviousPage()") &larr; Previous
+                                                li(ng-repeat="i in [] | range:pages", ng-class="($index + 1 == currentPage) && 'active'")
+                                                    a(href="javascript:;", ng-click="getUsers($index + 1)") {{ i + 1 }}
+                                                li.next(ng-class="(currentPage == pages) && 'disabled'")
+                                                    a(href="javascript:;", ng-click="getNextPage()") Next &nbsp;&rarr;

@@ -154,3 +154,15 @@ input {
     margin-left: 5px;
 }
 */
+
+.admin-custom-header {
+    padding: 10px 20px 10px 30px !important;
+}
+
+.admin-custom-breadcrumb {
+    padding: 8px 30px !important;
+}
+
+.admin-custom-content-body {
+    padding: 10px 20px 40px 30px !important;
+}

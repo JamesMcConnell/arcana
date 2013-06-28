@@ -1,7 +1,7 @@
 .span1
     aside.side-left.fixed(style="top: 60px;")
         ul.sidebar
-            li.first.active
+            li.first
                 a(href="/", title="Home")
                     .helper-font-24
                         i.icofont-dashboard
@@ -12,20 +12,23 @@
                         i.icofont-table
                     span.sidebar-text Lobby
             li
-                a(href="/admin", title="Admin")
+                a(href="javascript:;", title="Admin")
                     .helper-font-24
                         i.icofont-edit
                     span.sidebar-text Admin
                 ul.sub-sidebar-form.corner-top.shadow-white
                     li
                         a.corner-all(href="/admin/users", title="Users")
-                            i.icon-user &nbsp;
+                            i.icofont-user(style="margin-top: 2px;")
+                            | &nbsp;&nbsp;
                             span.sidebar-text Users
                     li
                         a.corner-all(href="/admin/rooms", title="Rooms")
-                            i.icon-road &nbsp;
+                            i.icofont-th-large(style="margin-top: 2px;")
+                            | &nbsp;&nbsp;
                             span.sidebar-text Rooms
                     li
                         a.corner-all(href="/admin/tables", title="Tables")
-                            i.icon-table &nbsp;
+                            i.icofont-table(style="margin-top: 2px;")
+                            | &nbsp;&nbsp;
                             span.sidebar-text Tables
