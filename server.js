@@ -26,17 +26,16 @@ app.configure(function () {
 });
 
 var DB = require('./config/db-config');
-var db = {};
-var somethingToForceCommit = {};
+db = new DB.startup('mongodb://interneth3ro:jm71cl33@ds031108.mongolab.com:31108/MongoLab-u')
 
 app.configure('development', function () {
     app.use(express.errorHandler({ dumpExceptions: true, showStack: true }));
-    db = new DB.startup('mongodb://localhost/arcana');
+    //db = new DB.startup('mongodb://localhost/arcana');
 });
 
 app.configure('production', function (){
     app.use(express.errorHandler());
-    db = new DB.startup('mongodb://interneth3ro:jm71cl33@ds031108.mongolab.com:31108/MongoLab-u')
+
 });
 
 io.configure(function () {
