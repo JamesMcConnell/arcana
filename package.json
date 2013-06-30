@@ -4,7 +4,7 @@
   "private": true,
   "author": "James McConnell <james.p.mcconnell@gmail.com>",
   "engines": {
-    "node": "0.10.x",
+    "node": ">= 0.8.2",
     "npm": "1.2.x"
   },
   "scripts": {
@@ -14,8 +14,6 @@
     "express": "3.2.5",
     "jade": "*",
     "mongoose": "latest",
-    "connect-mongo": "latest",
-    "connect-flash": "latest",
     "passport": "latest",
     "passport-local": "latest",
     "passport-twitter": "latest",
