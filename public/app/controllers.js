@@ -168,13 +168,13 @@ app.controller('LobbyController', function ($scope, $rootScope, UserService, Roo
         });
     };
 
-    $scope.takeSeat = function (tableId, position) {
+    $scope.takeSeat = function (tableId, seatId) {
         var table = _.find($scope.tables, function (table) {
             return table._id == tableId;
         });
 
         var seat = _.find(table.seats, function (seat) {
-            return seat.position == position;
+            return seat._id == seatId;
         });
 
         seat.username = $scope.currentUser.username;
@@ -184,7 +184,7 @@ app.controller('LobbyController', function ($scope, $rootScope, UserService, Roo
         $scope.chat.emit('playerChangedSeat', {
             action: 'tookSeat',
             tableId: tableId,
-            position: position,
+            seatId: seatId,
             username: $scope.currentUser.username
         });
     };
@@ -195,7 +195,7 @@ app.controller('LobbyController', function ($scope, $rootScope, UserService, Roo
         });
 
         var seat = _.find(table.seats, function (seat) {
-            return seat.position = data.position;
+            return seat._id = data.seatId;
         });
 
         if (data.action == 'tookSeat') {
@@ -207,13 +207,13 @@ app.controller('LobbyController', function ($scope, $rootScope, UserService, Roo
         $scope.safeApply();
     });
 
-    $scope.leaveSeat = function (tableId, position) {
+    $scope.leaveSeat = function (tableId, seatId) {
         var table = _.find($scope.tables, function (table) {
             return table._id == tableId;
         });
 
         var seat = _.find(table.seats, function (seat) {
-            return seat.position == position;
+            return seat._id == seatId;
         });
 
         seat.username = '';
@@ -224,7 +224,7 @@ app.controller('LobbyController', function ($scope, $rootScope, UserService, Roo
         $scope.chat.emit('playerChangedSeat', {
             action: 'leftSeat',
             tableId: tableId,
-            position: position,
+            seatId: seatId,
             username: ''
         });
     };
@@ -281,7 +281,6 @@ app.controller('TableAdminController', function ($scope, $http, $dialog, TableSe
         $scope.getTables(1);
     });
 
-    /* Populate table data
     $scope.populateTables = function () {
         RoomService.getRooms(false, null, null, function (currentPage, pages, rooms) {
             var tableNames = [];
@@ -326,7 +325,6 @@ app.controller('TableAdminController', function ($scope, $http, $dialog, TableSe
 
         $scope.getTables($scope.currentPage);
     };
-    */
 
     $scope.getTables = function (page) {
         if (page >= 1 && page <= $scope.pages) {
@@ -347,13 +345,13 @@ app.controller('TableAdminController', function ($scope, $http, $dialog, TableSe
         $scope.getTables(parseInt($scope.currentPage) + 1);
     };
 
-    $scope.kickPlayer = function (tableId, seatId) {
+    $scope.kickPlayer = function (tableId, position) {
         var table = _.find($scope.tables, function (table) {
             return table._id == tableId;
         });
 
         var seat = _.find(table.seats, function (seat) {
-            return seat._id == seatId;
+            return seat.position == position;
         });
 
         seat.username = '';
