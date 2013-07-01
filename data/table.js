@@ -8,7 +8,7 @@ module.exports = {
         var newTable = new Table({
             tableName: tableInfo.tableName,
             roomName: tableInfo.roomName,
-            players: tableInfo.players,
+            seats: tableInfo.seats,
             status: tableInfo.status
         });
 

@@ -28,9 +28,9 @@ block content
                                 span {{ table.tableName }}&nbsp; - &nbsp;
                                 span.muted(style="font-size: 11px;") {{ table.status }}
                             .box-body
-                                div(ng-repeat="i in [] | range:currentRoom.numPlayers")
-                                    button.btn.btn-small.btn-warning(ng-click="takeSeat(i, table._id, table.tableName)", ng-show="!playerInSeat(i, table.tableName)") Take Seat
-                                    button.btn.btn-small.btn-error(ng-click="leaveSeat(i, table._id, table.tableName)", ng-show="playerInSeat(i, table.tableName)", ng-disabled="table.players[order].username != currentUser.username") {{ getSeatText(i, table.tableName) }}
+                                div(ng-repeat="seat in table.seats")
+                                    button.btn.btn-small.btn-warning(ng-click="takeSeat(table._id, seat.position)", ng-show="!seat.username") Take Seat
+                                    button.btn.btn-small.btn-error(ng-click="leaveSeat(table._id, seat.position)", ng-show="seat.username", ng-disabled="seat.username != currentUser.username") {{ (seat.username != currentUser.username) ? seat.username : 'Leave Seat' }}
                         div(ng-class="($index + 1 % 4 == 0 && 'clear')")
 
     .span2(ng-controller="ChatController")

@@ -4,10 +4,9 @@ var mongoose = require('mongoose'),
 var TableSchema = new Schema({
     tableName: { type: String, required: true, unique: true },
     roomName: { type: String, required: true },
-    players: [{
+    seats: [{
         username: { type: String },
-        userId: { type: String },
-        order: { type: Number }
+        position: { type: Number }
     }],
     status: { type: String, enum: ['Open', 'In Progress', 'Closed']}
 });

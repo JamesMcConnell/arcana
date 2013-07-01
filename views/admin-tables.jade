@@ -56,12 +56,17 @@ block content
                                             th Table Name
                                             th Room
                                             th Current Status
+                                            th Seats
                                             th Operations
                                     tbody
                                         tr(ng-repeat="table in tables")
                                             td(style="vertical-align: middle;") {{ table.tableName }}
                                             td(style="vertical-align: middle;") {{ table.roomName }}
                                             td(style="vertical-align: middle;") {{ table.status }}
+                                            td(style="vertical-align: middle;")
+                                                ul
+                                                    li(ng-repeat="seat in table.seats") Position {{seat.position}} - {{ (seat.username) ? seat.username : 'No Player' }} &nbsp;
+                                                        a(href="javascript:;", ng-show="seat.username", ng-click="kickPlayer(table._id, seat._id)") Kick Player
                                             td(style="vertical-align: middle;")
                                                 button.btn(ng-click="$parent.editTable(table._id)") Edit
                                 .row-fluid

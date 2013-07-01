@@ -23,7 +23,7 @@ module.exports = {
         tableDb.saveTable({
             tableName: req.param('tableName'),
             roomName: req.param('roomName'),
-            players: req.param('players'),
+            seats: req.param('seats'),
             status: req.param('status')
         }, function (err, table, info) {
             if (err) {
@@ -38,7 +38,7 @@ module.exports = {
         var tableObj = {
             tableName: req.body.tableName,
             roomName: req.body.roomName,
-            players: req.body.players,
+            seats: req.body.seats,
             status: req.body.status
         };
         tableDb.updateTable(tableId, tableObj, function (err, message) {
