@@ -1,0 +1,64 @@
+<div class="modal-header">
+    <button type="button" class="close" ng-click="cancel()">&times</button>
+    <h3 ng-show="newCard">Create New Card</h3>
+    <h3 ng-hide="newCard">Edit Card: {{ card.cardName }}</h3>
+</div>
+<div class="modal-container">
+    <p class="alert alert-error" ng-show="errorMessage">
+        {{ errorMessage }}
+    </p>
+    <form name="addEditCardForm" class="form-horizontal" style="margin-top: 20px;">
+        <div class="control-group">
+            <label class="control-label" for="cardName">Card Name:</label>
+            <div class="controls">
+                <input type="text" class="input-large" name="cardName" id="cardName" placeholder="Card Name" ng-model="card.cardName" required />
+            </div>
+        </div>
+        <div class="control-group">
+            <label class="control-label" for="cardType">Card Type:</label>
+            <div class="controls">
+                <select name="cardType" id="cardType" ng-model="card.cardType" ng-options="type as type for type in cardTypes" required></select>
+            </div>
+        </div>
+        <div class="control-group">
+            <label class="control-label" for="instanceCost">Instance Cost:</label>
+            <div class="controls">
+                <input type="text" class="input-large" name="instanceCost" id="instanceCost" ng-model="card.instanceCost" required />
+            </div>
+        </div>
+        <div class="control-group">
+            <label class="control-label" for="maintenanceCost">Maintenance Cost:</label>
+            <div class="controls">
+                <input type="text" class="input-large" name="maintenanceCost" id="maintenanceCost" ng-model="card.maintenanceCost" required />
+            </div>
+        </div>
+        <div class="control-group">
+            <label class="control-label" for="burnValue">Burn Value:</label>
+            <div class="controls">
+                <input type="text" class="input-large" name="burnValue" id="burnValue" ng-model="card.burnValue" required />
+            </div>
+        </div>
+        <div class="control-group">
+            <label class="control-label" for="genValue">Gen Value:</label>
+            <div class="controls">
+                <input type="text" class="input-large" name="genValue" id="genValue" ng-model="card.genValue" required />
+            </div>
+        </div>
+        <div class="control-group">
+            <label class="control-label" for="health">Health:</label>
+            <div class="controls">
+                <input type="text" class="input-large" name="health" id="health" ng-model="card.health" required />
+            </div>
+        </div>
+        <div class="control-group">
+            <label class="control-label" for="power">Power:</label>
+            <div class="controls">
+                <input type="text" class="input-large" name="power" id="power" ng-model="card.power" required />
+            </div>
+        </div>
+        <div class="form-actions">
+            <button type="button" class="btn btn-secondary" ng-click="save()" ng-disabled="addEditCardForm.$invalid">Save Card</button>
+            <button type="button" class="btn" ng-click="cancel()">Cancel</button>
+        </div>
+    </form>
+</div>

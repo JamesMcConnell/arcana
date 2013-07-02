@@ -7,11 +7,11 @@
     <p class="alert alert-error" ng-show="errorMessage">
         {{ errorMessage }}
     </p>
-    <form name="addEditRoomForm" class="form-horizontal">
+    <form name="addEditRoomForm" class="form-horizontal" style="margin-top: 20px;">
         <div class="control-group">
             <label class="control-label" for="roomName">Room Name:</label>
             <div class="controls">
-                <input type="text" class="input-large" name="roomName" id="roomName" placeholder="Room Name" ng-model="roomName" required />
+                <input type="text" class="input-large" name="roomName" id="roomName" placeholder="Room Name" ng-model="room.roomName" required />
                 <div class="input-help">
                     <h4>Room name is required</h4>
                 </div>
@@ -20,7 +20,7 @@
         <div class="control-group">
             <label class="control-label" for="numPlayers">Number of players:</label>
             <div class="controls">
-                <select name="numPlayers" id="numPlayers" ng-model="numPlayers" required>
+                <select name="numPlayers" id="numPlayers" ng-model="room.numPlayers" required>
                     <option value="2">2</option>
                     <option value="3">3</option>
                     <option value="4">4</option>

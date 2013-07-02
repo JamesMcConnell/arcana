@@ -57,6 +57,11 @@ module.exports = {
             pageTitle: 'Table Administration'
         });
     },
+    adminCards: function (req, res) {
+        res.render('admin-cards.jade', {
+            pageTitle: 'Card Administration'
+        });
+    },
     getLogin: function (req, res) {
         res.render('login.jade', {
             pageTitle: 'Login'

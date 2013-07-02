@@ -92,6 +92,33 @@ angular.module('appServices', ['ngCookies']).factory('UserService', function ($r
                 });
             }
     };
+}).factory('CardService', function ($rootScope, $http) {
+    return {
+        getCards:
+            function (isPaged,currentPage, numPerPage, cardType, callback) {
+                $http({ method: 'GET', url: '/api/cards', param: { isPaged: isPaged, currentPage: currentPage, numPerPage: numPerPage, cardType: cardType } }).success(function (data) {
+                    callback(data.result.currentPage, data.result.pages, data.result.cards);
+                });
+            },
+        getCard:
+            function (cardId, callback) {
+                $http.get('/api/cards/' + cardId).success(function (data) {
+                    callback(data);
+                });
+            },
+        addCard:
+            function (cardData, callback) {
+                $http.post('/api/cards', cardData).success(function (data) {
+                    callback(data);
+                });
+            },
+        updateCard:
+            function (cardId, cardData, callback) {
+                $http.put('/api/cards/' + cardId, cardData).success(function (data) {
+                    callback(data);
+                });
+            }
+    };
 }).factory('NotificationService', function () {
     return {
         success: function (message) {

@@ -51,6 +51,7 @@ module.exports = function (app) {
     app.get('/admin/users', ensureAuthenticatedAndAdmin, main.adminUsers);
     app.get('/admin/rooms', ensureAuthenticatedAndAdmin, main.adminRooms);
     app.get('/admin/tables', ensureAuthenticatedAndAdmin, main.adminTables);
+    app.get('/admin/cards', ensureAuthenticatedAndAdmin, main.adminCards);
 
     app.get('/api/users', ensureAuthenticatedAndAdmin, userApi.getUsers);
     app.get('/api/users/:userId', ensureAuthenticated, userApi.getUser);

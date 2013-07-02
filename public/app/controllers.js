@@ -273,6 +273,152 @@ app.controller('RegisterController', function ($scope, $http, $rootScope, $windo
     };
 });
 
+app.controller('CardAdminController', function ($scope, $http, $dialog, CardService, NotificationService) {
+    $scope.currentPage = 1;
+    $scope.pages = 1;
+    $scope.numPerPage = 10;
+    $scope.cards = [];
+    $scope.cardType = 'all';
+    $scope.cardTypes = ['Battery', 'Creature', 'Buff', 'Debuff', 'Sorcery'];
+    $scope.errorMessage = '';
+
+    $scope.$watch('numPerPage', function () {
+        $scope.getCards(1);
+    });
+
+    $scope.$watch('cardType', function () {
+        $scope.getCards(1);
+    });
+
+    $scope.getCards = function (page) {
+        if (page >= 1 && page <= $scope.pages) {
+            var cardType = ($scope.cardType == 'all') ? '' : $scope.cardType;
+            CardService.getCards(true, page, $scope.numPerPage, cardType, function (currentPage, pages, cards) {
+                $scope.currentPage = currentPage;
+                $scope.pages = pages;
+                $scope.cards = cards;
+            });
+        }
+    };
+
+    $scope.getPreviousPage = function () {
+        $scope.getCards(parseInt($scope.currentPage) - 1);
+    };
+
+    $scope.getNextPage = function () {
+        $scope.getTables(parseInt($scope.currentPage) + 1);
+    };
+
+    $scope.addCard = function () {
+        var dialog = $dialog.dialog({
+            dialogFade: true,
+            resolve: {
+                item: function () {
+                    return {
+                        newCard: true,
+                        card: {
+                            cardName: '',
+                            cardType: '',
+                            instanceCost: 0,
+                            maintenanceCost: 0,
+                            burnValue: 0,
+                            genValue: 0,
+                            health: 0,
+                            power: 0
+                        }
+                    };
+                }
+            }
+        });
+
+        dialog.open('/modals/addEditCardModal.html', 'CardEditModalController').then(function (status) {
+            if (status) {
+                NotificationService.success('Card successfully added!');
+                $scope.getCards($scope.currentPage);
+            }
+        });
+    };
+
+    $scope.editCard = function (cardId) {
+        CardService.getCard(cardId, function (data) {
+            if (data.success) {
+                var dialog = $dialog.dialog({
+                    dialogFade: true,
+                    resolve: {
+                        item: function () {
+                            return {
+                                newCard: false,
+                                card: angular.copy(data.result)
+                            };
+                        }
+                    }
+                });
+
+                dialog.open('/modals/addEditCardModal.html', 'CardEditModalController').then(function (status) {
+                    if (status) {
+                        NotificationService.success('Card successfully updated!');
+                        $scope.getCards($scope.currentPage);
+                    }
+                });
+            } else {
+                $scope.errorMessage = data.message;
+            }
+        });
+    };
+
+    $scope.getCards($scope.currentPage);
+});
+
+app.controller('CardEditModalController', ['$scope', '$rootScope', 'CardService', 'dialog', 'item', function ($scope, $rootScope, CardService, dialog, item) {
+    $scope.newCard = item.newCard;
+    $scope.cardId = (!item.newCard) ? item.card._id : '';
+    $scope.card = item.card;
+    $scope.cardTypes = ['Battery', 'Creature', 'Buff', 'Debuff', 'Sorcery'];
+    $scope.errorMessage = '';
+
+    $scope.cancel = function () {
+        dialog.close(false);
+    };
+
+    $scope.save = function () {
+        if ($scope.newCard) {
+            CardService.addCard({
+                cardName: $scope.card.cardName,
+                cardType: $scope.card.cardType,
+                instanceCost: $scope.card.instanceCost,
+                maintenanceCost: $scope.card.maintenanceCost,
+                burnValue: $scope.card.burnValue,
+                genValue: $scope.card.genValue,
+                health: $scope.card.health,
+                power: $scope.card.power
+            }, function (data) {
+                if (data.success) {
+                    dialog.close(true);
+                } else {
+                    $scope.errorMessage = data.message;
+                }
+            });
+        } else {
+            CardService.updateCard($scope.cardId, {
+                cardName: $scope.card.cardName,
+                cardType: $scope.card.cardType,
+                instanceCost: $scope.card.instanceCost,
+                maintenanceCost: $scope.card.maintenanceCost,
+                burnValue: $scope.card.burnValue,
+                genValue: $scope.card.genValue,
+                health: $scope.card.health,
+                power: $scope.card.power
+            }, function (data) {
+                if (data.success) {
+                    dialog.close(true);
+                } else {
+                    $scope.errorMessage = data.message;
+                }
+            });
+        }
+    };
+}]);
+
 app.controller('TableAdminController', function ($scope, $http, $dialog, TableService, RoomService, NotificationService) {
     $scope.currentPage = 1;
     $scope.pages = 1;
@@ -376,7 +522,10 @@ app.controller('TableAdminController', function ($scope, $http, $dialog, TableSe
                 item: function () {
                     return {
                         newTable: true,
-                        table: null
+                        table: {
+                            tableName: '',
+                            roomName: ''
+                        }
                     };
                 }
             }
@@ -421,6 +570,49 @@ app.controller('TableAdminController', function ($scope, $http, $dialog, TableSe
         $scope.rooms = rooms;
     });
 });
+
+app.controller('TableEditModalController', ['$scope', '$rootScope', 'RoomService', 'TableService', 'dialog', 'item', function ($scope, $rootScope, RoomService, TableService, dialog, item) {
+    $scope.newTable = item.newTable;
+    $scope.tableId = (!item.newTable) ? item.table._id : '';
+    $scope.table = item.table;
+    $scope.rooms = [];
+
+    RoomService.getRooms(false, null, null, function (currentPage, pages, rooms) {
+        $scope.rooms = rooms;
+    });
+
+    $scope.cancel = function () {
+        dialog.close(false);
+    };
+
+    $scope.save = function () {
+        if ($scope.newTable) {
+            TableService.addTable({
+                tableName: $scope.table.tableName,
+                roomName: $scope.table.roomName,
+                status: 'Open'
+            }, function (data) {
+                if (data.success) {
+                    dialog.close(true);
+                } else {
+                    $scope.errorMessage = data.message;
+                }
+            });
+        } else {
+            TableService.updateTable($scope.tableId, {
+                tableName: $scope.table.tableName,
+                roomName: $scope.table.roomName,
+                status: 'Open'
+            }, function (data) {
+                if (data.success) {
+                    dialog.close(true);
+                } else {
+                    $scope.errorMessage = data.message;
+                }
+            });
+        }
+    };
+}]);
 
 app.controller('RoomAdminController', function ($scope, $http, $dialog, RoomService, NotificationService) {
     $scope.currentPage = 1;
@@ -489,7 +681,10 @@ app.controller('RoomAdminController', function ($scope, $http, $dialog, RoomServ
                 item: function () {
                     return {
                         newRoom: true,
-                        room: null
+                        room: {
+                            roomName: '',
+                            numPlayers: 0
+                        }
                     };
                 }
             }
@@ -532,6 +727,42 @@ app.controller('RoomAdminController', function ($scope, $http, $dialog, RoomServ
 
     $scope.getRooms($scope.currentPage);
 });
+
+app.controller('RoomEditModalController', ['$scope', '$rootScope', 'RoomService', 'dialog', 'item', function ($scope, $rootScope, RoomService, dialog, item) {
+    $scope.newRoom = item.newRoom;
+    $scope.roomId = (!item.newRoom) ? item.room._id : '';
+    $scope.room = item.room;
+
+    $scope.cancel = function () {
+        dialog.close(false);
+    };
+
+    $scope.save = function () {
+        if ($scope.newRoom) {
+            RoomService.addRoom({
+                roomName: $scope.room.roomName,
+                numPlayers: $scope.room.numPlayers
+            }, function (data) {
+                if (data.success) {
+                    dialog.close(true);
+                } else {
+                    $scope.errorMessage = data.message;
+                }
+            });
+        } else {
+            RoomService.updateRoom($scope.roomId, {
+                roomName: $scope.room.roomName,
+                numPlayers: $scope.room.numPlayers
+            }, function (data) {
+                if (data.success) {
+                    dialog.close(true);
+                } else {
+                    $scope.errorMessage = data.message;
+                }
+            });
+        }
+    };
+}]);
 
 app.controller('UserAdminController', function ($scope, $http, $dialog, UserService, NotificationService) {
     $scope.currentPage = 1;
@@ -580,7 +811,11 @@ app.controller('UserAdminController', function ($scope, $http, $dialog, UserServ
                 item: function () {
                     return {
                         newUser: true,
-                        user: null
+                        user: {
+                            username: '',
+                            email: '',
+                            isAdmin: false
+                        }
                     };
                 }
             }
@@ -622,93 +857,10 @@ app.controller('UserAdminController', function ($scope, $http, $dialog, UserServ
     $scope.getUsers($scope.currentPage);
 });
 
-app.controller('TableEditModalController', ['$scope', '$rootScope', 'RoomService', 'TableService', 'dialog', 'item', function ($scope, $rootScope, RoomService, TableService, dialog, item) {
-    $scope.newTable = item.newTable;
-    $scope.tableId = (!item.newTable) ? item.table._id : '';
-    $scope.tableName = (!item.newTable) ? item.table.tableName : '';
-    $scope.roomName = (!item.newTable) ? item.table.roomName : '';
-    $scope.rooms = [];
-
-    RoomService.getRooms(false, null, null, function (currentPage, pages, rooms) {
-        $scope.rooms = rooms;
-    });
-
-    $scope.cancel = function () {
-        dialog.close(false);
-    };
-
-    $scope.save = function () {
-        if ($scope.newTable) {
-            TableService.addTable({
-                tableName: $scope.tableName,
-                roomName: $scope.roomName,
-                status: 'Open'
-            }, function (data) {
-                if (data.success) {
-                    dialog.close(true);
-                } else {
-                    $scope.errorMessage = data.message;
-                }
-            });
-        } else {
-            TableService.updateTable($scope.tableId, {
-                tableName: $scope.tableName,
-                roomName: $scope.roomName,
-                status: 'Open'
-            }, function (data) {
-                if (data.success) {
-                    dialog.close(true);
-                } else {
-                    $scope.errorMessage = data.message;
-                }
-            });
-        }
-    };
-}]);
-
-app.controller('RoomEditModalController', ['$scope', '$rootScope', 'RoomService', 'dialog', 'item', function ($scope, $rootScope, RoomService, dialog, item) {
-    $scope.newRoom = item.newRoom;
-    $scope.roomId = (!item.newRoom) ? item.room._id : '';
-    $scope.roomName = (!item.newRoom) ? item.room.roomName : '';
-    $scope.numPlayers = (!item.newRoom) ? item.room.numPlayers : 0;
-
-    $scope.cancel = function () {
-        dialog.close(false);
-    };
-
-    $scope.save = function () {
-        if ($scope.newRoom) {
-            RoomService.addRoom({
-                roomName: $scope.roomName,
-                numPlayers: $scope.numPlayers
-            }, function (data) {
-                if (data.success) {
-                    dialog.close(true);
-                } else {
-                    $scope.errorMessage = data.message;
-                }
-            });
-        } else {
-            RoomService.updateRoom($scope.roomId, {
-                roomName: $scope.roomName,
-                numPlayers: $scope.numPlayers
-            }, function (data) {
-                if (data.success) {
-                    dialog.close(true);
-                } else {
-                    $scope.errorMessage = data.message;
-                }
-            });
-        }
-    };
-}]);
-
 app.controller('UserEditModalController', ['$scope', '$rootScope', 'UserService', 'dialog', 'item', function ($scope, $rootScope, UserService, dialog, item) {
     $scope.newUser = item.newUser;
     $scope.uid = (!item.newUser) ? item.user._id : '';
-    $scope.username = (!item.newUser) ? item.user.username : '';
-    $scope.email = (!item.newUser) ? item.user.email : '';
-    $scope.isAdmin = (!item.newUser) ? item.user.isAdmin : false;
+    $scope.user = item.user;
     $scope.password = '';
     $scope.confirmPassword = '';
 
@@ -751,9 +903,9 @@ app.controller('UserEditModalController', ['$scope', '$rootScope', 'UserService'
     $scope.save = function () {
         if ($scope.newUser) {
             UserService.addUser({
-                username: $scope.username,
-                email: $scope.email,
-                isAdmin: $scope.isAdmin,
+                username: $scope.user.username,
+                email: $scope.user.email,
+                isAdmin: $scope.user.isAdmin,
                 password: $scope.password
             }, function (payload) {
                 if (payload.success) {
@@ -764,9 +916,9 @@ app.controller('UserEditModalController', ['$scope', '$rootScope', 'UserService'
             });
         } else {
             UserService.updateUser($scope.uid, {
-                username: $scope.username,
-                email: $scope.email,
-                isAdmin: $scope.isAdmin
+                username: $scope.user.username,
+                email: $scope.user.email,
+                isAdmin: $scope.user.isAdmin
             }, function (payload) {
                 if (payload.success) {
                     dialog.close(true);

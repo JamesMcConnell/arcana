@@ -7,11 +7,11 @@
     <p class="alert alert-error" ng-show="errorMessage">
         {{ errorMessage }}
     </p>
-    <form name="addEditUserForm" class="form-horizontal">
+    <form name="addEditUserForm" class="form-horizontal" style="margin-top: 20px;">
         <div class="control-group">
             <label class="control-label" for="username">Username:</label>
             <div class="controls">
-                <input type="text" class="input-large" name="username" id="username" placeholder="Username" ng-model="username" ng-disabled="!newUser" required />
+                <input type="text" class="input-large" name="username" id="username" placeholder="Username" ng-model="user.username" ng-disabled="!newUser" required />
                 <div class="input-help">
                     <h4>Username is required</h4>
                 </div>
@@ -20,7 +20,7 @@
         <div class="control-group">
             <label class="control-label" for="email">Email Address:</label>
             <div class="controls">
-                <input type="email" class="input-large" name="email" id="email" placeholder="Email Address" ng-model="email" required />
+                <input type="email" class="input-large" name="email" id="email" placeholder="Email Address" ng-model="user.email" required />
                 <div class="input-help">
                     <h4>Invalid email address</h4>
                 </div>
@@ -29,7 +29,7 @@
         <div class="control-group">
             <div class="controls">
                 <label class="checkbox">
-                    <input type="checkbox" name="isAdmin" id="isAdmin" ng-model="isAdmin" /> Is Admin User
+                    <input type="checkbox" name="isAdmin" id="isAdmin" ng-model="user.isAdmin" /> Is Admin User
                 </label>
             </div>
         </div>

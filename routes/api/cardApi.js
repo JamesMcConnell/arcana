@@ -2,7 +2,7 @@ var cardDb = require('../../data/card');
 
 module.exports = {
     getCards: function (req, res) {
-        cardDb.getCards(req.param('isPaged'), req.param('currentPage'), req.param('numPerPage'), function (err, reply, info) {
+        cardDb.getCards(req.param('isPaged'), req.param('currentPage'), req.param('numPerPage'), req.param('cardType'), function (err, reply, info) {
             if (err) {
                 return res.json(200, { success: false, result: null, message: info.message });
             } else {

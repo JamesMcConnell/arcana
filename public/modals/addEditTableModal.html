@@ -7,11 +7,11 @@
     <p class="alert alert-error" ng-show="errorMessage">
         {{ errorMessage }}
     </p>
-    <form name="addEditTableForm" class="form-horizontal">
+    <form name="addEditTableForm" class="form-horizontal" style="margin-top: 20px;">
         <div class="control-group">
             <label class="control-label" for="tableName">Table Name:</label>
             <div class="controls">
-                <input type="text" class="input-large" name="tableName" id="tableName" placeholder="Table Name" ng-model="tableName" required />
+                <input type="text" class="input-large" name="tableName" id="tableName" placeholder="Table Name" ng-model="table.tableName" required />
                 <div class="input-help">
                     <h4>Table name is required</h4>
                 </div>
@@ -20,9 +20,7 @@
         <div class="control-group">
             <label class="control-label" for="roomName">Room:</label>
             <div class="controls">
-                <select name="roomName" id="roomName" ng-model="roomName" required>
-                    <option ng-repeat="room in rooms" value="{{ room.roomName }}">{{ room.roomName }}</option>
-                </select>
+                <select name="roomName" id="roomName" ng-model="table.roomName" ng-options="room.roomName as room.roomName for room in rooms" required></select>
                 <div class="input-help">
                     <h4>Room is required</h4>
                 </div>

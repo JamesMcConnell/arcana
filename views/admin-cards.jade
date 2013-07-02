@@ -1,0 +1,88 @@
+extends layout
+
+block content
+    .span11
+        .content
+            .content-header.admin-custom-header
+                h2
+                    i.icofont-building
+                    span &nbsp; Card Administration
+            .content-breadcrumb
+                ul.breadcrumb.admin-custom-breadcrumb
+                    li
+                        a(href="/")
+                            i.icofont-home
+                            | &nbsp; Home
+                        span.divider &rsaquo;
+                    li
+                        a(href="/admin") Admin Dashboard
+                        span.divider &rsaquo;
+                    li.active Card Administration
+            .content-body.admin-custom-content-body
+                .row-fluid
+                    .span12
+                        .box.corner-all
+                            .box-header.grd-white.corner-top
+                                span Cards
+                            .box-body(ng-controller="CardAdminController")
+                                p.alert.alert-error(ng-show="errorMessage")
+                                    {{ errorMessage }}
+                                .row-fluid
+                                    .span6
+                                        .dataTables_length
+                                            .pull-left
+                                                button.btn.btn-primary.pull-left(type="button", ng-click="addCard()")
+                                                    i.icofont-plus-sign
+                                                    | &nbsp; Add Card
+                                            label(style="margin-left: 10px;")
+                                                select(ng-model="numPerPage", style="width: 5em;")
+                                                    option(value="5") 5
+                                                    option(value="10") 10
+                                                    option(value="15") 15
+                                                    option(value="25") 25
+                                                    option(value="50") 50
+                                                | &nbsp;per page
+                                    .span6
+                                        .dataTables_filter
+                                            label
+                                                | Filter by card type: &nbsp;
+                                                select(ng-model="cardType")
+                                                    option(value="all") All
+                                                    option(ng-repeat="type in cardTypes", value="{{ type }}") {{ type }}
+                                table.table.table-striped.table-bordered
+                                    thead
+                                        tr
+                                            th Card Name
+                                            th Card Type
+                                            th Instance Cost
+                                            th Maintenance Cost
+                                            th Burn Value
+                                            th Gen Value
+                                            th Health
+                                            th Power
+                                            th Operations
+                                    tbody
+                                        tr(ng-repeat="card in cards")
+                                            td(style="vertical-align: middle") {{ card.cardName }}
+                                            td(style="vertical-align: middle") {{ card.cardType }}
+                                            td(style="vertical-align: middle") {{ card.instanceCost }}
+                                            td(style="vertical-align: middle") {{ card.maintenanceCost }}
+                                            td(style="vertical-align: middle") {{ card.burnValue }}
+                                            td(style="vertical-align: middle") {{ card.genValue }}
+                                            td(style="vertical-align: middle") {{ card.health }}
+                                            td(style="vertical-align: middle") {{ card.power }}
+                                            td(style="vertical-align: middle")
+                                                button.btn(ng-click="$parent.editCard(card._id)") Edit
+                                .row-fluid
+                                    .span6
+                                        .dataTables_info
+                                            | Showing 1 to 10 of 46 entries
+                                    .span6
+                                        .dataTables_paginate.paging_bootstrap.pagination
+                                            ul
+                                                li.prev(ng-class="(currentPage == 1) && 'disabled'")
+                                                    a(href="javascript:;", ng-disabled="currentPage == 1", ng-click="getPreviousPage()") &larr; Previous
+                                                li(ng-repeat="i in [] | range:pages", ng-class="($index + 1 == currentPage) && 'active'")
+                                                    a(href="javascript:;", ng-click="getUsers($index + 1)") {{ i + 1 }}
+                                                li.next(ng-class="(currentPage == pages) && 'disabled'")
+                                                    a(href="javascript:;", ng-click="getNextPage()") Next &nbsp;&rarr;

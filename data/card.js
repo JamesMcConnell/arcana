@@ -44,9 +44,12 @@ module.exports = {
             callback(false, card, null);
         });
     },
-    getCards: function (isPaged, currentPage, numPerPage, callback) {
+    getCards: function (isPaged, currentPage, numPerPage, cardType, callback) {
         if (!isPaged) {
             var query = Card.find().sort('cardName');
+            if (cardType && cardType.length > 0) {
+                query.where('cardType').equals(cardType);
+            }
             query.exec(function (err, cardList) {
                 if (err) {
                     return callback(true, null, { message: 'Unable to retrieve cards' });
@@ -64,6 +67,9 @@ module.exports = {
             var skip = (currentPage - 1) * numPerPage;
 
             var countQuery = Card.find().count();
+            if (cardType && cardType.length > 0) {
+                countQuery.where('cardType').equals(cardType);
+            }
             countQuery.exec(function (err, num) {
                 count = num;
                 if (count > 1) {
