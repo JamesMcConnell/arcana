@@ -2,7 +2,8 @@ var passport = require('passport'),
     main = require('./routes/index'),
     userApi = require('./routes/api/userApi'),
     roomApi = require('./routes/api/roomApi'),
-    tableApi = require('./routes/api/tableApi');
+    tableApi = require('./routes/api/tableApi'),
+    cardApi = require('./routes/api/cardApi');
 
 function ensureAuthenticated(req, res, next) {
     if (req.isAuthenticated()) {
@@ -52,19 +53,25 @@ module.exports = function (app) {
     app.get('/admin/tables', ensureAuthenticatedAndAdmin, main.adminTables);
 
     app.get('/api/users', ensureAuthenticatedAndAdmin, userApi.getUsers);
+    app.get('/api/users/:userId', ensureAuthenticated, userApi.getUser);
     app.post('/api/users', ensureAuthenticatedAndAdmin, userApi.postUser);
     app.put('/api/users/:userId', ensureAuthenticatedAndAdmin, userApi.putUser);
-    app.get('/api/users/:userId', ensureAuthenticatedAndAdmin, userApi.getUser);
 
-    app.get('/api/rooms', ensureAuthenticatedAndAdmin, roomApi.getRooms);
-    app.get('/api/rooms/:roomId', ensureAuthenticatedAndAdmin, roomApi.getRoom);
+
+    app.get('/api/rooms', ensureAuthenticated, roomApi.getRooms);
+    app.get('/api/rooms/:roomId', ensureAuthenticated, roomApi.getRoom);
     app.post('/api/rooms', ensureAuthenticatedAndAdmin, roomApi.postRoom);
     app.put('/api/rooms/:roomId', ensureAuthenticatedAndAdmin, roomApi.putRoom);
 
-    app.get('/api/tables', ensureAuthenticatedAndAdmin, tableApi.getTables);
-    app.get('/api/tables/:tableId', ensureAuthenticatedAndAdmin, tableApi.getTable);
+    app.get('/api/tables', ensureAuthenticated, tableApi.getTables);
+    app.get('/api/tables/:tableId', ensureAuthenticated, tableApi.getTable);
     app.post('/api/tables', ensureAuthenticatedAndAdmin, tableApi.postTable);
     app.put('/api/tables/:tableId', ensureAuthenticatedAndAdmin, tableApi.putTable);
+
+    app.get('/api/cards', ensureAuthenticated, cardApi.getCards);
+    app.get('/api/cards/:cardId', ensureAuthenticated, cardApi.getCard);
+    app.post('/api/cards', ensureAuthenticatedAndAdmin, cardApi.postCard);
+    app.put('/api/cards/:cardId', ensureAuthenticatedAndAdmin, cardApi.putCard);
 };
 
 

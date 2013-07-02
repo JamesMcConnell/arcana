@@ -32,6 +32,7 @@ module.exports = function (app, io) {
             socket.on('switchRoom', function (data) {
                 socket.leave(socket.room); // leave the old room
                 socket.join(data.roomName); // join the new room
+                socket.username = data.username;
                 // Send chat message for user
                 socket.emit('updateChat', {
                     serverGenerated: true,
@@ -70,8 +71,8 @@ module.exports = function (app, io) {
     var lobby = io
         .of('/lobby')
         .on('connection', function (socket) {
-            socket.on('playerChangedSeat', function (data) {
-                socket.broadcast.emit('updateTable', data);
+            socket.on('playerChangedSeat', function () {
+                socket.broadcast.emit('updateTable');
             });
         });
 };
