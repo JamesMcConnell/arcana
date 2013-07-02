@@ -47,9 +47,11 @@ module.exports = {
     getCards: function (isPaged, currentPage, numPerPage, cardType, callback) {
         if (!isPaged) {
             var query = Card.find().sort('cardName');
+            /*
             if (cardType && cardType.length > 0) {
                 query.where('cardType').equals(cardType);
             }
+            */
             query.exec(function (err, cardList) {
                 if (err) {
                     return callback(true, null, { message: 'Unable to retrieve cards' });

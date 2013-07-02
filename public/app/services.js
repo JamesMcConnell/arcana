@@ -95,8 +95,8 @@ angular.module('appServices', ['ngCookies']).factory('UserService', function ($r
 }).factory('CardService', function ($rootScope, $http) {
     return {
         getCards:
-            function (isPaged,currentPage, numPerPage, cardType, callback) {
-                $http({ method: 'GET', url: '/api/cards', param: { isPaged: isPaged, currentPage: currentPage, numPerPage: numPerPage, cardType: cardType } }).success(function (data) {
+            function (isPaged, currentPage, numPerPage, cardType, callback) {
+                $http({ method: 'GET', url: '/api/cards', params: { isPaged: isPaged, currentPage: currentPage, numPerPage: numPerPage, cardType: cardType } }).success(function (data) {
                     callback(data.result.currentPage, data.result.pages, data.result.cards);
                 });
             },

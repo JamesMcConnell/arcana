@@ -58,7 +58,6 @@ module.exports = function (app) {
     app.post('/api/users', ensureAuthenticatedAndAdmin, userApi.postUser);
     app.put('/api/users/:userId', ensureAuthenticatedAndAdmin, userApi.putUser);
 
-
     app.get('/api/rooms', ensureAuthenticated, roomApi.getRooms);
     app.get('/api/rooms/:roomId', ensureAuthenticated, roomApi.getRoom);
     app.post('/api/rooms', ensureAuthenticatedAndAdmin, roomApi.postRoom);
