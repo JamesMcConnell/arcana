@@ -42,6 +42,11 @@ module.exports = {
             pageTitle: 'Lobby'
         });
     },
+    adminRoot: function (req, res) {
+        res.render('admin.jade', {
+            pageTitle: 'Admin Dashboard'
+        });
+    },
     adminUsers: function (req, res) {
         res.render('admin-users.jade', {
             pageTitle: 'User Administration'

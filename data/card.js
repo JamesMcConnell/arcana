@@ -47,17 +47,18 @@ module.exports = {
     getCards: function (isPaged, currentPage, numPerPage, cardType, callback) {
         if (!isPaged) {
             var query = Card.find().sort('cardName');
-            /*
-            if (cardType && cardType.length > 0) {
+            if (cardType && cardType.length > 0 && cardType != 'All') {
                 query.where('cardType').equals(cardType);
             }
-            */
+
             query.exec(function (err, cardList) {
                 if (err) {
                     return callback(true, null, { message: 'Unable to retrieve cards' });
                 }
 
                 var reply = {
+                    currentPage: 1,
+                    pages: 1,
                     cards: cardList
                 };
                 callback(false, reply, null);
@@ -69,7 +70,7 @@ module.exports = {
             var skip = (currentPage - 1) * numPerPage;
 
             var countQuery = Card.find().count();
-            if (cardType && cardType.length > 0) {
+            if (cardType && cardType.length > 0 && cardType != 'All') {
                 countQuery.where('cardType').equals(cardType);
             }
             countQuery.exec(function (err, num) {
@@ -79,6 +80,10 @@ module.exports = {
                 }
 
                 var listQuery = Card.find().sort('cardName').skip(skip).limit(numPerPage);
+                if (cardType && cardType.length > 0) {
+                    listQuery.where('cardType').equals(cardType);
+                }
+
                 listQuery.exec(function (err, cardList) {
                     if (err) {
                         return callback(true, null, { message: 'Unable to retrieve cards' });

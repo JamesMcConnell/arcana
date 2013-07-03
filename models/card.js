@@ -12,10 +12,12 @@ var CardSchema = new Schema({
     power: { type: Number }
 });
 
+/*
 var DeckSchema = new Schema({
     deckName: { type: String, required: true, unique: true },
     cards: [{ type: Schema.Types.ObjectId, ref: 'Card' }]
 });
+*/
 
 module.exports = mongoose.model('Card', CardSchema);
-module.exports = mongoose.model('Deck', DeckSchema);
+//module.exports = mongoose.model('Deck', DeckSchema);

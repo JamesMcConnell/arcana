@@ -48,6 +48,7 @@ module.exports = function (app) {
     app.post('/register', main.postRegister);
     app.get('/logout', main.logout);
     app.get('/lobby', ensureAuthenticated, main.lobby);
+    app.get('/admin', ensureAuthenticatedAndAdmin, main.adminRoot);
     app.get('/admin/users', ensureAuthenticatedAndAdmin, main.adminUsers);
     app.get('/admin/rooms', ensureAuthenticatedAndAdmin, main.adminRooms);
     app.get('/admin/tables', ensureAuthenticatedAndAdmin, main.adminTables);

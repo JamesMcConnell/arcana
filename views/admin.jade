@@ -1,0 +1,52 @@
+extends layout
+
+block content
+    .span11
+        .content
+            .content-header.admin-custom-header
+                h2
+                    i.icofont-edit
+                    span &nbsp; Admin Dashboard
+            .content-breadcrumb
+                ul.breadcrumb.admin-custom-breadcrumb
+                    li
+                        a(href="/")
+                            i.icofont-home
+                            | &nbsp; Home
+                        span.divider &rsaquo;
+                    li.active Admin Dashboard
+            .content-body.admin-custom-content-body
+                .shortcut-group
+                    ul.a-btn-group
+                        li
+                            a.a-btn(href="/admin/users", rel="tooltip", title, data-original-title="View Users")
+                                .grd-white
+                                    span
+                                    span
+                                        i.icofont-user.color-silver
+                                    span
+                                        i.icofont-user.color-silver-dark
+                        li
+                            a.a-btn(href="/admin/rooms", rel="tooltip", title, data-original-title="View Rooms")
+                                .grd-white
+                                    span
+                                    span
+                                        i.icofont-th-large.color-silver
+                                    span
+                                        i.icofont-th-large.color-silver-dark
+                        li
+                            a.a-btn(href="/admin/tables", rel="tooltip", title, data-original-title="View Tables")
+                                .grd-white
+                                    span
+                                    span
+                                        i.icofont-table.color-silver
+                                    span
+                                        i.icofont-table.color-silver-dark
+                        li
+                            a.a-btn(href="/admin/cards", rel="tooltip", title, data-original-title="View Cards")
+                                .grd-white
+                                    span
+                                    span
+                                        i.icofont-building.color-silver
+                                    span
+                                        i.icofont-building.color-silver-dark
