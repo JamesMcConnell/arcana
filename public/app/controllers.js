@@ -279,7 +279,7 @@ app.controller('CardAdminController', function ($scope, $http, $dialog, CardServ
     $scope.numPerPage = 10;
     $scope.cards = [];
     $scope.cardType = 'all';
-    $scope.cardTypes = ['Battery', 'Creature', 'Buff', 'Debuff', 'Sorcery'];
+    $scope.cardTypes = ['Battery', 'Creature', 'Buff', 'Debuff', 'Sorcery', 'Interrupt'];
     $scope.errorMessage = '';
 
     $scope.$watch('numPerPage', function () {
@@ -324,7 +324,13 @@ app.controller('CardAdminController', function ($scope, $http, $dialog, CardServ
                             burnValue: 0,
                             genValue: 0,
                             health: 0,
-                            power: 0
+                            power: 0,
+                            isModifier: false,
+                            modification: {
+                                affectedStat: '',
+                                modificationValue: 0,
+                                duration: 0
+                            }
                         }
                     };
                 }
@@ -366,19 +372,48 @@ app.controller('CardAdminController', function ($scope, $http, $dialog, CardServ
         });
     };
 
+    $scope.viewCard = function (cardId) {
+        CardService.getCard(cardId, function (data) {
+            if (data.success) {
+                var dialog = $dialog.dialog({
+                    dialogFade: true,
+                    dialogClass: 'modal span3',
+                    resolve: {
+                        item: function () {
+                            return {
+                                card: angular.copy(data.result)
+                            };
+                        }
+                    }
+                });
+
+                dialog.open('/modals/viewCardModal.html', 'CardViewerModalController');
+            }
+        });
+    };
+
     $scope.getCards($scope.currentPage);
 });
+
+app.controller('CardViewerModalController', ['$scope', 'dialog', 'item', function ($scope, dialog, item) {
+    $scope.card = item.card;
+}]);
 
 app.controller('CardEditModalController', ['$scope', '$rootScope', 'CardService', 'dialog', 'item', function ($scope, $rootScope, CardService, dialog, item) {
     $scope.newCard = item.newCard;
     $scope.cardId = (!item.newCard) ? item.card._id : '';
     $scope.card = item.card;
-    $scope.cardTypes = ['Battery', 'Creature', 'Buff', 'Debuff', 'Sorcery'];
+    $scope.cardTypes = ['Battery', 'Creature', 'Buff', 'Debuff', 'Sorcery', 'Interrupt'];
+    $scope.affectedStats = ['Maintenance Cost', 'Burn Value', 'Gen Value', 'Health', 'Power', 'Arcane Energy'];
     $scope.errorMessage = '';
 
     $scope.cancel = function () {
         dialog.close(false);
     };
+
+    $scope.$watch('card.cardType', function () {
+        $scope.card.isModifier = ($scope.card.cardType == 'Buff' || $scope.card.cardType == 'Debuff' || $scope.card.cardType == 'Sorcery');
+    });
 
     $scope.save = function () {
         if ($scope.newCard) {
@@ -390,7 +425,9 @@ app.controller('CardEditModalController', ['$scope', '$rootScope', 'CardService'
                 burnValue: $scope.card.burnValue,
                 genValue: $scope.card.genValue,
                 health: $scope.card.health,
-                power: $scope.card.power
+                power: $scope.card.power,
+                isModifier: $scope.card.isModifier,
+                modification: $scope.card.modification
             }, function (data) {
                 if (data.success) {
                     dialog.close(true);
@@ -407,7 +444,9 @@ app.controller('CardEditModalController', ['$scope', '$rootScope', 'CardService'
                 burnValue: $scope.card.burnValue,
                 genValue: $scope.card.genValue,
                 health: $scope.card.health,
-                power: $scope.card.power
+                power: $scope.card.power,
+                isModifier: $scope.card.isModifier,
+                modification: $scope.card.modification
             }, function (data) {
                 if (data.success) {
                     dialog.close(true);

@@ -1,0 +1,33 @@
+<ul class="thumbnails card-view color-black">
+    <li class="span3 grd-white active corner-all">
+        <div class="card-header grd-white">
+            <div class="pull-left">
+                {{ card.cardName }}
+            </div>
+            <div class="pull-right">
+                I: <span class="badge badge-success">{{ card.instanceCost }}</span> &nbsp;
+                M: <span class="badge badge-info">{{ card.maintenanceCost }}</span>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="thumbnail" style="margin-top: 3px;">
+                <img src="/img/sample/thumbnails/quicktime-logo.gif" width="120" height="120" alt="{{ card.cardName }}" />
+            </div>
+        </div>
+        <div class="features">
+            <h3>{{ card.description }}</h3>
+            <ul>
+                <li>Gen Value: {{ card.genValue }} <small class="muted">This card generates {{ card.genValue }} arcane energy per round.</small></li>
+                <li>Burn Value: {{ card.burnValue }} <small class="muted">Sacrificing this card generates {{ card.burnValue }} arcane energy.</small></li>
+            </ul>
+        </div>
+        <div class="card-footer grd-white">
+            <div class="pull-left">
+                H: <span class="badge badge-warning">{{ card.health }}</span>
+            </div>
+            <div class="pull-right">
+                P: <span class="badge">{{ card.power }}</span>
+            </div>
+        </div>
+    </li>
+</ul>

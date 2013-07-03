@@ -20,6 +20,44 @@
                 <select name="cardType" id="cardType" ng-model="card.cardType" ng-options="type as type for type in cardTypes" required></select>
             </div>
         </div>
+        <div ng-show="card.isModifier">
+            <div class="divider-content">
+                <span></span>
+            </div>
+            <div class="control-group">
+                <label class="control-label" for="affectedStat">Affected Stat:</label>
+                <div class="controls">
+                    <select name="affectedStat" id="affectedStat" ng-model="card.modification.affectedStat" ng-options="stat as stat for stat in affectedStats"></select>
+                </div>
+            </div>
+            <div class="control-group">
+                <label class="control-label" for="modificationValue">Modification Value:</label>
+                <div class="controls">
+                    <input type="text" name="modificationValue" id="modificationValue" placeholder="Modification Value" ng-model="card.modification.modificationValue" />
+                </div>
+            </div>
+            <div class="control-group">
+                <label class="control-label" for="duration">Duration:</label>
+                <div class="controls">
+                    <input type="text" name="duration" id="duration" placeholder="Duration" ng-model="card.modification.duration" />
+                </div>
+            </div>
+            <div class="divider-content">
+                <span></span>
+            </div>
+        </div>
+        <div class="control-group">
+            <label class="control-label" for="description">Description:</label>
+            <div class="controls">
+                <textarea id="description" name="description" ng-model="card.description" class="span3" rows="4" />
+            </div>
+        </div>
+        <div class="control-group">
+            <label class="control-label" for="flavorText">Flavor Text:</label>
+            <div class="controls">
+                <textarea id="flavorText" name="flavorText" ng-model="card.flavorText" class="span3" rows="4" />
+            </div>
+        </div>
         <div class="control-group">
             <label class="control-label" for="instanceCost">Instance Cost:</label>
             <div class="controls">

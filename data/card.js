@@ -8,12 +8,16 @@ module.exports = {
         var newCard = new Card({
             cardName: cardInfo.cardName,
             cardType: cardInfo.cardType,
+            description: cardInfo.description,
+            flavorText: cardInfo.flavorText,
             instanceCost: cardInfo.instanceCost,
             maintenanceCost: cardInfo.maintenanceCost,
             burnValue: cardInfo.burnValue,
             genValue: cardInfo.genValue,
             health: cardInfo.health,
-            power: cardInfo.power
+            power: cardInfo.power,
+            isModifier: cardInfo.isModifier,
+            modification: cardInfo.modification
         });
 
         newCard.save(function (err) {

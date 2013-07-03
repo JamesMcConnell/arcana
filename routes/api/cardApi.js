@@ -23,12 +23,16 @@ module.exports = {
         cardDb.saveCard({
             cardName: req.param('cardName'),
             cardType: req.param('cardType'),
+            description: req.param('description'),
+            flavorText: req.param('flavorText'),
             instanceCost: req.param('instanceCost'),
             maintenanceCost: req.param('maintenanceCost'),
             burnValue: req.param('burnValue'),
             genValue: req.param('genValue'),
             health: req.param('health'),
-            power: req.param('power')
+            power: req.param('power'),
+            isModifier: req.param('isModifier'),
+            modification: req.param('modification')
         }, function (err, card, info) {
             if (err) {
                 return res.json(200, { success: false, card: null, message: info.message });
@@ -42,12 +46,16 @@ module.exports = {
         var cardObj = {
             cardName: req.body.cardName,
             cardType: req.body.cardType,
+            description: req.body.description,
+            flavorText: req.body.flavorText,
             instanceCost: req.body.instanceCost,
             maintenanceCost: req.body.maintenanceCost,
             burnValue: req.body.burnValue,
             genValue: req.body.genValue,
             health: req.body.health,
-            power: req.body.power
+            power: req.body.power,
+            isModifier: req.body.isModifier,
+            modification: req.body.modification
         };
         cardDb.updateCard(cardId, cardObj, function (err, message) {
             if (err) {

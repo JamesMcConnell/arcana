@@ -54,6 +54,8 @@ block content
                                         tr
                                             th Card Name
                                             th Card Type
+                                            th Description
+                                            th Flavor Text
                                             th Instance Cost
                                             th Maintenance Cost
                                             th Burn Value
@@ -65,6 +67,8 @@ block content
                                         tr(ng-repeat="card in cards")
                                             td(style="vertical-align: middle") {{ card.cardName }}
                                             td(style="vertical-align: middle") {{ card.cardType }}
+                                            td(style="vertical-align: middle") {{ card.description }}
+                                            td(style="vertical-align: middle") {{ card.flavorText }}
                                             td(style="vertical-align: middle") {{ card.instanceCost }}
                                             td(style="vertical-align: middle") {{ card.maintenanceCost }}
                                             td(style="vertical-align: middle") {{ card.burnValue }}
@@ -72,7 +76,9 @@ block content
                                             td(style="vertical-align: middle") {{ card.health }}
                                             td(style="vertical-align: middle") {{ card.power }}
                                             td(style="vertical-align: middle")
-                                                button.btn(ng-click="$parent.editCard(card._id)") Edit
+                                                button.btn.btn-small(ng-click="$parent.editCard(card._id)") Edit
+                                                | &nbsp;&nbsp;
+                                                button.btn.btn-info.btn-small(ng-click="$parent.viewCard(card._id)") View Card
                                 .row-fluid
                                     .span6
                                         .dataTables_info
