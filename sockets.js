@@ -71,8 +71,8 @@ module.exports = function (app, io) {
     var lobby = io
         .of('/lobby')
         .on('connection', function (socket) {
-            socket.on('playerChangedSeat', function () {
-                socket.broadcast.emit('updateTable');
+            socket.on('playerChangedSeat', function (data) {
+                socket.broadcast.emit('updateTable', data);
             });
         });
 };
