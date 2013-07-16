@@ -610,13 +610,15 @@ app.controller('TableAdminController', function ($scope, $http, $dialog, TableSe
                         tableName: tableName,
                         roomName: room.roomName,
                         status: 'Open',
-                        seats: []
+                        seats: [],
+                        hasLeader: false
                     };
 
                     for (var i = 1; i <= room.numPlayers; i++) {
                         table.seats.push({
                             username: '',
-                            position: i
+                            position: i,
+                            isLeader: false
                         });
                     }
 
