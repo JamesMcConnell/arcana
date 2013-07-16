@@ -75,4 +75,22 @@ module.exports = function (app, io) {
                 socket.broadcast.emit('updateTable', data);
             });
         });
+
+    var tableSocket = io
+        .of('/table')
+        .on('connection', function (socket) {
+            socket.on('playerTookSeat', function (data) {
+                socket.broadcast.emit('updateTable', {
+                    tableId: data.tableId
+                });
+            });
+
+            socket.on('removePlayerFromSeat', function (data) {
+                socket.broadcast.emit('removePlayerFromSeat', data);
+            });
+
+            socket.on('addPlayerToSeat', function (data) {
+                socket.broadcast.emit('addPlayerToSeat', data);
+            })
+        });
 };

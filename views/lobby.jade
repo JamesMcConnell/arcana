@@ -22,15 +22,15 @@ block content
                         | Current room: {{ currentRoom.roomName }} - {{ currentRoom.numPlayers }} player
             .content-body
                 .row-fluid
-                    .span3(ng-repeat="table in tables", ng-style="clearLeftMargin($index)")
-                        .box.corner-all
+                    .span3(ng-repeat="tbl in tables", ng-style="clearLeftMargin($index)")
+                        .box.corner-all(ng-controller="TableController", ng-init="init(tbl)")
                             .box-header.grd-white
                                 span {{ table.tableName }}&nbsp; - &nbsp;
                                 span.muted(style="font-size: 11px;") {{ table.status }}
                             .box-body
                                 div(ng-repeat="seat in table.seats")
-                                    button.btn.btn-small.btn-warning(ng-click="takeSeat(table, seat)", ng-show="!seat.username") Take Seat
-                                    button.btn.btn-small.btn-error(ng-click="leaveSeat(table, seat)", ng-show="seat.username", ng-disabled="seat.username != currentUser.username") {{ (seat.username != currentUser.username) ? seat.username : 'Leave Seat' }}
+                                    button.btn.btn-small.btn-warning(ng-click="takeSeat(seat)", ng-show="!seat.username") Take Seat
+                                    button.btn.btn-small.btn-error(ng-click="leaveSeat(seat)", ng-show="seat.username", ng-disabled="seat.username != currentUser.username") {{ (seat.username != currentUser.username) ? seat.username : 'Leave Seat' }}
                         div(ng-class="($index + 1 % 4 == 0 && 'clear')")
 
     .span2(ng-controller="ChatController")

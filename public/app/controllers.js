@@ -122,7 +122,7 @@ app.controller('LobbyController', function ($scope, $rootScope, UserService, Roo
     $scope.rooms = [];
     $scope.tables = [];
     $scope.currentRoom = {};
-    $scope.currentTable = {};
+    $scope.table = {};
     $scope.currentSeat = {};
 
     RoomService.getRooms(false, null, null, function (currentPage, pages, rooms) {
@@ -169,97 +169,167 @@ app.controller('LobbyController', function ($scope, $rootScope, UserService, Roo
             roomName: $scope.currentRoom.roomName,
             username: $scope.currentUser.username
         });
+    };;
+});
+
+app.controller('TableController', function ($scope, $rootScope, TableService) {
+    $scope.table = {};
+    $scope.socket = io.connect('/table');
+
+    $scope.init = function (table) {
+        $scope.table = table;
     };
 
-    $scope.takeSeat = function (table, seat) {
-        if ($scope.currentTable._id && $scope.currentSeat._id) {
-            // User is already in a seat, first check if its at the same table
-            if ($scope.currentTable._id == table._id) { // User is changing seats at the same table
-                var oldSeat = _.find(table.seats, function (seat) {
-                    return seat._id == $scope.currentSeat._id;
+    $scope.takeSeat = function (seat) {
+        // Get users current table
+        var currentUserTable = TableService.getCurrentUserTable();
+
+        // Check if user is already at a table
+        if (currentUserTable._id) {
+
+            // Check if it is this table
+            if (currentUserTable._id === $scope.table._id) {
+
+                // Get their current seat
+                var currentSeat = _.find($scope.table.seats, function (seat) {
+                    return seat.username === $scope.currentUser.username;
                 });
 
-                oldSeat.username = '';
+                // Remove them from current seat
+                currentSeat.username = '';
+
+                // Add them to new seat
                 seat.username = $scope.currentUser.username;
-                TableService.updateTable(table._id, table, function (data) {});
-                $scope.chat.emit('updateTable', {
-                    tables: [{
-                        tableId: table._id,
-                        seats:[seat, oldSeat]
-                    }]
-                });
-                $scope.currentSeat = seat;
-            } else { // User is changing tables as well
-                var oldTable = _.find($scope.tables, function (table) {
-                    return table._id == $scope.currentTable._id;
+
+                // Update database
+                TableService.updateTable($scope.table._id, $scope.table, function (data) {
+                    if (data.success) {
+                        // Tell other clients to remove player from seat
+                        $scope.socket.emit('removePlayerFromSeat', {
+                            tableId: currentUserTable._id,
+                            seatId: currentSeat._id
+                        });
+
+                        // Tell other clients to add player to new seat
+                        $scope.socket.emit('addPlayerToSeat', {
+                            tableId: $scope.table._id,
+                            seatId: seat._id,
+                            username: $scope.currentUser.username
+                        });
+                    }
                 });
 
-                var oldSeat = _.find(oldTable.seats, function (seat) {
-                    return seat._id == $scope.currentSeat._id;
+                $scope.safeApply();
+            } else { // Player is in a seat at another table
+
+                // First, update currentUserTable
+                TableService.setCurrentUserTable(angular.copy($scope.table));
+
+                // We want to raise a client-side event
+                // so the controller for the current table
+                // can properly remove the user,
+                // and alert other clients of the change
+                $rootScope.$broadcast('removePlayerFromSeat', {
+                    tableId: currentUserTable._id,
+                    username: $scope.currentUser.username
                 });
 
-                oldSeat.username = '';
                 seat.username = $scope.currentUser.username;
-                TableService.updateTable(table._id, table, function (data) {});
-                TableService.updateTable(oldTable._id, oldTable, function (data) {});
-                $scope.chat.emit('playerChangedSeat', {
-                    tables:[{
-                        tableId: table._id,
-                        seats: [seat]
-                    },{
-                        tableId: oldTable._id,
-                        seats: [oldSeat]
-                    }]
+
+                TableService.updateTable($scope.table._id, $scope.table, function (data) {
+                    if (data.success) {
+                        // Alert other clients to update
+                        $scope.socket.emit('addPlayerToSeat', {
+                            tableId: $scope.table._id,
+                            seatId: seat._id,
+                            username: $scope.currentUser.username
+                        });
+
+                        $scope.safeApply();
+                    }
                 });
-                $scope.currentTable = table;
-                $scope.currentSeat = seat;
             }
         } else {
-            // User not currently in seat
+            // User is not at a table
             seat.username = $scope.currentUser.username;
-            $scope.currentTable = table;
-            $scope.currentSeat = seat;
-            TableService.updateTable(table._id, table, function (data) {});
-            $scope.chat.emit('playerChangedSeat', {
-                tables: [{
-                    tableId: table._id,
-                    seats: [seat]
-                }]
+            TableService.setCurrentUserTable(angular.copy($scope.table));
+
+            TableService.updateTable($scope.table._id, $scope.table, function (data) {
+                if (data.success) {
+                    // Alert other clients to update
+                    $scope.socket.emit('addPlayerToSeat', {
+                        tableId: $scope.table._id,
+                        seatId: seat._id,
+                        username: $scope.currentUser.username
+                    });
+
+                    $scope.safeApply();
+                }
             });
         }
-        $scope.safeApply();
     };
 
-    $scope.chat.on('updateTable', function (data) {
-        angular.forEach(data.tables, function (payloadTable) {
-            var scopeTable = _.find($scope.tables, function (table) {
-                return table._id === payloadTable.tableId;
-            });
+    $scope.leaveSeat = function (seat) {
+        seat.username = '';
+        TableService.setCurrentUserTable({});
 
-            angular.forEach(payloadTable.seats, function (payloadSeat) {
-                var scopeSeat = _.find(scopeTable.seats, function (seat) {
-                    return seat._id === payloadSeat._id;
+        TableService.updateTable($scope.table._id, $scope.table, function (data) {
+            if (data.success) {
+                // Alert other clients to update
+                $scope.socket.emit('removePlayerFromSeat', {
+                    tableId: $scope.table._id,
+                    seatId: seat._id
                 });
 
-                scopeSeat.username = payloadSeat.username;
-            });
-        });
-
-        $scope.safeApply();
-    });
-
-    $scope.leaveSeat = function (table, seat) {
-        seat.username = '';
-        TableService.updateTable(table._id, table, function (data) {});
-
-        $scope.safeApply();
-        $scope.chat.emit('playerChangedSeat', {
-            tables: [{
-                tableId: table._id,
-                seats: [seat]
-            }]
+                $scope.safeApply();
+            }
         });
     };
+
+    $scope.socket.on('removePlayerFromSeat', function (data) {
+        if (data.tableId === $scope.table._id) { // Only respond if we own this table
+            var seat = _.find($scope.table.seats, function (item) {
+                return item._id === data.seatId;
+            });
+            if (seat) {
+                seat.username = '';
+                $scope.safeApply();
+            }
+        }
+    });
+
+    $scope.socket.on('addPlayerToSeat', function (data) {
+        if (data.tableId === $scope.table._id) { // Only respond if we own this table
+            var seat = _.find($scope.table.seats, function (item) {
+                return item._id === data.seatId;
+            });
+            if (seat && seat.username.length == 0) {
+                seat.username = data.username;
+                $scope.safeApply();
+            }
+        }
+    });
+
+    $rootScope.$on('removePlayerFromSeat', function (scope, data) {
+        if (data.tableId === $scope.table._id) { // Only respond if we own this table
+            var seat = _.find($scope.table.seats, function (item) {
+                return item.username === $scope.currentUser.username;
+            });
+
+            if (seat) {
+                seat.username = '';
+                TableService.updateTable($scope.table._id, $scope.table, function (data) {
+                    if (data.success) {
+                        $scope.socket.emit('removePlayerFromSeat', {
+                            tableId: $scope.table._id,
+                            seatId: seat._id
+                        });
+                        $scope.safeApply();
+                    }
+                });
+            }
+        }
+    })
 });
 
 app.controller('LoginController', function ($scope, $http, $rootScope, $window) {

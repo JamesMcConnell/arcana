@@ -66,7 +66,17 @@ angular.module('appServices', ['ngCookies']).factory('UserService', function ($r
             }
     };
 }).factory('TableService', function ($rootScope, $http) {
+    var currentUserTable = {};
+
     return {
+        setCurrentUserTable:
+            function (table) {
+                currentUserTable = table;
+            },
+        getCurrentUserTable:
+            function () {
+                return currentUserTable;
+            },
         getTables:
             function (isPaged, currentPage, numPerPage, roomName, callback) {
                 $http({ method: 'GET', url: '/api/tables', params: { isPaged: isPaged, currentPage: currentPage, numPerPage: numPerPage, roomName: roomName } }).success(function (data) {
