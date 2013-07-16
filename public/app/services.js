@@ -66,16 +66,16 @@ angular.module('appServices', ['ngCookies']).factory('UserService', function ($r
             }
     };
 }).factory('TableService', function ($rootScope, $http) {
-    var currentUserTable = {};
+    var currentUserTableSeat = {};
 
     return {
-        setCurrentUserTable:
-            function (table) {
-                currentUserTable = table;
+        setCurrentUserTableSeat:
+            function (tableSeat) {
+                currentUserTableSeat = tableSeat;
             },
-        getCurrentUserTable:
+        getCurrentUserTableSeat:
             function () {
-                return currentUserTable;
+                return currentUserTableSeat;
             },
         getTables:
             function (isPaged, currentPage, numPerPage, roomName, callback) {

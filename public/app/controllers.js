@@ -165,11 +165,20 @@ app.controller('LobbyController', function ($scope, $rootScope, UserService, Roo
 
         $scope.getTables($scope.currentRoom.roomName);
 
+        var currentTable = TableService.getCurrentUserTableSeat();
+
+        // This removes the player from whichever seat they are currently at
+        $rootScope.$broadcast('removePlayerFromSeat', {
+            tableId: currentTable.tableId,
+            seatId: currentTable.seatId
+        });
+
+        // This lets the ChatController know to change socket rooms
         $rootScope.$broadcast('userChangedRoom', {
             roomName: $scope.currentRoom.roomName,
             username: $scope.currentUser.username
         });
-    };;
+    };
 });
 
 app.controller('TableController', function ($scope, $rootScope, TableService) {
@@ -182,17 +191,17 @@ app.controller('TableController', function ($scope, $rootScope, TableService) {
 
     $scope.takeSeat = function (seat) {
         // Get users current table
-        var currentUserTable = TableService.getCurrentUserTable();
+        var currentUserTableSeat = TableService.getCurrentUserTableSeat();
 
         // Check if user is already at a table
-        if (currentUserTable._id) {
+        if (currentUserTableSeat.tableId && currentUserTableSeat.seatId) {
 
             // Check if it is this table
-            if (currentUserTable._id === $scope.table._id) {
+            if (currentUserTableSeat.tableId === $scope.table._id) {
 
                 // Get their current seat
                 var currentSeat = _.find($scope.table.seats, function (seat) {
-                    return seat.username === $scope.currentUser.username;
+                    return seat._id === currentUserTableSeat.seatId;
                 });
 
                 // Remove them from current seat
@@ -200,13 +209,17 @@ app.controller('TableController', function ($scope, $rootScope, TableService) {
 
                 // Add them to new seat
                 seat.username = $scope.currentUser.username;
+                TableService.setCurrentUserTableSeat({
+                    tableId: $scope.table._id,
+                    seatId: seat._id
+                });
 
                 // Update database
                 TableService.updateTable($scope.table._id, $scope.table, function (data) {
                     if (data.success) {
                         // Tell other clients to remove player from seat
                         $scope.socket.emit('removePlayerFromSeat', {
-                            tableId: currentUserTable._id,
+                            tableId: currentUserTableSeat.tableId,
                             seatId: currentSeat._id
                         });
 
@@ -223,15 +236,18 @@ app.controller('TableController', function ($scope, $rootScope, TableService) {
             } else { // Player is in a seat at another table
 
                 // First, update currentUserTable
-                TableService.setCurrentUserTable(angular.copy($scope.table));
+                TableService.setCurrentUserTableSeat({
+                    tableId: $scope.table._id,
+                    seatId: seat._id
+                });
 
                 // We want to raise a client-side event
                 // so the controller for the current table
                 // can properly remove the user,
                 // and alert other clients of the change
                 $rootScope.$broadcast('removePlayerFromSeat', {
-                    tableId: currentUserTable._id,
-                    username: $scope.currentUser.username
+                    tableId: currentUserTableSeat.tableId,
+                    seatId: currentUserTableSeat.seatId
                 });
 
                 seat.username = $scope.currentUser.username;
@@ -252,7 +268,10 @@ app.controller('TableController', function ($scope, $rootScope, TableService) {
         } else {
             // User is not at a table
             seat.username = $scope.currentUser.username;
-            TableService.setCurrentUserTable(angular.copy($scope.table));
+            TableService.setCurrentUserTableSeat({
+                tableId: $scope.table._id,
+                seatId: seat._id
+            });
 
             TableService.updateTable($scope.table._id, $scope.table, function (data) {
                 if (data.success) {
@@ -271,7 +290,7 @@ app.controller('TableController', function ($scope, $rootScope, TableService) {
 
     $scope.leaveSeat = function (seat) {
         seat.username = '';
-        TableService.setCurrentUserTable({});
+        TableService.setCurrentUserTableSeat({});
 
         TableService.updateTable($scope.table._id, $scope.table, function (data) {
             if (data.success) {
@@ -313,7 +332,7 @@ app.controller('TableController', function ($scope, $rootScope, TableService) {
     $rootScope.$on('removePlayerFromSeat', function (scope, data) {
         if (data.tableId === $scope.table._id) { // Only respond if we own this table
             var seat = _.find($scope.table.seats, function (item) {
-                return item.username === $scope.currentUser.username;
+                return item._id === data.seatId;
             });
 
             if (seat) {
@@ -329,7 +348,7 @@ app.controller('TableController', function ($scope, $rootScope, TableService) {
                 });
             }
         }
-    })
+    });
 });
 
 app.controller('LoginController', function ($scope, $http, $rootScope, $window) {
