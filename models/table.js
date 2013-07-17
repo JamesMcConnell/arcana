@@ -12,7 +12,7 @@ var TableSchema = new Schema({
     roomName: { type: String, required: true },
     seats: [SeatSchema],
     status: { type: String, enum: ['Open', 'In Progress', 'Closed']},
-    hasLeader: { type: Boolean }
+    leader: { type: String }
 });
 
 module.exports = mongoose.model('Table', TableSchema);

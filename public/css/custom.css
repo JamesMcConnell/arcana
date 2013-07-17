@@ -166,3 +166,13 @@ input {
 .admin-custom-content-body {
     padding: 10px 20px 40px 30px !important;
 }
+
+.no-left-m {
+    margin-left: 0 !important;
+}
+
+.seat-btn {
+    padding-left: 15px !important;
+    padding-right: 15px !important;
+    height: 45px !important;
+}

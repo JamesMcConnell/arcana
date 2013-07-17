@@ -611,7 +611,7 @@ app.controller('TableAdminController', function ($scope, $http, $dialog, TableSe
                         roomName: room.roomName,
                         status: 'Open',
                         seats: [],
-                        hasLeader: false
+                        leader: ''
                     };
 
                     for (var i = 1; i <= room.numPlayers; i++) {
