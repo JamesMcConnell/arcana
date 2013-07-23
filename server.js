@@ -43,6 +43,8 @@ io.configure(function () {
     io.set('log level', 1);
 });
 
+// Changing file to verify I can check in from this machine.
+
 require('./routes')(app, io);
 require('./sockets')(app, io);
 server.listen(3000);
