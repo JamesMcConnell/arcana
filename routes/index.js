@@ -1,4 +1,4 @@
-var db = require('../config/db-config');
+var db = require('../data/user');
 
 module.exports = {
     index: function (req, res) {

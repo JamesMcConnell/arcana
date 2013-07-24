@@ -778,7 +778,7 @@ app.controller('RoomAdminController', function ($scope, $http, $dialog, RoomServ
         $scope.getRooms(1);
     });
 
-    /* Populate room data
+    /* Populate room data */
     var rooms = [{
         roomName: "Randland",
         numPlayers: 2,
@@ -807,7 +807,6 @@ app.controller('RoomAdminController', function ($scope, $http, $dialog, RoomServ
         });
         $scope.getRooms($scope.currentPage);
     };
-    */
 
     $scope.getRooms = function (page) {
         if (page >= 1 && page <= $scope.pages) {
