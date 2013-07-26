@@ -69,14 +69,6 @@ angular.module('appServices', ['ngCookies']).factory('UserService', function ($r
     var currentUserTableSeat = {};
 
     return {
-        setCurrentUserTableSeat:
-            function (tableSeat) {
-                currentUserTableSeat = tableSeat;
-            },
-        getCurrentUserTableSeat:
-            function () {
-                return currentUserTableSeat;
-            },
         getTables:
             function (isPaged, currentPage, numPerPage, roomName, callback) {
                 $http({ method: 'GET', url: '/api/tables', params: { isPaged: isPaged, currentPage: currentPage, numPerPage: numPerPage, roomName: roomName } }).success(function (data) {

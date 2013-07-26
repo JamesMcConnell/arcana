@@ -174,5 +174,19 @@ input {
 .seat-btn {
     padding-left: 15px !important;
     padding-right: 15px !important;
-    height: 45px !important;
+    height: 30px !important;
+}
+
+.half {
+    width: 50%;
+    float: right;
+}
+
+span.seat-text {
+    font-size: 14px;
+    line-height: 0;
+}
+
+ul.seat-list {
+    list-style: none;
 }

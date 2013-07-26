@@ -28,13 +28,16 @@ block content
                                 span {{ table.tableName }}&nbsp; - &nbsp;
                                 span.muted(style="font-size: 11px;") {{ table.status }}
                             .box-body
-                                .shortcut-group
-                                    ul.b-btn-group.no-left-m
+                                a.b-btn.seat-btn.grd-white(href="javascript:;", ng-click="takeSeat(seat)", ng-show="!seat.username")
+                                    span.b-btn-text.seat-text Take Seat
+                                a.b-btn.seat-btn.grd-white(href="javascript:;",ng-click="leaveSeat(seat)", ng-show="seat.username", ng-disabled="seat.username != currentUser.username")
+                                    span.b-btn-text.helper-font-18 {{ (seat.username != currentUser.username) ? seat.username : 'Leave Seat' }}
+                                .half
+                                    ul.no-left-m.seat-list
                                         li(ng-repeat="seat in table.seats")
-                                            a.b-btn.seat-btn.grd-white(href="javascript:;", ng-click="takeSeat(seat)", ng-show="!seat.username")
-                                                span.b-btn-text.helper-font-18 Take Seat
-                                            a.b-btn.seat-btn.grd-white(href="javascript:;",ng-click="leaveSeat(seat)", ng-show="seat.username", ng-disabled="seat.username != currentUser.username")
-                                                span.b-btn-text.helper-font-18 {{ (seat.username != currentUser.username) ? seat.username : 'Leave Seat' }}
+                                            span.label(ng-show="!seat.username") Empty
+                                            span.label.label-warning(ng-show="seat.username === currentUser.username)") You
+                                            span.label.label-info(ng-show="seat.username !== currentUser.username") {{ seat.username }}
                         div(ng-class="($index + 1 % 4 == 0 && 'clear')")
 
     .span2(ng-controller="ChatController")
