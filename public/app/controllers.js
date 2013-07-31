@@ -135,8 +135,8 @@ app.controller('LobbyController', function ($scope, $rootScope, UserService, Roo
         });
     });
 
-    $scope.clearLeftMargin = function (index) {
-        if (index % 4 == 0) {
+    $scope.clearLeftMargin = function (index, divisor) {
+        if (index % divisor == 0) {
             return { 'margin-left': '0px' };
         }
 
@@ -195,6 +195,7 @@ app.controller('LobbyController', function ($scope, $rootScope, UserService, Roo
 app.controller('TableController', function ($scope, $rootScope, TableService) {
     $scope.table = {};
     $scope.socket = io.connect('/table');
+    $scope.setTableLeader = false;
 
     $scope.init = function (table) {
         $scope.table = table;

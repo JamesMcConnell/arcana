@@ -190,3 +190,7 @@ span.seat-text {
 ul.seat-list {
     list-style: none;
 }
+
+.clearLeftMargin {
+    margin-left: 0px !important;
+}
