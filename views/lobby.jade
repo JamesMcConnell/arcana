@@ -33,16 +33,18 @@ block content
                                         .span6(ng-repeat="seat in table.seats", ng-style="clearLeftMargin($index, 2)")
                                             .seat-item
                                                 span {{ (!seat.username) ? 'Empty' : seat.username }}
-                                                .btn-group.pull-right
-                                                    button.btn.btn-mini.btn-info.pull-right.dropdown-toggle(data-toggle="dropdown", ng-disabled="canUserSit(seat)")
-                                                        {{ getSeatText(seat) }}
+                                                .btn-group.pull-right(ng-show="showSeatButton(seat) && showSeatWithOptions(seat)")
+                                                    button.btn.btn-mini.btn-info.pull-right.dropdown-toggle(data-toggle="dropdown")
+                                                        | Take Seat
                                                         | &nbsp;
                                                         span.caret
                                                     ul.dropdown-menu(style="min-width: 0px;")
                                                         li
                                                             a(href="javascript:;", ng-click="sitAsPlayer(seat)") Sit as player
-                                                        li
+                                                        li(ng-show="showSitAsLeader()")
                                                             a(href="javascript:;", ng-click="sitAsLeader(seat)") Sit as leader
+                                                .btn-group.pull-right(ng-show="showSeatButton(seat) && !showSeatWithOptions(seat)")
+                                                    button.btn.btn-mini.btn-info.pull-right(ng-click="leaveSeat(seat)") Leave Seat
                         div(ng-class="($index + 1 % 3 == 0 && 'clear')")
 
     .span2(ng-controller="ChatController")

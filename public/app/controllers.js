@@ -201,20 +201,36 @@ app.controller('TableController', function ($scope, $rootScope, TableService) {
         $scope.table = table;
     };
 
-    $scope.useSeat = function (seat) {
+    // Determines whether or not to show a button (either take seat or leave seat) allowing a user to sit at this particular seat
+    $scope.showSeatButton = function (seat) {
+        // If another player is in the seat, we don't want to show any button.
+        // If no one is in the seat, or the player is in the seat, we want to show a button
+        return !(seat.username.length && seat.username !== $scope.currentUser.username);
 
     };
 
-    $scope.canUserSit = function (seat) {
-        return false;
+    // Determines whether or not to show a button with options (sit as player/sit as leader)
+    $scope.showSeatWithOptions = function (seat) {
+        return !(seat.username.length && seat.username === $scope.currentUser.username);
+
+
     };
 
-    $scope.getSeatText = function (seat) {
-        return 'Take Seat'
+    $scope.sitAsPlayer = function (seat) {
+        // Logic to sit user as a player
     };
 
-    $scope.seatHasOptions = function (seat) {
-        return true;
+    $scope.sitAsLeader = function (seat) {
+        // Logic to sit user as leader
+    };
+
+    $scope.leaveSeat = function (seat) {
+        // Logic to remove player from seat
+    };
+
+    // Determines whether or not to show the Sit as leader option in the UI
+    $scope.showSitAsLeader = function () {
+        return !$scope.table.leader;
     };
 
     $scope.takeSeat = function (seat) {
