@@ -29,17 +29,20 @@ block content
                                 span.muted(style="font-size: 11px;") {{ table.status }}
                             .box-body
                                 .row(style="margin-left: 0px;")
-                                    p(style="margin-bottom: 0px;")
-                                        button.b-btn.btn-block.seat-btn.btn-info.clearLeftMargin(href="javascript:;", ng-click="takeSeat(seat)", ng-show="!seat.username", style="margin-bottom: 2px;") Take Seat
-                                        button.b-btn.btn-block.seat-btn.btn-info.clearLeftMargin(href="javascript:;", ng-click="leaveSeat(seat)", ng-show="seat.username", style="margin-bottom: 2px;", ng-disabled="seat.username != currentUser.username") {{ (seat.username != currentUser.username) ? seat.username : 'Leave Seat' }}
-                                    .divider-content(style="margin: 10px;")
-                                        span
                                     p.clearLeftMargin
                                         .span6(ng-repeat="seat in table.seats", ng-style="clearLeftMargin($index, 2)")
-                                            .alert.alert-success
+                                            .seat-item
                                                 span {{ (!seat.username) ? 'Empty' : seat.username }}
-                                                | &nbsp;
-                                                i.icofont-star-empty
+                                                .btn-group.pull-right
+                                                    button.btn.btn-mini.btn-info.pull-right.dropdown-toggle(data-toggle="dropdown", ng-disabled="canUserSit(seat)")
+                                                        {{ getSeatText(seat) }}
+                                                        | &nbsp;
+                                                        span.caret
+                                                    ul.dropdown-menu(style="min-width: 0px;")
+                                                        li
+                                                            a(href="javascript:;", ng-click="sitAsPlayer(seat)") Sit as player
+                                                        li
+                                                            a(href="javascript:;", ng-click="sitAsLeader(seat)") Sit as leader
                         div(ng-class="($index + 1 % 3 == 0 && 'clear')")
 
     .span2(ng-controller="ChatController")

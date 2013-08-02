@@ -201,6 +201,22 @@ app.controller('TableController', function ($scope, $rootScope, TableService) {
         $scope.table = table;
     };
 
+    $scope.useSeat = function (seat) {
+
+    };
+
+    $scope.canUserSit = function (seat) {
+        return false;
+    };
+
+    $scope.getSeatText = function (seat) {
+        return 'Take Seat'
+    };
+
+    $scope.seatHasOptions = function (seat) {
+        return true;
+    };
+
     $scope.takeSeat = function (seat) {
         // Check if user is already at a table
         if ($scope.currentTable.tableId && $scope.currentTable.seatId) {
