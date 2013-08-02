@@ -28,28 +28,18 @@ block content
                                 span {{ table.tableName }}&nbsp; - &nbsp;
                                 span.muted(style="font-size: 11px;") {{ table.status }}
                             .box-body
-                                .span12
-                                    .span8
-                                        a.b-btn.btn-block.seat-btn.grd-white.clearLeftMargin(href="javascript:;", ng-click="takeSeat(seat)", ng-show="!seat.username")
-                                            span.b-btn-text.seat-text Take Seat
-                                        a.b-btn.btn-block.seat-btn.grd-white.clearLeftMargin(href="javascript:;", ng-click="leaveSeat(seat)", ng-show="seat.username", ng-disabled="seat.username != currentUser.username")
-                                            span.b-btn-text.helper-font-18 {{ (seat.username != currentUser.username) ? seat.username : 'Leave Seat' }}
-                                    .span4
-                                        label.checkbox
-                                            .checker
-                                                span
-                                                    input(type="checkbox", ng-model="setTableLeader")
-                                            small.helper-font-small Table Leader
-                                .span12.clearLeftMargin
-                                    .span6(ng-repeat="seat in table.seats", ng-style="clearLeftMargin($index, 2)")
-                                        .alert.alert-success
-                                            span.label {{ (!seat.username) ? 'Empty' : seat.username }}
-                                //.half
-                                    ul.no-left-m.seat-list
-                                        li(ng-repeat="seat in table.seats")
-                                            span.label(ng-show="!seat.username") Empty
-                                            span.label.label-warning(ng-show="seat.username === currentUser.username)") You
-                                            span.label.label-info(ng-show="seat.username !== currentUser.username") {{ seat.username }}
+                                .row(style="margin-left: 0px;")
+                                    p(style="margin-bottom: 0px;")
+                                        button.b-btn.btn-block.seat-btn.btn-info.clearLeftMargin(href="javascript:;", ng-click="takeSeat(seat)", ng-show="!seat.username", style="margin-bottom: 2px;") Take Seat
+                                        button.b-btn.btn-block.seat-btn.btn-info.clearLeftMargin(href="javascript:;", ng-click="leaveSeat(seat)", ng-show="seat.username", style="margin-bottom: 2px;", ng-disabled="seat.username != currentUser.username") {{ (seat.username != currentUser.username) ? seat.username : 'Leave Seat' }}
+                                    .divider-content(style="margin: 10px;")
+                                        span
+                                    p.clearLeftMargin
+                                        .span6(ng-repeat="seat in table.seats", ng-style="clearLeftMargin($index, 2)")
+                                            .alert.alert-success
+                                                span {{ (!seat.username) ? 'Empty' : seat.username }}
+                                                | &nbsp;
+                                                i.icofont-star-empty
                         div(ng-class="($index + 1 % 3 == 0 && 'clear')")
 
     .span2(ng-controller="ChatController")
