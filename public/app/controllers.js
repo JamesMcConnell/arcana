@@ -206,130 +206,111 @@ app.controller('TableController', function ($scope, $rootScope, TableService) {
         // If another player is in the seat, we don't want to show any button.
         // If no one is in the seat, or the player is in the seat, we want to show a button
         return !(seat.username.length && seat.username !== $scope.currentUser.username);
-
     };
 
     // Determines whether or not to show a button with options (sit as player/sit as leader)
     $scope.showSeatWithOptions = function (seat) {
         return !(seat.username.length && seat.username === $scope.currentUser.username);
-
-
     };
 
-    $scope.sitAsPlayer = function (seat) {
-        // Logic to sit user as a player
-    };
+    $scope.takeSeat = function (seat, sitAsLeader) {
+        if (!$scope.currentTable.tableId) {
+            // User is not currently at a seat
+            seat.username = $scope.currentUser.username;
+            seat.isLeader = sitAsLeader;
+            if (sitAsLeader) {
+                $scope.table.leader = $scope.currentUser.username;
+            }
+            $scope.currentTable.tableId = $scope.table._id;
+            $scope.currentTable.seatId = seat._id;
+            TableService.updateTable($scope.table._id, $scope.table, function (data) {
+                if (data.success) {
+                    $scope.socket.emit('addPlayerToSeat', {
+                        tableId: $scope.table._id,
+                        seatId: seat._id,
+                        username: $scope.currentUser.username,
+                        isLeader: sitAsLeader
+                    });
 
-    $scope.sitAsLeader = function (seat) {
-        // Logic to sit user as leader
-    };
-
-    $scope.leaveSeat = function (seat) {
-        // Logic to remove player from seat
-    };
-
-    // Determines whether or not to show the Sit as leader option in the UI
-    $scope.showSitAsLeader = function () {
-        return !$scope.table.leader;
-    };
-
-    $scope.takeSeat = function (seat) {
-        // Check if user is already at a table
-        if ($scope.currentTable.tableId && $scope.currentTable.seatId) {
-
-            // Check if it is this table
-            if ($scope.currentTable.tableId === $scope.table._id) {
-
-                // Get their current seat
-                var currentSeat = _.find($scope.table.seats, function (seat) {
-                    return seat._id === $scope.currentTable.seatId;
+                    $scope.safeApply();
+                }
+            });
+        } else {
+            if ($scope.currentTable.tableId == $scope.table._id) {
+                var currentSeat = _.find($scope.table.seats, function (s) {
+                    return s._id === $scope.currentTable.seatId;
                 });
 
-                // Remove them from current seat
                 currentSeat.username = '';
+                currentSeat.isLeader = false;
 
-                // Add them to new seat
                 seat.username = $scope.currentUser.username;
+                if (sitAsLeader) {
+                    seat.isLeader = true;
+                    $scope.table.leader = $scope.currentUser.username;
+                }
+
                 $scope.currentTable.tableId = $scope.table._id;
                 $scope.currentTable.seatId = seat._id;
 
-                // Update database
                 TableService.updateTable($scope.table._id, $scope.table, function (data) {
                     if (data.success) {
-                        // Tell other clients to remove player from seat
                         $scope.socket.emit('removePlayerFromSeat', {
                             tableId: $scope.currentTable.tableId,
-                            seatId: $scope.currentTable.seatId
+                            seatId: $socpe.currentTable.seatId
                         });
 
-                        // Tell other clients to add player to new seat
                         $scope.socket.emit('addPlayerToSeat', {
                             tableId: $scope.currentTable.tableId,
                             seatId: $scope.currentTable.seatId,
-                            username: $scope.currentUser.username
+                            username: $scope.currentUser.username,
+                            isLeader: sitAsLeader
                         });
                     }
                 });
 
                 $scope.safeApply();
-            } else { // Player is in a seat at another table
-
-                // We want to raise a client-side event
-                // so the controller for the current table
-                // can properly remove the user,
-                // and alert other clients of the change
+            } else {
                 $rootScope.$broadcast('removePlayerFromSeat', {
                     tableId: $scope.currentTable.tableId,
                     seatId: $scope.currentTable.seatId
                 });
 
-                // Update current table
                 $scope.currentTable.tableId = $scope.table._id;
                 $scope.currentTable.seatId = seat._id;
 
                 seat.username = $scope.currentUser.username;
+                if (sitAsLeader) {
+                    seat.isLeader = true;
+                    $scope.table.leader = $scope.currentUser.username;
+                }
 
                 TableService.updateTable($scope.table._id, $scope.table, function (data) {
                     if (data.success) {
-                        // Alert other clients to update
                         $scope.socket.emit('addPlayerToSeat', {
                             tableId: $scope.table._id,
                             seatId: seat._id,
-                            username: $scope.currentUser.username
+                            username: $scope.currentUser.username,
+                            isLeader: sitAsLeader
                         });
 
                         $scope.safeApply();
                     }
                 });
             }
-        } else {
-            // User is not at a table
-            seat.username = $scope.currentUser.username;
-            $scope.currentTable.tableId = $scope.table._id;
-            $scope.currentTable.seatId = seat._id;
-
-            TableService.updateTable($scope.table._id, $scope.table, function (data) {
-                if (data.success) {
-                    // Alert other clients to update
-                    $scope.socket.emit('addPlayerToSeat', {
-                        tableId: $scope.table._id,
-                        seatId: seat._id,
-                        username: $scope.currentUser.username
-                    });
-
-                    $scope.safeApply();
-                }
-            });
         }
     };
 
     $scope.leaveSeat = function (seat) {
         seat.username = '';
+        if (seat.isLeader) {
+            seat.isLeader = false;
+            $scope.table.leader = '';
+        }
         $scope.currentTable = {};
 
         TableService.updateTable($scope.table._id, $scope.table, function (data) {
             if (data.success) {
-                // Alert other clients to update
                 $scope.socket.emit('removePlayerFromSeat', {
                     tableId: $scope.table._id,
                     seatId: seat._id
@@ -338,6 +319,11 @@ app.controller('TableController', function ($scope, $rootScope, TableService) {
                 $scope.safeApply();
             }
         });
+    };
+
+    // Determines whether or not to show the Sit as leader option in the UI
+    $scope.showSitAsLeader = function () {
+        return !$scope.table.leader;
     };
 
     $scope.socket.on('removePlayerFromSeat', function (data) {
@@ -359,6 +345,10 @@ app.controller('TableController', function ($scope, $rootScope, TableService) {
             });
             if (seat && seat.username.length == 0) {
                 seat.username = data.username;
+                if (data.isLeader) {
+                    seat.isLeader = true;
+                    $scope.table.leader = data.username;
+                }
                 $scope.safeApply();
             }
         }
@@ -372,6 +362,11 @@ app.controller('TableController', function ($scope, $rootScope, TableService) {
 
             if (seat) {
                 seat.username = '';
+                if (seat.isLeader) {
+                    seat.isLeader = false;
+                    $scope.table.leader = '';
+                }
+
                 TableService.updateTable($scope.table._id, $scope.table, function (data) {
                     if (data.success) {
                         $scope.socket.emit('removePlayerFromSeat', {
